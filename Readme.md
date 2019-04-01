@@ -13,7 +13,7 @@ Run `npm run storybook` to view component storybooks.
 Create a storybook for every new component. If you find yourself writing a component whose parts can be
 re-used in other components, extract those bits into a new component.
 
-Container package contain redux High order components or API consuming components.
+Container package contain redux High order components which are responsible for providing the data required by components with in the components package.
 
 Prefer to write tests where possible for complex components that consume API data. (This maybe relaxed due to time limit issues)
 

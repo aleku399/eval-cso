@@ -5,10 +5,6 @@ body {
     background: #9933ff;
 }
 
-.ui.form .field label {
+.ui.form .field label, .ui.header, .ui.vertical.text.menu .item {
     color:white;
-}
-
-.ui.header {
-  color: white
 }
