@@ -1,5 +1,6 @@
 @import "../node_modules/semantic-ui-css/semantic.min.css";
 @import "../node_modules/react-datepicker/dist/react-datepicker.css";
+
 body {
     color: white;
     background: #9933ff;
@@ -7,4 +8,9 @@ body {
 
 .ui.form .field label, .ui.header, .ui.vertical.text.menu .item {
     color:white;
+}
+
+a {
+  text-decoration: none;
+  color: white;
 }
