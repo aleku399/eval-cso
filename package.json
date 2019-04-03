@@ -6,6 +6,7 @@
   "author": "aleku399",
   "scripts": {
     "build": "next build && tsc --project tsconfig.server.json",
+    "compile": "tsc --project tsconfig.server.json",
     "dev": "nodemon server/index.ts",
     "prettier": "prettier-tslint fix '{src,pages}/**/*.(tsx|ts)' ",
     "lint": "tslint --project ./tsconfig.json",
@@ -25,6 +26,7 @@
     "react-datepicker": "^2.1.0",
     "react-dom": "^16.7.0",
     "react-redux": "^6.0.1",
+    "react-table": "^6.9.2",
     "redux": "^4.0.0",
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",

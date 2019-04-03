@@ -21,10 +21,12 @@ app.prepare()
       handle(req, res, parsedUrl);
     }
   })
-  .listen(port, (err) => {
-    if (err) { throw err; }
+ .listen(port, () => {
     /* tslint:disable */
     console.log(`> Ready on http://localhost:${port}`);
-    /* tslint:enable */
-  });
+  })
+  .on("error", (error) => {
+    throw error;
+  })
 });
+

@@ -1,8 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
-import { bindActionCreators, Dispatch } from "redux";
+import { AnyAction, bindActionCreators, Dispatch } from "redux";
 import { AppState } from "../../../redux";
-import { changeQualityView, ChangeQualityView } from "../../../redux/actions";
+import { changeQualityView, ChangeQualityViewFn } from "../../../redux/actions";
 import NavMenu, {
   horizontal,
   SetActiveMenuItem
@@ -31,8 +31,11 @@ const mapStateToProps = ({ qualityView }: AppState) => ({
   activeItem: qualityView
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<ChangeQualityView>) => ({
-  setActiveMenuItem: bindActionCreators(changeQualityView, dispatch)
+const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => ({
+  setActiveMenuItem: bindActionCreators<AnyAction, ChangeQualityViewFn>(
+    changeQualityView,
+    dispatch
+  )
 });
 
 export default connect(

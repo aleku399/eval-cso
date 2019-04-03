@@ -177,7 +177,7 @@ storiesOf("components/Profile", module).add(
       roleOptions={roleOptions}
       autoFocus={true}
       onSubmit={action("profile")}
-      editUser={LoggedInEvaluator }
+      editUser={LoggedInEvaluator}
       loggedInUser={admin}
       options={options}
       serviceOptions={serviceOptions}
