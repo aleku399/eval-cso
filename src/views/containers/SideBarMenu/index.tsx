@@ -1,8 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
-import { bindActionCreators, Dispatch } from "redux";
+import { AnyAction, bindActionCreators, Dispatch } from "redux";
 import { AppState } from "../../../redux";
-import { changeQuality, ChangeQuality } from "../../../redux/actions";
+import { changeQuality, ChangeQualityFn } from "../../../redux/actions";
 import NavMenu, { SetActiveMenuItem, vertical } from "../../components/NavMenu";
 
 const items = [
@@ -28,8 +28,11 @@ function SideBarMenu(props: Props) {
 
 const mapStateToProps = ({ quality }: AppState) => ({ activeItem: quality });
 
-const mapDispatchToProps = (dispatch: Dispatch<ChangeQuality>) => ({
-  setActiveMenuItem: bindActionCreators(changeQuality, dispatch)
+const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => ({
+  setActiveMenuItem: bindActionCreators<AnyAction, ChangeQualityFn>(
+    changeQuality,
+    dispatch
+  )
 });
 
 export default connect(

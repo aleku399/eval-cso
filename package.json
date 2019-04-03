@@ -6,6 +6,7 @@
   "author": "aleku399",
   "scripts": {
     "build": "next build && tsc --project tsconfig.server.json",
+    "compile": "tsc --project tsconfig.server.json",
     "dev": "nodemon server/index.ts",
     "prettier": "prettier-tslint fix '{src,pages}/**/*.(tsx|ts)' ",
     "lint": "tslint --project ./tsconfig.json",

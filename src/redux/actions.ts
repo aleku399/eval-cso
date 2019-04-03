@@ -18,16 +18,25 @@ export type ChangeLoadingStatus = Action & {
   loading: boolean;
 };
 
-export const changeQuality = (quality: string): ChangeQuality => ({
+export type ChangeQualityFn = (quality: string) => ChangeQuality;
+
+export const changeQuality: ChangeQualityFn = quality => ({
   type: CHANGE_QUALITY,
   quality
 });
 
-export const changeQualityView = (
+export type ChangeQualityViewFn = (
   qualityView: QualityView
-): ChangeQualityView => ({ type: CHANGE_QUALITY_VIEW, qualityView });
+) => ChangeQualityView;
 
-export const changeLoadingStatus = (loading: boolean): ChangeLoadingStatus => ({
+export const changeQualityView: ChangeQualityViewFn = qualityView => ({
+  type: CHANGE_QUALITY_VIEW,
+  qualityView
+});
+
+export type ChangeLoadingStatusFn = (loading: boolean) => ChangeLoadingStatus;
+
+export const changeLoadingStatus: ChangeLoadingStatusFn = loading => ({
   type: LOADING_STATUS,
   loading
 });
