@@ -50,10 +50,8 @@ interface Props {
 }
 
 export default class EvaluationDataForm extends React.Component<Props, State> {
-  public checkBoxParent: any;
   constructor(props) {
     super(props);
-    this.checkBoxParent = React.createRef();
     this.state = this.initialState();
   }
 
