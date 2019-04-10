@@ -6,7 +6,7 @@ body {
     background: #9933ff;
 }
 
-.ui.form .field label, .ui.header, .ui.vertical.text.menu .item {
+.ui.form .field label, .ui.header, .ui.vertical.text.menu .item, .ui.form .inline.field > label {
     color:white;
 }
 

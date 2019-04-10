@@ -19,6 +19,8 @@ Prefer to write tests where possible for complex components that consume API dat
 
 Ensure that your code is well typed where possible.
 
+Run `npm run prettier` before you commit.
+
 ## Tool / technologies used
 
 - Emotion for JS in CSS styling
@@ -29,4 +31,6 @@ Ensure that your code is well typed where possible.
 
 ## Gotchas
 
+- Semantic ui handles refs differently see https://react.semantic-ui.com/addons/ref/#types-ref
 - core-js is required by storybook as a peer dev-dependencies [see](https://github.com/storybooks/storybook/issues/3805)
+
