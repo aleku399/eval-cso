@@ -23,8 +23,12 @@ interface Props {
 function SideBarMenu(props: Props) {
   return (
     <div>
-      <h4>Menu</h4>
-      <NavMenu {...props} items={items} alignment={vertical} />
+      <NavMenu
+        {...props}
+        items={items}
+        header="Services"
+        alignment={vertical}
+      />
     </div>
   );
 }

@@ -2,15 +2,5 @@
 @import "../node_modules/react-datepicker/dist/react-datepicker.css";
 
 body {
-    color: white;
-    background: #9933ff;
-}
-
-.ui.form .field label, .ui.header, .ui.vertical.text.menu .item, .ui.form .inline.field > label {
-    color:white;
-}
-
-a {
-  text-decoration: none;
-  color: white;
+  background: #F4F6F8;
 }

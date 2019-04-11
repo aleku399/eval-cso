@@ -12,7 +12,7 @@ import NavMenu, {
 } from "../../components/NavMenu";
 
 const items = [
-  { name: "Enter Service Score", id: "enter-score" },
+  { name: "Evaluate", id: "enter-score" },
   { name: "Data", id: "data-view" },
   { name: "Summary", id: "summary" }
 ];
@@ -25,7 +25,7 @@ interface Props {
 function SideBarMenu(props: Props) {
   return (
     <div>
-      <NavMenu {...props} items={items} alignment={horizontal} />
+      <NavMenu {...props} items={items} alignment={horizontal} widths={3} />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Menu } from "semantic-ui-react";
+import { Menu, SemanticWIDTHS } from "semantic-ui-react";
 
 export interface SideBarItem {
   name: string;
@@ -15,6 +15,8 @@ export type SetActiveMenuItem = (val: string) => void;
 
 export interface Props {
   items: SideBarItem[];
+  header?: string;
+  widths?: SemanticWIDTHS;
   alignment?: Alignment;
   activeItem: string;
   setActiveMenuItem: SetActiveMenuItem;
@@ -40,9 +42,14 @@ class NavMenu extends Component<Props, State> {
 
   public render() {
     const { activeItem } = this.state;
-    const { items, alignment } = this.props;
+    const { items, alignment, header, widths } = this.props;
     return (
-      <Menu text={true} vertical={vertical === alignment}>
+      <Menu vertical={vertical === alignment} fluid={true} widths={widths}>
+        {header ? (
+          <Menu.Item>
+            <Menu.Header>{header}</Menu.Header>
+          </Menu.Item>
+        ) : null}
         {items.map(item => (
           <Menu.Item
             name={item.name}
