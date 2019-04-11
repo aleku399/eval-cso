@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
-import Quality from "src/views/templates/Quality";
+import Services from "src/views/templates/Services";
 
-const index = () => <Quality />;
+const index = () => <Services />;
 
 export default connect()(index);

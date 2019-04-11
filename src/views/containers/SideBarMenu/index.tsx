@@ -2,14 +2,17 @@ import React from "react";
 import { connect } from "react-redux";
 import { AnyAction, bindActionCreators, Dispatch } from "redux";
 import { AppState } from "../../../redux";
-import { changeQuality, ChangeQualityFn } from "../../../redux/actions";
+import {
+  changeService,
+  ChangeServiceFn
+} from "../../../redux/services/actions";
 import NavMenu, { SetActiveMenuItem, vertical } from "../../components/NavMenu";
 
 const items = [
-  { name: "Call Quality", id: "call-quality" },
-  { name: "SMS Quality", id: "sms-quality" },
-  { name: "Email Quality", id: "email-quality" },
-  { name: "Claims Quality", id: "claims-quality" }
+  { name: "Call", id: "call" },
+  { name: "SMS", id: "sms" },
+  { name: "Email", id: "email" },
+  { name: "Claims", id: "claims" }
 ];
 
 interface Props {
@@ -26,11 +29,11 @@ function SideBarMenu(props: Props) {
   );
 }
 
-const mapStateToProps = ({ quality }: AppState) => ({ activeItem: quality });
+const mapStateToProps = ({ service }: AppState) => ({ activeItem: service });
 
 const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => ({
-  setActiveMenuItem: bindActionCreators<AnyAction, ChangeQualityFn>(
-    changeQuality,
+  setActiveMenuItem: bindActionCreators<AnyAction, ChangeServiceFn>(
+    changeService,
     dispatch
   )
 });

@@ -2,14 +2,17 @@ import React from "react";
 import { connect } from "react-redux";
 import { AnyAction, bindActionCreators, Dispatch } from "redux";
 import { AppState } from "../../../redux";
-import { changeQualityView, ChangeQualityViewFn } from "../../../redux/actions";
+import {
+  changeServiceView,
+  ChangeServiceViewFn
+} from "../../../redux/services/actions";
 import NavMenu, {
   horizontal,
   SetActiveMenuItem
 } from "../../components/NavMenu";
 
 const items = [
-  { name: "Enter Quality Score", id: "enter-score" },
+  { name: "Enter Service Score", id: "enter-score" },
   { name: "Data", id: "data-view" },
   { name: "Summary", id: "summary" }
 ];
@@ -32,8 +35,8 @@ const mapStateToProps = ({ qualityView }: AppState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => ({
-  setActiveMenuItem: bindActionCreators<AnyAction, ChangeQualityViewFn>(
-    changeQualityView,
+  setActiveMenuItem: bindActionCreators<AnyAction, ChangeServiceViewFn>(
+    changeServiceView,
     dispatch
   )
 });

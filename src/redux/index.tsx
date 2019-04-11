@@ -1,16 +1,16 @@
 import { AnyAction, applyMiddleware, createStore, Store } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 import thunkMiddleware from "redux-thunk";
+import { LOADING_STATUS } from "./global/actions";
 import {
-  CHANGE_QUALITY,
-  CHANGE_QUALITY_VIEW,
-  LOADING_STATUS,
-  QualityView
-} from "./actions";
+  CHANGE_SERVICE,
+  CHANGE_SERVICE_VIEW,
+  ServiceView
+} from "./services/actions";
 
 export interface AppState {
-  quality: string; // TODO: turn into UNION type of all possible qualities
-  qualityView: QualityView;
+  service: string;
+  qualityView: ServiceView;
   loading: boolean;
   userId?: string;
   userName?: string;
@@ -19,7 +19,7 @@ export interface AppState {
 
 const appState = {
   loading: true,
-  quality: "call-quality",
+  service: "call",
   qualityView: "enter-score"
 };
 
@@ -27,9 +27,9 @@ let store = null;
 
 const reducer = (state: AppState, action: AnyAction): AppState => {
   switch (action.type) {
-    case CHANGE_QUALITY:
-      return { ...state, quality: action.quality };
-    case CHANGE_QUALITY_VIEW:
+    case CHANGE_SERVICE:
+      return { ...state, service: action.service };
+    case CHANGE_SERVICE_VIEW:
       return { ...state, qualityView: action.qualityView };
     case LOADING_STATUS:
       return { ...state, loading: action.loading };

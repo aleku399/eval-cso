@@ -5,7 +5,7 @@ import NavBar from "../../containers/NavBar";
 import SideBarMenu from "../../containers/SideBarMenu";
 import Layout from "../Layout";
 
-export default function Quality() {
+export default function Service() {
   return (
     <Layout>
       <Grid column={3}>
