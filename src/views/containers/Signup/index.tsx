@@ -1,23 +1,21 @@
 import React from "react";
 import { connect } from "react-redux";
 import { AnyAction, Dispatch } from "redux";
-
-import { loginUser } from "../../../redux/login/action";
 import { AppState } from "../../../redux/reducers";
-import LoginForm, { Props } from "../../components/LoginForm";
+import { signupUser } from "../../../redux/signup/action";
+import SignupForm, { Props } from "../../components/SignupForm";
 
-const mapStateToProps = ({ login: { loading, error, profile } }: AppState) => ({
+const mapStateToProps = ({ signup: { loading, error } }: AppState) => ({
   loading,
-  userName: profile && profile.userName,
   error
 });
 
 function Login(props: Props) {
-  return <LoginForm {...props} />;
+  return <SignupForm {...props} />;
 }
 
 const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => ({
-  onSubmit: loginUser(dispatch)
+  onSubmit: signupUser(dispatch)
 });
 
 export default connect(

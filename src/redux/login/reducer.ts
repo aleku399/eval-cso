@@ -7,7 +7,7 @@ import {
 } from "./action";
 
 const initialState: LoginState = {
-  pendingLogin: false
+  loading: false
 };
 
 export function loginReducer(
@@ -16,11 +16,16 @@ export function loginReducer(
 ): LoginState {
   switch (action.type) {
     case REQUESTS_LOGIN:
-      return { ...state, pendingLogin: true };
+      return { ...state, loading: true };
     case RECEIVES_LOGIN_SUCCESS:
-      return { ...state, pendingLogin: false, jwt: action.jwt };
+      return {
+        ...state,
+        loading: false,
+        jwt: action.jwt,
+        profile: action.profile
+      };
     case RECEIVES_LOGIN_FAILURE:
-      return { ...state, pendingLogin: false, error: action.error };
+      return { ...state, loading: false, error: action.error };
     default:
       return state;
   }

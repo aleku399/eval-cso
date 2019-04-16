@@ -7,7 +7,20 @@ import {
   Message,
   Select
 } from "semantic-ui-react";
-import { Profile } from "../../../types/user";
+
+export interface Agent {
+  services: string;
+  branch: string;
+  supervisor: string;
+}
+
+export interface Profile {
+  userName: string;
+  password: string;
+  email: string;
+  role: string;
+  agent?: Agent;
+}
 
 export interface Opt {
   key: string;

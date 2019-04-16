@@ -1,7 +1,7 @@
 import App, { Container } from "next/app";
 import React from "react";
 import { Provider } from "react-redux";
-import withReduxStore from "src/redux/with-redux-store";
+import withReduxStore from "src/redux/withReduxStore";
 import "style/index.css";
 
 class MyApp extends App {

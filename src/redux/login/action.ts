@@ -1,5 +1,6 @@
 import { Action, Dispatch } from "redux";
-import { Credentials } from "../../types/user";
+import { Credentials } from "../../views/components/LoginForm";
+import { Profile } from "../../views/components/UserProfile";
 import axios from "../axios";
 
 export const REQUESTS_LOGIN = "REQUESTS_LOGIN";
@@ -10,21 +11,23 @@ const userLoginApi = "/users/login";
 
 export interface LoginState {
   error?: string;
-  pendingLogin: boolean;
+  loading?: boolean;
+  profile?: Profile;
   jwt?: string;
 }
 
 export type RequestLogin = Action & {
-  pendingLogin: boolean;
+  loading: boolean;
 };
 
 export type ReceiveLoginSuccess = Action & {
-  pendingLogin: boolean;
+  loading: boolean;
   jwt: string;
+  profile: Profile;
 };
 
 export type ReceiveLoginFailure = Action & {
-  pendingLogin: boolean;
+  loading: boolean;
   error: string;
 };
 
@@ -41,19 +44,20 @@ export const receiveLoginFailure = (error: string) => ({
   error
 });
 
-export const receiveLoginSuccess = (jwt: string) => ({
+export const receiveLoginSuccess = (jwt: string, profile: Profile) => ({
   type: RECEIVES_LOGIN_SUCCESS,
-  jwt
+  jwt,
+  profile
 });
 
 export const loginUser = (dispatch: Dispatch) => (credentials: Credentials) => {
   dispatch(requestLogin());
   return axios
     .post(userLoginApi, credentials)
-    .then(response => {
-      const jwt = response.data.userToken;
+    .then(({ data }) => {
+      const jwt = data.userToken;
       window.localStorage.setItem("token", jwt);
-      dispatch(receiveLoginSuccess(jwt));
+      dispatch(receiveLoginSuccess(jwt, data.user));
     })
     .catch(error => {
       dispatch(receiveLoginFailure(error.response.data));

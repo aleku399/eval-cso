@@ -1,29 +1,33 @@
+import Router from "next/router";
 import * as React from "react";
 import { Button, Form, Header, Input, Message } from "semantic-ui-react";
 
 export interface Props {
   autoFocus?: boolean;
+  error?: string;
   loading?: boolean;
-  onSubmit: (data: SingUp) => Promise<void>;
+  onSubmit: (data: SignupData) => Promise<void>;
 }
 
-interface SingUp {
-  username: string;
+export interface SignupData {
+  name: string;
+  fullName: string;
   email: string;
   password: string;
 }
 
 interface State {
-  form: SingUp;
+  form: SignupData;
   emailError?: string;
 }
 
-export default class SignUp extends React.Component<Props, State> {
+export default class Signup extends React.Component<Props, State> {
   constructor(props) {
     super(props);
     this.state = {
       form: {
-        username: "",
+        name: "",
+        fullName: "",
         email: "",
         password: ""
       }
@@ -47,14 +51,20 @@ export default class SignUp extends React.Component<Props, State> {
     return true;
   };
 
-  public handleSubmit = async () => {
-    if (this.validate()) {
-      await this.props.onSubmit(this.state.form);
+  public handleSubmit = async (): Promise<void> => {
+    if (!this.validate()) {
+      return;
+    }
+
+    await this.props.onSubmit(this.state.form);
+
+    if (!this.props.error && !process.env.STORYBOOK) {
+      Router.push("/login");
     }
   };
 
   public render() {
-    const hasError = !!this.state.emailError;
+    const hasError = !!this.state.emailError || !!this.props.error;
     return (
       <div>
         <Header as="h3" textAlign="center">
@@ -64,12 +74,23 @@ export default class SignUp extends React.Component<Props, State> {
           <Form.Field>
             <label>UserName</label>
             <Input
-              placeholder="UserName"
+              placeholder="nick name"
               type="text"
-              id="username"
-              name="username"
+              name="name"
               minLength={3}
-              value={this.state.form.username}
+              value={this.state.form.name}
+              onChange={this.handleInput}
+              required={true}
+            />
+          </Form.Field>
+          <Form.Field>
+            <label>Full Name</label>
+            <Input
+              placeholder="Full Name"
+              type="text"
+              name="fullName"
+              minLength={3}
+              value={this.state.form.fullName}
               onChange={this.handleInput}
               required={true}
             />
@@ -106,6 +127,11 @@ export default class SignUp extends React.Component<Props, State> {
           <Button className="ui submit button" type="submit">
             Sign Up
           </Button>
+          <Message
+            error={true}
+            header="Signup Error"
+            content={this.props.error}
+          />
         </Form>
       </div>
     );
