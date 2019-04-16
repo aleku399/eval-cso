@@ -1,21 +1,17 @@
-const path = require('path');
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const path = require("path");
+const webpack = require("webpack")
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
-const TS_CONFIG_FILE = path.join(__dirname, "../tsconfig.json");
-
-const ROOT_DIR = path.join(__dirname, "./");
-const NODE_MODULES_DIR = path.join(__dirname, "../node_modules");
-
-module.exports = ({config, mode}) => {
+module.exports = ({config, _mode}) => {
   config.module.rules.push({
     test: /\.(ts|tsx)$/,
-    loader: require.resolve('babel-loader'),
+    loader: require.resolve("babel-loader"),
     options: {
-      presets: [require.resolve('babel-preset-react-app')],
+      presets: [require.resolve("babel-preset-react-app")],
     },
   });
 
-  config.resolve.extensions.push('.ts', '.tsx');
+  config.resolve.extensions.push(".ts", ".tsx");
 
   config.resolve.alias = {
     ...config.resolve.alias || {},
@@ -28,9 +24,18 @@ module.exports = ({config, mode}) => {
     new ForkTsCheckerWebpackPlugin({
       async: false,
       checkSyntacticErrors: true,
-      formatter: require('react-dev-utils/typescriptFormatter'),
+      formatter: require("react-dev-utils/typescriptFormatter"),
     })
   );
+
+  config.plugins.push(
+    new webpack.EnvironmentPlugin({
+      API: "http://212.71.238.164:8888/api/",
+      DEBUG: false,
+      NODE_ENV: "development",
+      STORYBOOK: true,
+    })
+  )
 
   return config
 }

@@ -10,8 +10,10 @@ export type ChangeService = Action & {
 };
 
 export type ChangeServiceView = Action & {
-  qualityView: string;
+  serviceView: ServiceView;
 };
+
+export type ServiceActions = ChangeService & ChangeServiceView;
 
 export type ChangeServiceFn = (service: string) => ChangeService;
 
@@ -21,10 +23,10 @@ export const changeService: ChangeServiceFn = service => ({
 });
 
 export type ChangeServiceViewFn = (
-  qualityView: ServiceView
+  serviceView: ServiceView
 ) => ChangeServiceView;
 
-export const changeServiceView: ChangeServiceViewFn = qualityView => ({
+export const changeServiceView: ChangeServiceViewFn = serviceView => ({
   type: CHANGE_SERVICE_VIEW,
-  qualityView
+  serviceView
 });

@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { AnyAction, bindActionCreators, Dispatch } from "redux";
-import { AppState } from "../../../redux";
+import { AppState } from "../../../redux/reducers";
 import {
   changeServiceView,
   ChangeServiceViewFn
@@ -23,15 +23,11 @@ interface Props {
 }
 
 function SideBarMenu(props: Props) {
-  return (
-    <div>
-      <NavMenu {...props} items={items} alignment={horizontal} widths={3} />
-    </div>
-  );
+  return <NavMenu {...props} items={items} alignment={horizontal} widths={3} />;
 }
 
-const mapStateToProps = ({ qualityView }: AppState) => ({
-  activeItem: qualityView
+const mapStateToProps = ({ service: { serviceView } }: AppState) => ({
+  activeItem: serviceView
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => ({

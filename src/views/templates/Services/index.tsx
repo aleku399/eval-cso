@@ -12,7 +12,7 @@ export default function Service() {
         <Grid.Column width={2}>
           <SideBarMenu />
         </Grid.Column>
-        <Grid.Column width={11}>
+        <Grid.Column width={12}>
           <Grid.Row>
             <NavBar />
           </Grid.Row>
@@ -20,7 +20,7 @@ export default function Service() {
             <Placeholder />
           </Grid.Row>
         </Grid.Column>
-        <Grid.Column width={3}>
+        <Grid.Column width={2}>
           <Grid.Row>
             <h4>User Profile</h4>
           </Grid.Row>

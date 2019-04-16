@@ -1,9 +1,9 @@
 const path = require("path");
+const webpack = require("webpack");
 const withPlugins = require("next-compose-plugins");
 const typescript = require("@zeit/next-typescript");
 const css = require("@zeit/next-css");
 const images = require("next-images");
-const dotenv = require("next-runtime-dotenv");
 
 const ROOT_DIR = path.resolve(__dirname, "./");
 const NODE_MODULES_DIR = path.resolve(__dirname, "../node_modules");
@@ -39,17 +39,21 @@ const config = {
       },
     );
 
+    nextConfig.plugins.push(
+      new webpack.EnvironmentPlugin({
+        API: "http://212.71.238.164:8888/api/",
+        DEBUG: false,
+        NODE_ENV: "development",
+        STORYBOOK: false,
+      })
+    )
+
     return nextConfig;
   },
 
 };
 
 module.exports = withPlugins([
-
-  [dotenv, {
-    public: ["BACKEND_URL"],
-    server: [],
-  }],
 
   [typescript],
 

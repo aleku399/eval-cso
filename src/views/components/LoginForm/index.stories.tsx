@@ -4,5 +4,5 @@ import React from "react";
 import LoginForm from "./index";
 
 storiesOf("components/Login", module).add("LoginForm", () => (
-  <LoginForm autoFocus={false} onSubmit={action("submit")} />
+  <LoginForm onSubmit={action("submit")} loading={false} />
 ));

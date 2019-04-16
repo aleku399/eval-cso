@@ -1,13 +1,11 @@
+import Router from "next/router";
 import React from "react";
-import { Button, Form, Header, Input } from "semantic-ui-react";
+import { Button, Form, Header, Input, Message } from "semantic-ui-react";
+import { Credentials } from "../../../types/user";
 
-interface Credentials {
-  email: string;
-  password: string;
-}
-
-interface Props {
-  autoFocus?: boolean;
+export interface Props {
+  loading: boolean;
+  error?: string;
   onSubmit: (input: Credentials) => Promise<void>;
 }
 
@@ -35,15 +33,23 @@ class LoginForm extends React.Component<Props, Credentials> {
       email: this.state.email,
       password: this.state.password
     });
+    if (!this.props.error && !process.env.STORYBOOK) {
+      return Router.push("/");
+    }
   };
 
   public render() {
+    const hasError = !!this.props.error;
     return (
       <div>
         <Header as="h3" textAlign="center">
           Sign In
         </Header>
-        <Form onSubmit={this.handleSubmitForm}>
+        <Form
+          onSubmit={this.handleSubmitForm}
+          loading={this.props.loading}
+          error={hasError}
+        >
           <Form.Field>
             <Input
               icon="user"
@@ -70,6 +76,11 @@ class LoginForm extends React.Component<Props, Credentials> {
             />
           </Form.Field>
           <Button type="submit">Login</Button>
+          <Message
+            error={true}
+            header="Login Error"
+            content={this.props.error}
+          />
         </Form>
       </div>
     );

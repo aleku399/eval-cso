@@ -7,6 +7,7 @@ import {
   Message,
   Select
 } from "semantic-ui-react";
+import { Profile } from "../../../types/user";
 
 export interface Opt {
   key: string;
@@ -19,26 +20,12 @@ export interface LoggedIn {
   role: string;
 }
 
-export interface Agent {
-  services: string;
-  branch: string;
-  supervisor: string;
-}
-
-export interface Profile {
-  userName: string;
-  password: string;
-  email: string;
-  role: string;
-  agent?: Agent;
-}
-
 export interface Props {
   roleOptions: Opt[];
   editUser: Profile;
   loggedInUser: LoggedIn;
   autoFocus: boolean;
-  onSubmit: (data: any) => Promise<void>;
+  onSubmit: (data: Profile) => Promise<void>;
   search: boolean;
   selection: boolean;
   options: Opt[];
