@@ -16,6 +16,7 @@ export interface Agent {
 
 export interface Profile {
   userName: string;
+  fullName: string;
   password: string;
   email: string;
   role: string;

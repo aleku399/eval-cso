@@ -55,7 +55,7 @@ export const loginUser = (dispatch: Dispatch) => (credentials: Credentials) => {
   return axios
     .post(userLoginApi, credentials)
     .then(({ data }) => {
-      const jwt = data.userToken;
+      const jwt = data.token;
       window.localStorage.setItem("token", jwt);
       dispatch(receiveLoginSuccess(jwt, data.user));
     })

@@ -22,7 +22,7 @@ interface Props {
   activeItem: string;
 }
 
-function SideBarMenu(props: Props) {
+function NavbarMenu(props: Props) {
   return <NavMenu {...props} items={items} alignment={horizontal} widths={3} />;
 }
 
@@ -40,4 +40,4 @@ const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(SideBarMenu);
+)(NavbarMenu);

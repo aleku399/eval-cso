@@ -10,7 +10,7 @@ const mapStateToProps = ({ signup: { loading, error } }: AppState) => ({
   error
 });
 
-function Login(props: Props) {
+function Signup(props: Props) {
   return <SignupForm {...props} />;
 }
 
@@ -21,4 +21,4 @@ const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Login);
+)(Signup);

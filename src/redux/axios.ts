@@ -8,4 +8,9 @@ const instance: AxiosInstance = axios.create({
   }
 });
 
+export function authAxios(jwt: string): AxiosInstance {
+  instance.defaults.headers.Authorization = `Bearer ${jwt}`;
+  return instance;
+}
+
 export default instance;

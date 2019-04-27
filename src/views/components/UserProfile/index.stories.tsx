@@ -15,6 +15,7 @@ const profile = {
   email: "",
   password: "",
   role: "Agent",
+  fullName: "",
   agent: {
     services: "",
     branch: "",
@@ -26,6 +27,7 @@ const agent = {
   userName: "Thanos",
   email: "thanos_titan@gmail.com",
   password: "saturn",
+  fullName: "Thanos",
   role: "Agent",
   agent: {
     services: "call",
@@ -41,6 +43,7 @@ const admin = {
 
 const adminProfile = {
   userName: "Star Lord",
+  fullName: "Star Lord",
   email: "spartoi@missouri.com",
   password: "missouri",
   role: "Admin"
@@ -53,6 +56,7 @@ const LoggedIn = {
 
 const LoggedInEvaluator = {
   userName: "aleku399",
+  fullName: "Alex Ssentongo",
   email: "aleku399@gmail.com",
   password: "ftytuioftyu",
   role: "Evaluator"

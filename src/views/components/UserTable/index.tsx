@@ -7,10 +7,11 @@ import "react-table/react-table.css";
 export interface User {
   userName: string;
   role: string;
+  fullName: string;
 }
 
 export interface Props {
-  data: User[];
+  users: User[];
 }
 
 const columns = [
@@ -18,12 +19,17 @@ const columns = [
     Header: "Users List",
     columns: [
       {
-        Header: "User Name",
+        Header: "UserName",
         filterable: true,
         accessor: "userName",
         Cell: ({ row }) => (
           <Link href={`/user/${row.userName}`}>{row.userName}</Link>
         )
+      },
+      {
+        Header: "FullName",
+        filterable: true,
+        accessor: "fullName"
       },
       {
         Header: "Role",
@@ -34,6 +40,6 @@ const columns = [
   }
 ];
 
-export default function userTable({ data }) {
-  return <ReactTable data={data} columns={columns} />;
+export default function UserTable({ users }: Props) {
+  return <ReactTable data={users} columns={columns} />;
 }
