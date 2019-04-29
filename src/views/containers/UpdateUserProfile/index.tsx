@@ -1,10 +1,11 @@
+import { AxiosResponse } from "axios";
 import React, { useState } from "react";
 import { connect } from "react-redux";
 import useEffectOnce from "react-use/esm/useEffectOnce";
 import { AnyAction, Dispatch } from "redux";
+import { agentApi, userApi } from "../../../lib/apiEndpoints";
 import { authAxios } from "../../../lib/axios";
 import { useAxiosGet } from "../../../lib/useAxios";
-// import { useAxiosGet } from "../../../lib/useAxios";
 import { AgentData, getAgentData } from "../../../redux/AgentData/action";
 import { AppState } from "../../../redux/reducers";
 import UserProfile, {
@@ -20,7 +21,6 @@ interface DispatchedProps extends AgentData {
   loggedInUser: Profile;
   loading: boolean;
   error?: string;
-  users?: Profile[];
 }
 
 interface FetchedAgentProfileData {
@@ -38,9 +38,6 @@ interface OwnProps {
 }
 
 type Props = DispatchedProps & DispatchGetAgentData & OwnProps;
-
-const userApi = "/users/";
-const agentApi = "/agents/";
 
 function useFetchAgentProfileData(
   jwt: string,
@@ -69,9 +66,9 @@ const deleteUser = (_jwt: string) => (_userName: string): Promise<void> => {
 
 const updateUser = (jwt: string) => async (
   profile: ProfileUpdate
-): Promise<any> => {
+): Promise<AxiosResponse<any>> => {
   const httpRequest = authAxios(jwt);
-  if (profile.agent) {
+  if (profile.agent.supervisor || profile.agent.branch) {
     await httpRequest.put(`${agentApi}${profile.userName}`, profile.agent);
   }
   return httpRequest.put(`${userApi}${profile.userName}`, profile.user);
@@ -79,8 +76,7 @@ const updateUser = (jwt: string) => async (
 
 const mapStateToProps = ({
   agentData: { branches, supervisors, services, error, loading },
-  login: { jwt, profile },
-  users: { users }
+  login: { jwt, profile }
 }: AppState): DispatchedProps => ({
   loading,
   branches,
@@ -88,7 +84,6 @@ const mapStateToProps = ({
   services,
   error,
   loggedInUser: profile,
-  users,
   jwt
 });
 

@@ -59,12 +59,11 @@ const roles = [ADMIN, AGENT, SUPERVISOR, EVALUATOR];
 
 class UserProfile extends React.Component<Props, State> {
   public state: State;
-
   constructor(props) {
     super(props);
 
     this.state = {
-      agent: this.props.agent,
+      agent: this.props.agent || { supervisor: null, branch: null },
       editUser: this.props.editUser,
       loading: this.props.loading,
       error: this.props.error
@@ -80,7 +79,7 @@ class UserProfile extends React.Component<Props, State> {
   };
 
   public handleDropdownInput = (_event, { name, value }) => {
-    const agent = { ...this.state.agent, [name]: value };
+    const agent = { ...this.state.agent, [name]: value.length ? value : null };
     this.setState({ agent });
   };
 
@@ -104,10 +103,13 @@ class UserProfile extends React.Component<Props, State> {
           userName: this.props.editUser.userName
         })
         .then(() => {
-          this.setState({ loading: false, feedback: "Updated User Profile" });
+          this.setState({
+            loading: false,
+            feedback: "Submitted data Successfully"
+          });
         })
         .catch(error => {
-          this.setState({ error });
+          this.setState({ error: error.toString(), loading: false });
         });
     }
   };
@@ -123,7 +125,9 @@ class UserProfile extends React.Component<Props, State> {
             Router.push("/");
           }
         })
-        .catch(error => this.setState({ error }));
+        .catch(error =>
+          this.setState({ error: error.toString(), loading: false })
+        );
     }
   };
 
@@ -185,7 +189,7 @@ class UserProfile extends React.Component<Props, State> {
           />
         </Form.Field>
         <Form.Field>
-          <label>Branches</label>
+          <label>Branch</label>
           <SearchableDropdown
             placeholder="BranchName"
             name="branch"
@@ -250,7 +254,7 @@ class UserProfile extends React.Component<Props, State> {
           <Message
             error={true}
             header="User Profile Errors"
-            content={this.props.error}
+            content={this.state.error}
           />
           <Message
             floating={true}

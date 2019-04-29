@@ -1,4 +1,5 @@
 import { Action, Dispatch } from "redux";
+import { userApi } from "../../lib/apiEndpoints";
 import axios from "../../lib/axios";
 import { Credentials } from "../../views/components/LoginForm";
 import { Profile } from "../../views/components/UserProfile";
@@ -7,7 +8,7 @@ export const REQUESTS_LOGIN = "REQUESTS_LOGIN";
 export const RECEIVES_LOGIN_FAILURE = "RECEIVES_LOGIN";
 export const RECEIVES_LOGIN_SUCCESS = "RECEIVES_LOGIN_SUCCESS";
 
-const userLoginApi = "/users/login";
+const userLoginApi = `${userApi}login`;
 
 export interface LoginState {
   error?: string;

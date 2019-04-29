@@ -22,6 +22,13 @@ const agent: Profile = {
   role: AGENT
 };
 
+const emptyAgent = {
+  userName: "",
+  fullName: "",
+  role: AGENT,
+  email: ""
+};
+
 const adminProfileA = {
   userName: "steve",
   role: ADMIN,
@@ -118,6 +125,17 @@ storiesOf("components/Profile", module).add(
     />
   )
 );
+
+storiesOf("components/Profile", module).add("Admin creating Agent", () => (
+  <UserProfile
+    onSubmit={action("profile")}
+    editUser={emptyAgent}
+    loggedInUser={adminProfileA}
+    branches={branches}
+    supervisors={supervisors}
+    deleteUserHandler={action("delete Agent")}
+  />
+));
 
 storiesOf("components/Profile", module).add(
   "Agent editing Agent Profile",

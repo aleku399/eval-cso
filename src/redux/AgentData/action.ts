@@ -1,4 +1,5 @@
 import { Action, Dispatch } from "redux";
+import { agentApi } from "../../lib/apiEndpoints";
 import axios from "../../lib/axios";
 import { Profile } from "../../views/components/UserProfile";
 
@@ -6,13 +7,13 @@ export const REQUESTS_AGENT = "REQUESTS_AGENT";
 export const RECEIVES_AGENT_FAILURE = "RECEIVES_AGENT";
 export const RECEIVES_AGENT_SUCCESS = "RECEIVES_AGENT_SUCCESS";
 
-const agentDataApi = "/agents/data";
+const agentDataApi = `${agentApi}data`;
 const agentError = "Error getting AgentData, Check you are logged in";
 
 export interface AgentData {
-  branches?: string[];
-  supervisors?: Profile[];
-  services?: [string];
+  branches: string[];
+  supervisors: Profile[];
+  services: string[];
 }
 
 export interface AgentDataState extends AgentData {

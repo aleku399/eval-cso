@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Message } from "semantic-ui-react";
-import { Development } from "../../../lib/constants";
+import { Development } from "../../../lib/envs";
 
 interface State {
   error?: string;

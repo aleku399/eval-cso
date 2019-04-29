@@ -1,12 +1,11 @@
 import { Action, Dispatch } from "redux";
+import { userApi } from "../../lib/apiEndpoints";
 import { authAxios } from "../../lib/axios";
 import { Profile } from "../../views/components/UserProfile";
 
 export const REQUESTS_USERS = "REQUESTS_USERS";
 export const RECEIVES_USERS_FAILURE = "RECEIVES_USERS";
 export const RECEIVES_USERS_SUCCESS = "RECEIVES_USERS_SUCCESS";
-
-const userListApi = "/users";
 
 export interface UserListState {
   error?: string;
@@ -41,7 +40,7 @@ export const receiveUsersSuccess = (users: Profile[]) => ({
 export const getUsers = (dispatch: Dispatch) => (jwt: string) => {
   dispatch(requestUsers());
   return authAxios(jwt)
-    .get(userListApi)
+    .get(userApi)
     .then(response => {
       dispatch(receiveUsersSuccess(response.data));
     })

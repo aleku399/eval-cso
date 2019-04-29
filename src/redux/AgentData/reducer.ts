@@ -7,7 +7,10 @@ import {
 } from "./action";
 
 const initialState: AgentDataState = {
-  loading: false
+  loading: false,
+  supervisors: [],
+  branches: [],
+  services: []
 };
 
 export function agentDataReducer(
