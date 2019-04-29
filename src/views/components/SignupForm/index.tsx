@@ -1,16 +1,14 @@
+import { AxiosPromise } from "axios";
 import Router from "next/router";
 import * as React from "react";
 import { Button, Form, Header, Input, Message } from "semantic-ui-react";
 
 export interface Props {
-  autoFocus?: boolean;
-  error?: string;
-  loading?: boolean;
-  onSubmit: (data: SignupData) => Promise<void>;
+  onSubmit: (data: SignupData) => AxiosPromise<void>;
 }
 
 export interface SignupData {
-  name: string;
+  userName: string;
   fullName: string;
   email: string;
   password: string;
@@ -18,15 +16,17 @@ export interface SignupData {
 
 interface State {
   form: SignupData;
-  emailError?: string;
+  loading: boolean;
+  error?: string;
 }
 
 export default class Signup extends React.Component<Props, State> {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       form: {
-        name: "",
+        userName: "",
         fullName: "",
         email: "",
         password: ""
@@ -44,47 +44,60 @@ export default class Signup extends React.Component<Props, State> {
   public validate = (): boolean => {
     if (!this.state.form.email.toLowerCase().endsWith("@nssfug.org")) {
       const emailError = "Please provide an nssfug.org email";
-      this.setState({ emailError });
+      this.setState({ error: emailError });
       return false;
     }
-    this.setState({ emailError: null });
+    this.setState({ error: null });
     return true;
   };
 
   public handleSubmit = async (): Promise<void> => {
-    if (!this.validate()) {
-      return;
-    }
+    if (this.validate()) {
+      this.setState({ loading: true });
 
-    await this.props.onSubmit(this.state.form);
-
-    if (!this.props.error && !process.env.STORYBOOK) {
-      Router.push("/login");
+      this.props
+        .onSubmit(this.state.form)
+        .then(response => {
+          this.setState({ loading: false });
+          if (response.status !== 200) {
+            this.setState({ error: "Error signing up, please contact IT" });
+          }
+          if (!process.env.STORYBOOK) {
+            Router.push("/login");
+          }
+        })
+        .catch(error => {
+          this.setState({ error: error.toString(), loading: false });
+        });
     }
   };
 
   public render() {
-    const hasError = !!this.state.emailError || !!this.props.error;
+    const hasError = !!this.state.error;
     return (
       <div>
         <Header as="h3" textAlign="center">
           Sign Up
         </Header>
-        <Form error={hasError} onSubmit={this.handleSubmit}>
+        <Form
+          error={hasError}
+          onSubmit={this.handleSubmit}
+          loading={this.state.loading}
+        >
           <Form.Field>
             <label>UserName</label>
             <Input
               placeholder="nick name"
               type="text"
-              name="name"
+              name="userName"
               minLength={3}
-              value={this.state.form.name}
+              value={this.state.form.userName}
               onChange={this.handleInput}
               required={true}
             />
           </Form.Field>
           <Form.Field>
-            <label>Full Name</label>
+            <label>FullName</label>
             <Input
               placeholder="Full Name"
               type="text"
@@ -106,11 +119,6 @@ export default class Signup extends React.Component<Props, State> {
               onChange={this.handleInput}
               required={true}
             />
-            <Message
-              error={true}
-              header="Email input Error"
-              content={this.state.emailError}
-            />
           </Form.Field>
           <Form.Field>
             <label>Password</label>
@@ -130,7 +138,7 @@ export default class Signup extends React.Component<Props, State> {
           <Message
             error={true}
             header="Signup Error"
-            content={this.props.error}
+            content={this.state.error}
           />
         </Form>
       </div>

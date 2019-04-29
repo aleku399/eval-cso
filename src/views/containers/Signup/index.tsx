@@ -1,24 +1,14 @@
+import { AxiosPromise } from "axios";
 import React from "react";
-import { connect } from "react-redux";
-import { AnyAction, Dispatch } from "redux";
-import { AppState } from "../../../redux/reducers";
-import { signupUser } from "../../../redux/signup/action";
-import SignupForm, { Props } from "../../components/SignupForm";
+import axios from "../../../lib/axios";
+import SignupForm, { SignupData } from "../../components/SignupForm";
 
-const mapStateToProps = ({ signup: { loading, error } }: AppState) => ({
-  loading,
-  error
-});
+const userSignupApi = "/users/signup";
 
-function Signup(props: Props) {
-  return <SignupForm {...props} />;
+export const signupUser = (credentials: SignupData): AxiosPromise<void> => {
+  return axios.post(userSignupApi, credentials);
+};
+
+export default function Signup() {
+  return <SignupForm onSubmit={signupUser} />;
 }
-
-const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => ({
-  onSubmit: signupUser(dispatch)
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Signup);

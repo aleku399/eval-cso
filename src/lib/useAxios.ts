@@ -2,7 +2,7 @@ import { AxiosRequestConfig } from "axios";
 import { useState } from "react";
 // tslint:disable-next-line: no-submodule-imports
 import useEffectOnce from "react-use/esm/useEffectOnce";
-import { authAxios } from "./axios";
+import axios, { authAxios } from "./axios";
 
 interface Response<T> {
   data: T;
@@ -15,14 +15,14 @@ interface PostRequest {
   url: string;
 }
 
-export const useAxios = <T>(jwt: string) => (
+export const useAxios = <T>(jwt?: string) => (
   request: AxiosRequestConfig
 ): Response<T> => {
   const defaultState = { loading: true, data: null, error: null };
   const [response, setResponse] = useState(defaultState);
 
   useEffectOnce(() => {
-    authAxios(jwt)
+    (jwt ? authAxios(jwt) : axios)
       .request(request)
       .then(res => {
         setResponse({ ...defaultState, loading: false, data: res.data });
@@ -37,14 +37,14 @@ export const useAxios = <T>(jwt: string) => (
   return response;
 };
 
-export const useAxiosGet = <T>(jwt: string) => (url: string): Response<T> => {
+export const useAxiosGet = <T>(jwt?: string) => (url: string): Response<T> => {
   return useAxios<T>(jwt)({
     method: "get",
     url
   });
 };
 
-export const useAxiosPost = <T>(jwt: string) => ({
+export const useAxiosPost = <T>(jwt?: string) => ({
   url,
   data
 }: PostRequest): Response<T> => {

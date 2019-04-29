@@ -4,5 +4,5 @@ import React from "react";
 import SignUp from "./index";
 
 storiesOf("components/signUp", module).add("default", () => (
-  <SignUp autoFocus={true} onSubmit={action("signup")} />
+  <SignUp onSubmit={action("signup")} />
 ));
