@@ -1,6 +1,6 @@
 import { Action, Dispatch } from "redux";
+import axios from "../../lib/axios";
 import { SignupData } from "../../views/components/SignupForm";
-import axios from "../axios";
 
 export const REQUESTS_SIGNUP = "REQUESTS_SIGNUP";
 export const RECEIVES_SIGNUP_FAILURE = "RECEIVES_SIGNUP";
@@ -14,10 +14,6 @@ export interface SignupState {
   state?: string;
 }
 
-export type RequestSignup = Action & {
-  loading: boolean;
-};
-
 export type ReceiveSignupSuccess = Action & {
   loading: boolean;
   state: "success";
@@ -28,9 +24,7 @@ export type ReceiveSignupFailure = Action & {
   error: string;
 };
 
-export type SignupActions = ReceiveSignupFailure &
-  ReceiveSignupSuccess &
-  RequestSignup;
+export type SignupActions = ReceiveSignupFailure & ReceiveSignupSuccess;
 
 export const requestSignup = () => ({
   type: REQUESTS_SIGNUP

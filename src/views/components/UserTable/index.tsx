@@ -1,17 +1,11 @@
 import Link from "next/link";
 import * as React from "react";
 import ReactTable from "react-table";
-// tslint:disable-next-line: no-submodule-imports
 import "react-table/react-table.css";
-
-export interface User {
-  userName: string;
-  role: string;
-  fullName: string;
-}
+import { Profile } from "../UserProfile";
 
 export interface Props {
-  users: User[];
+  users: Profile[];
 }
 
 const columns = [

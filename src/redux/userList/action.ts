@@ -1,6 +1,6 @@
 import { Action, Dispatch } from "redux";
-import { User } from "../../views/components/UserTable";
-import { authAxios } from "../axios";
+import { authAxios } from "../../lib/axios";
+import { Profile } from "../../views/components/UserProfile";
 
 export const REQUESTS_USERS = "REQUESTS_USERS";
 export const RECEIVES_USERS_FAILURE = "RECEIVES_USERS";
@@ -11,26 +11,18 @@ const userListApi = "/users";
 export interface UserListState {
   error?: string;
   loading?: boolean;
-  users?: User[];
+  users?: Profile[];
 }
 
-export type RequestUsers = Action & {
-  loading: boolean;
-};
-
 export type ReceiveUsersSuccess = Action & {
-  loading: boolean;
-  users: User[];
+  users: Profile[];
 };
 
 export type ReceiveUsersFailure = Action & {
-  loading: boolean;
   error: string;
 };
 
-export type UserListActions = ReceiveUsersFailure &
-  ReceiveUsersSuccess &
-  RequestUsers;
+export type UserListActions = ReceiveUsersFailure & ReceiveUsersSuccess;
 
 export const requestUsers = () => ({
   type: REQUESTS_USERS
@@ -41,7 +33,7 @@ export const receiveUsersFailure = (error: string) => ({
   error
 });
 
-export const receiveUsersSuccess = (users: User[]) => ({
+export const receiveUsersSuccess = (users: Profile[]) => ({
   type: RECEIVES_USERS_SUCCESS,
   users
 });

@@ -1,5 +1,6 @@
 import { storiesOf } from "@storybook/react";
 import React from "react";
+import { ADMIN, AGENT, EVALUATOR } from "../UserProfile";
 import UserTable from "./index";
 
 storiesOf("components/UserTable", module).add("default", () => (
@@ -9,17 +10,20 @@ storiesOf("components/UserTable", module).add("default", () => (
 const data = [
   {
     userName: "mary",
-    role: "Agent",
-    fullName: "Mary Jane"
+    role: AGENT,
+    fullName: "Mary Jane",
+    email: "mary@gmail.com"
   },
   {
     userName: "aleku399",
-    role: "Admin",
-    fullName: "Alex Ssentongo"
+    role: ADMIN,
+    fullName: "Alex Ssentongo",
+    email: "aleku@gmail.com"
   },
   {
     userName: "John",
-    role: "Evaluator",
-    fullName: "John Doe"
+    role: EVALUATOR,
+    fullName: "John Doe",
+    email: "johjn@gmail.com"
   }
 ];

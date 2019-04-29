@@ -1,7 +1,7 @@
 import { Action, Dispatch } from "redux";
+import axios from "../../lib/axios";
 import { Credentials } from "../../views/components/LoginForm";
 import { Profile } from "../../views/components/UserProfile";
-import axios from "../axios";
 
 export const REQUESTS_LOGIN = "REQUESTS_LOGIN";
 export const RECEIVES_LOGIN_FAILURE = "RECEIVES_LOGIN";
@@ -16,24 +16,16 @@ export interface LoginState {
   jwt?: string;
 }
 
-export type RequestLogin = Action & {
-  loading: boolean;
-};
-
 export type ReceiveLoginSuccess = Action & {
-  loading: boolean;
   jwt: string;
   profile: Profile;
 };
 
 export type ReceiveLoginFailure = Action & {
-  loading: boolean;
   error: string;
 };
 
-export type LoginActions = ReceiveLoginFailure &
-  ReceiveLoginSuccess &
-  RequestLogin;
+export type LoginActions = ReceiveLoginFailure & ReceiveLoginSuccess;
 
 export const requestLogin = () => ({
   type: REQUESTS_LOGIN

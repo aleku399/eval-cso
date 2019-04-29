@@ -1,17 +1,7 @@
 {
-  "extends": ["tslint:latest", "tslint-react", "tslint-config-prettier"],
+  "extends": ["tslint:latest", "tslint-react", "tslint-config-prettier", "tslint-react-hooks"],
     "rules": {
-      "no-submodule-imports": [
-        true,
-        "next",
-        "glamor",
-        "components",
-        "style",
-        "src",
-        "types",
-        "brand",
-        "sdk"
-      ],
+      "no-submodule-imports": false,
       "no-implicit-dependencies": false,
       "object-literal-sort-keys": false,
       "interface-name": false,

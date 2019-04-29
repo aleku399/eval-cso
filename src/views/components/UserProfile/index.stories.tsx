@@ -1,98 +1,61 @@
 import { action } from "@storybook/addon-actions";
 import { storiesOf } from "@storybook/react";
 import React from "react";
-import UserProfile from "./index";
+import UserProfile, {
+  ADMIN,
+  Agent,
+  AGENT,
+  EVALUATOR,
+  Profile,
+  SUPERVISOR
+} from "./index";
 
-const roleOptions = [
-  { text: "Admin", key: "admin", value: "Admin" },
-  { text: "Evaluator", key: "evaluator", value: "Evaluator" },
-  { text: "Supervisor", key: "supervisor", value: "Supervisor" },
-  { text: "Agent", key: "agent", value: "Agent" }
-];
-
-const profile = {
-  userName: "",
-  email: "",
-  password: "",
-  role: "Agent",
-  fullName: "",
-  agent: {
-    services: "",
-    branch: "",
-    supervisor: ""
-  }
+const agentProfile: Agent = {
+  branch: "Jinja",
+  supervisor: "steve"
 };
 
-const agent = {
+const agent: Profile = {
   userName: "Thanos",
   email: "thanos_titan@gmail.com",
-  password: "saturn",
   fullName: "Thanos",
-  role: "Agent",
-  agent: {
-    services: "call",
-    branch: "Jinja",
-    supervisor: "Gomora"
-  }
+  role: AGENT
 };
 
-const admin = {
-  userName: "Steve Rogers",
-  role: "Admin"
+const adminProfileA = {
+  userName: "steve",
+  role: ADMIN,
+  fullName: "Steve Rogers",
+  email: "email@gmail.com"
 };
 
-const adminProfile = {
-  userName: "Star Lord",
+const adminProfileB: Profile = {
+  userName: "Star",
   fullName: "Star Lord",
   email: "spartoi@missouri.com",
-  password: "missouri",
   role: "Admin"
 };
 
-const LoggedIn = {
-  userName: "aleku399",
-  role: "Evaluator"
-};
+const supervisors = [{ ...adminProfileA, role: SUPERVISOR }];
 
-const LoggedInEvaluator = {
+const loggedInEvaluator: Profile = {
   userName: "aleku399",
   fullName: "Alex Ssentongo",
   email: "aleku399@gmail.com",
-  password: "ftytuioftyu",
-  role: "Evaluator"
+  role: EVALUATOR
 };
 
-const options = [
-  { text: "John", key: "j", value: "John" },
-  { text: "Logan", key: "L", value: "Logan" }
-];
-
-const serviceOptions = [
-  { text: "Email", key: "e", value: "Email" },
-  { text: "call", key: "c", value: "Call" },
-  { text: "sms", key: "s", value: "sms" }
-];
-
-const branches = [
-  { text: "Nakawa", key: "N", value: "Nakawa" },
-  { text: "Jinja", key: "j", value: "Jinja" },
-  { text: "Luzira", key: "L", value: "Luzira" }
-];
+const branches = ["Nakawa", "Jinja", "Luzira"];
 
 storiesOf("components/Profile", module).add(
   "Evaluator editing own Profile",
   () => (
     <UserProfile
-      roleOptions={roleOptions}
-      autoFocus={true}
       onSubmit={action("profile")}
-      editUser={LoggedInEvaluator}
-      loggedInUser={LoggedIn}
-      options={options}
-      serviceOptions={serviceOptions}
+      editUser={loggedInEvaluator}
+      loggedInUser={loggedInEvaluator}
       branches={branches}
-      search={true}
-      selection={true}
+      supervisors={supervisors}
       deleteUserHandler={action("delete Agent")}
     />
   )
@@ -102,16 +65,12 @@ storiesOf("components/Profile", module).add(
   "Evaluator editing Agent Profile",
   () => (
     <UserProfile
-      roleOptions={roleOptions}
-      autoFocus={true}
+      supervisors={supervisors}
+      agent={agentProfile}
       onSubmit={action("profile")}
       editUser={agent}
-      loggedInUser={LoggedIn}
-      options={options}
-      serviceOptions={serviceOptions}
+      loggedInUser={loggedInEvaluator}
       branches={branches}
-      search={true}
-      selection={true}
       deleteUserHandler={action("delete Agent")}
     />
   )
@@ -121,54 +80,26 @@ storiesOf("components/Profile", module).add(
   "Admin editing Agent Profile",
   () => (
     <UserProfile
-      roleOptions={roleOptions}
-      autoFocus={true}
+      supervisors={supervisors}
       onSubmit={action("profile")}
+      agent={agentProfile}
       editUser={agent}
-      loggedInUser={admin}
-      options={options}
-      serviceOptions={serviceOptions}
+      loggedInUser={adminProfileA}
       branches={branches}
-      search={true}
-      selection={true}
       deleteUserHandler={action("delete Agent")}
     />
   )
 );
 
 storiesOf("components/Profile", module).add(
-  "Admin creating Agent Profile",
+  "Admin editing another admin",
   () => (
     <UserProfile
-      roleOptions={roleOptions}
-      autoFocus={true}
       onSubmit={action("profile")}
-      editUser={profile}
-      loggedInUser={admin}
-      options={options}
-      serviceOptions={serviceOptions}
+      editUser={adminProfileB}
+      loggedInUser={adminProfileA}
       branches={branches}
-      search={true}
-      selection={true}
-      deleteUserHandler={action("delete Agent")}
-    />
-  )
-);
-
-storiesOf("components/Profile", module).add(
-  "Admin editing another admins",
-  () => (
-    <UserProfile
-      roleOptions={roleOptions}
-      autoFocus={true}
-      onSubmit={action("profile")}
-      editUser={adminProfile}
-      loggedInUser={admin}
-      options={options}
-      serviceOptions={serviceOptions}
-      branches={branches}
-      search={true}
-      selection={true}
+      supervisors={supervisors}
       deleteUserHandler={action("delete Agent")}
     />
   )
@@ -178,16 +109,11 @@ storiesOf("components/Profile", module).add(
   "Admin editing another Evaluator",
   () => (
     <UserProfile
-      roleOptions={roleOptions}
-      autoFocus={true}
       onSubmit={action("profile")}
-      editUser={LoggedInEvaluator}
-      loggedInUser={admin}
-      options={options}
-      serviceOptions={serviceOptions}
+      editUser={loggedInEvaluator}
+      loggedInUser={adminProfileA}
       branches={branches}
-      search={true}
-      selection={true}
+      supervisors={supervisors}
       deleteUserHandler={action("delete Agent")}
     />
   )
@@ -197,16 +123,12 @@ storiesOf("components/Profile", module).add(
   "Agent editing Agent Profile",
   () => (
     <UserProfile
-      roleOptions={roleOptions}
-      autoFocus={true}
       onSubmit={action("profile")}
+      agent={agentProfile}
       editUser={agent}
       loggedInUser={agent}
-      options={options}
-      serviceOptions={serviceOptions}
       branches={branches}
-      search={true}
-      selection={true}
+      supervisors={supervisors}
       deleteUserHandler={action("delete Agent")}
     />
   )

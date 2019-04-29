@@ -1,57 +1,61 @@
+import Router from "next/router";
 import React from "react";
 import {
   Button,
   Container,
+  DropdownItemProps,
   Form,
   Input,
-  Message,
-  Select
+  Message
 } from "semantic-ui-react";
+import SearchableDropdown from "../SearchableDropdown";
+
+export type Role = "Admin" | "CSOAgent" | "Evaluator" | "Supervisor";
+
+export const ADMIN: Role = "Admin";
+export const AGENT: Role = "CSOAgent";
+export const EVALUATOR: Role = "Evaluator";
+export const SUPERVISOR: Role = "Supervisor";
 
 export interface Agent {
-  services: string;
-  branch: string;
-  supervisor: string;
+  branch?: string;
+  supervisor?: string;
 }
 
 export interface Profile {
   userName: string;
   fullName: string;
-  password: string;
   email: string;
-  role: string;
+  role: Role;
+}
+
+export interface ProfileUpdate {
+  userName: string;
+  user: Profile;
   agent?: Agent;
 }
 
-export interface Opt {
-  key: string;
-  text: string;
-  value: string;
-}
-
-export interface LoggedIn {
-  userName: string;
-  role: string;
-}
-
 export interface Props {
-  roleOptions: Opt[];
   editUser: Profile;
-  loggedInUser: LoggedIn;
-  autoFocus: boolean;
-  onSubmit: (data: Profile) => Promise<void>;
-  search: boolean;
-  selection: boolean;
-  options: Opt[];
-  serviceOptions: Opt[];
-  branches: Opt[];
-  deleteUserHandler: (e) => void;
+  agent?: Agent;
+  error?: string;
+  loading?: boolean;
+  loggedInUser: Profile;
+  onSubmit: (data: ProfileUpdate) => Promise<any>;
+  supervisors: Profile[];
+  branches: string[];
+  deleteUserHandler: (userName: string) => Promise<void>;
 }
 
 export interface State {
-  editUser: Profile;
-  emailError?: string;
+  editUser?: Profile;
+  agent?: Agent;
+  error?: string;
+  feedback?: string;
+  loading?: boolean;
 }
+
+const roles = [ADMIN, AGENT, SUPERVISOR, EVALUATOR];
 
 class UserProfile extends React.Component<Props, State> {
   public state: State;
@@ -60,8 +64,10 @@ class UserProfile extends React.Component<Props, State> {
     super(props);
 
     this.state = {
+      agent: this.props.agent,
       editUser: this.props.editUser,
-      emailError: null
+      loading: this.props.loading,
+      error: this.props.error
     };
   }
 
@@ -74,133 +80,153 @@ class UserProfile extends React.Component<Props, State> {
   };
 
   public handleDropdownInput = (_event, { name, value }) => {
-    const agent = { ...this.state.editUser.agent, [name]: value };
-    const editUser = { ...this.state.editUser, agent };
-    this.setState({ editUser });
+    const agent = { ...this.state.agent, [name]: value };
+    this.setState({ agent });
   };
 
   public validate = (): boolean => {
     if (!this.state.editUser.email.toLowerCase().endsWith("@nssfug.org")) {
-      const emailError = "Please provide an nssfug.org email";
-      this.setState({ emailError });
+      const error = "Please provide an nssfug.org email";
+      this.setState({ error });
       return false;
     }
-    this.setState({ emailError: null });
+    this.setState({ error: null });
     return true;
   };
 
-  public handleSubmit = async () => {
+  public handleSubmit = async (): Promise<void> => {
     if (this.validate()) {
-      await this.props.onSubmit(this.state.editUser);
+      this.setState({ loading: true });
+      this.props
+        .onSubmit({
+          user: this.state.editUser,
+          agent: this.state.agent,
+          userName: this.props.editUser.userName
+        })
+        .then(() => {
+          this.setState({ loading: false, feedback: "Updated User Profile" });
+        })
+        .catch(error => {
+          this.setState({ error });
+        });
     }
   };
 
-  public getOptions = (role: string, roleOptions: Opt[]) => {
-    return role === "Admin"
-      ? roleOptions
-      : roleOptions.filter(opt => opt.text !== "Admin");
+  public deleteUserHandler = async _event => {
+    if (this.validate()) {
+      this.setState({ loading: true });
+      this.props
+        .deleteUserHandler(this.props.editUser.userName)
+        .then(() => {
+          this.setState({ loading: false, feedback: "Deleted User Profile" });
+          if (!process.env.STORYBOOK) {
+            Router.push("/");
+          }
+        })
+        .catch(error => this.setState({ error }));
+    }
   };
 
-  public deleteUser = (role: string, edit: string) => {
-    return role === "Admin" && edit === "Agent" ? (
-      <Button
-        type="submit"
-        style={{ marginTop: "10px" }}
-        onClick={this.props.deleteUserHandler}
-      >
-        Delete Agent
-      </Button>
-    ) : role === "Admin" && edit === "Admin" ? (
-      <Button
-        type="submit"
-        style={{ marginTop: "10px" }}
-        onClick={this.props.deleteUserHandler}
-      >
-        Delete Admin
-      </Button>
-    ) : role === "Admin" && edit === "Evaluator" ? (
-      <Button
-        type="submit"
-        style={{ marginTop: "10px" }}
-        onClick={this.props.deleteUserHandler}
-      >
-        Delete Evaluator
-      </Button>
-    ) : null;
+  public getRoles = (role: string) => {
+    return role === ADMIN ? roles : roles.filter(opt => opt !== ADMIN);
   };
 
-  public adminField = (role: string) => {
-    return role === "Admin" ? (
+  public deleteUserButton = () => {
+    return (
+      <Form.Field>
+        <Button onClick={this.deleteUserHandler}>
+          Delete {this.props.editUser.role}
+        </Button>
+      </Form.Field>
+    );
+  };
+
+  public deleteUser = (activeUserRole: string, editUserRole: string) => {
+    return activeUserRole === ADMIN && editUserRole === AGENT
+      ? this.deleteUserButton()
+      : activeUserRole === ADMIN && editUserRole === ADMIN
+      ? this.deleteUserButton()
+      : activeUserRole === ADMIN && editUserRole === EVALUATOR
+      ? this.deleteUserButton()
+      : null;
+  };
+
+  public renderAdminRoleField = (activeUserRole: string) => {
+    return activeUserRole === ADMIN ? (
       <Form.Field>
         <label>Roles</label>
-        <Select
-          placeholder="role"
+        <SearchableDropdown
           name="role"
-          options={this.getOptions(
-            this.props.loggedInUser.role,
-            this.props.roleOptions
-          )}
+          values={roles}
           defaultValue={this.state.editUser.role}
           onChange={this.handleDropdownInput}
         />
       </Form.Field>
     ) : null;
   };
-
-  public agentField = (role: string, edit: string) => {
-    return (role === "Admin" || role === "Evaluator" || role === "Agent") &&
-      edit === "Agent" ? (
-      <span>
+  public getSupervisorOptions(): DropdownItemProps[] {
+    return this.props.supervisors.map(user => ({
+      key: user.userName,
+      value: user.userName,
+      text: user.fullName
+    }));
+  }
+  public renderAgentFields = (editedUserRole: Role) => {
+    return editedUserRole === AGENT ? (
+      <Form.Field>
         <Form.Field>
           <label>Supervisor</label>
-          <Select
+          <SearchableDropdown
             placeholder="Supervisor"
             name="supervisor"
-            options={this.props.options}
-            search={this.props.search}
+            options={this.getSupervisorOptions()}
             onChange={this.handleDropdownInput}
-            defaultValue={this.state.editUser.agent.supervisor}
-          />
-        </Form.Field>
-        <Form.Field>
-          <label>Services</label>
-          <Select
-            placeholder="Email"
-            name="services"
-            options={this.props.serviceOptions}
-            search={this.props.search}
-            onChange={this.handleDropdownInput}
-            defaultValue={this.state.editUser.agent.services}
+            defaultValue={this.state.agent.supervisor}
           />
         </Form.Field>
         <Form.Field>
           <label>Branches</label>
-          <Select
-            placeholder="Nakawa"
+          <SearchableDropdown
+            placeholder="BranchName"
             name="branch"
-            options={this.props.branches}
+            values={this.props.branches}
             onChange={this.handleDropdownInput}
-            defaultValue={this.state.editUser.agent.branch}
+            defaultValue={this.state.agent.branch}
           />
         </Form.Field>
-      </span>
+      </Form.Field>
     ) : null;
   };
 
   public render() {
-    const hasError = !!this.state.emailError;
-
+    const hasError = !!this.state.error;
     return (
       <Container>
-        <Form error={hasError} onSubmit={this.handleSubmit}>
+        <Form
+          error={hasError}
+          onSubmit={this.handleSubmit}
+          loading={!!this.state.loading}
+        >
           <Form.Field>
-            <label>User Name</label>
+            <label>UserName</label>
             <Input
               placeholder="Username"
               type="text"
               name="userName"
               minLength={3}
               value={this.state.editUser.userName}
+              onChange={this.handleInput}
+              required={true}
+            />
+          </Form.Field>
+          <Form.Field>
+            <label>FullName</label>
+            <Input
+              placeholder="Full Name"
+              type="text"
+              name="fullName"
+              minLength={3}
+              value={this.state.editUser.fullName}
               onChange={this.handleInput}
               required={true}
             />
@@ -216,30 +242,21 @@ class UserProfile extends React.Component<Props, State> {
               required={true}
             />
           </Form.Field>
+          {this.renderAdminRoleField(this.props.loggedInUser.role)}
+          {this.renderAgentFields(this.props.editUser.role)}
+          <Form.Field>
+            <Button type="submit">Submit</Button>
+          </Form.Field>
           <Message
             error={true}
-            header="Email input Error"
-            content={this.state.emailError}
+            header="User Profile Errors"
+            content={this.props.error}
           />
-          <Form.Field>
-            <label>Enter Password</label>
-            <Input
-              type="password"
-              name="password"
-              value={this.state.editUser.password}
-              onChange={this.handleInput}
-              minLength={5}
-              required={true}
-            />
-          </Form.Field>
-          {this.adminField(this.props.loggedInUser.role)}
-          {this.agentField(
-            this.props.loggedInUser.role,
-            this.props.editUser.role
-          )}
-          <Button type="submit" style={{ marginTop: "10px" }}>
-            Submit
-          </Button>
+          <Message
+            floating={true}
+            hidden={!this.state.feedback}
+            content={this.state.feedback}
+          />
         </Form>
         {this.deleteUser(
           this.props.loggedInUser.role,
