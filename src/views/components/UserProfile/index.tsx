@@ -1,21 +1,15 @@
 import Router from "next/router";
 import React from "react";
-import {
-  Button,
-  Container,
-  DropdownItemProps,
-  Form,
-  Input,
-  Message
-} from "semantic-ui-react";
+import { Button, Container, Form, Input, Message } from "semantic-ui-react";
+import { mkOptionsFromUser } from "../../../lib/helper";
 import SearchableDropdown from "../SearchableDropdown";
 
-export type Role = "Admin" | "CSOAgent" | "Evaluator" | "Supervisor";
+export type Role = "admin" | "agent" | "evaluator" | "supervisor";
 
-export const ADMIN: Role = "Admin";
-export const AGENT: Role = "CSOAgent";
-export const EVALUATOR: Role = "Evaluator";
-export const SUPERVISOR: Role = "Supervisor";
+export const ADMIN: Role = "admin";
+export const AGENT: Role = "agent";
+export const EVALUATOR: Role = "evaluator";
+export const SUPERVISOR: Role = "supervisor";
 
 export interface Agent {
   branch?: string;
@@ -120,7 +114,7 @@ class UserProfile extends React.Component<Props, State> {
       this.props
         .deleteUserHandler(this.props.editUser.userName)
         .then(() => {
-          this.setState({ loading: false, feedback: "Deleted User Profile" });
+          this.setState({ loading: false });
           if (!process.env.STORYBOOK) {
             Router.push("/");
           }
@@ -168,13 +162,7 @@ class UserProfile extends React.Component<Props, State> {
       </Form.Field>
     ) : null;
   };
-  public getSupervisorOptions(): DropdownItemProps[] {
-    return this.props.supervisors.map(user => ({
-      key: user.userName,
-      value: user.userName,
-      text: user.fullName
-    }));
-  }
+
   public renderAgentFields = (editedUserRole: Role) => {
     return editedUserRole === AGENT ? (
       <Form.Field>
@@ -183,7 +171,7 @@ class UserProfile extends React.Component<Props, State> {
           <SearchableDropdown
             placeholder="Supervisor"
             name="supervisor"
-            options={this.getSupervisorOptions()}
+            options={mkOptionsFromUser(this.props.supervisors)}
             onChange={this.handleDropdownInput}
             defaultValue={this.state.agent.supervisor}
           />
@@ -211,6 +199,12 @@ class UserProfile extends React.Component<Props, State> {
           onSubmit={this.handleSubmit}
           loading={!!this.state.loading}
         >
+          <Message
+            floating={true}
+            positive={true}
+            hidden={!this.state.feedback}
+            content={this.state.feedback}
+          />
           <Form.Field>
             <label>UserName</label>
             <Input
@@ -255,11 +249,6 @@ class UserProfile extends React.Component<Props, State> {
             error={true}
             header="User Profile Errors"
             content={this.state.error}
-          />
-          <Message
-            floating={true}
-            hidden={!this.state.feedback}
-            content={this.state.feedback}
           />
         </Form>
         {this.deleteUser(

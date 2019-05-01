@@ -23,7 +23,7 @@ const createParameters = (
   return authAxios(jwt).post(evaluationServiceApi, payload);
 };
 
-interface ParameterAttrs {
+export interface ParameterAttrs {
   value: string;
   name: string;
   weight: number;
@@ -40,7 +40,9 @@ const mapStateToProps = ({
   jwt
 });
 
-function toParameterCategories(data?: ParameterAttrs[]): ParameterCategory[] {
+export function toParameterCategories(
+  data?: ParameterAttrs[]
+): ParameterCategory[] {
   if (!data) {
     return Object.keys(categories).map(categoryName => {
       return {

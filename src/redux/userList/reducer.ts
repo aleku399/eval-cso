@@ -7,7 +7,8 @@ import {
 } from "./action";
 
 const initialState: UserListState = {
-  loading: false
+  loading: false,
+  users: []
 };
 
 export function userListReducer(

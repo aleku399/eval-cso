@@ -1,3 +1,4 @@
 export const userApi = "/users/";
 export const agentApi = "/agents/";
-export const evaluationServiceApi = "/evaluations/services";
+export const evaluationApi = "/evaluations/";
+export const evaluationServiceApi = `${evaluationApi}services/`;

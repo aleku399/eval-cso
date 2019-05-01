@@ -1,10 +1,9 @@
 import { AxiosRequestConfig } from "axios";
 import { useState } from "react";
-// tslint:disable-next-line: no-submodule-imports
 import useEffectOnce from "react-use/esm/useEffectOnce";
 import axios, { authAxios } from "./axios";
 
-interface Response<T> {
+export interface Response<T> {
   data: T;
   loading: boolean;
   error?: string;
@@ -15,6 +14,7 @@ interface PostRequest {
   url: string;
 }
 
+// TODO: implement simple session storage caching
 export const useAxios = <T>(jwt?: string) => (
   request: AxiosRequestConfig
 ): Response<T> => {

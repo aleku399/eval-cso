@@ -263,6 +263,12 @@ export default class UpdateServiceType extends React.PureComponent<
           error={!!this.state.error}
           onChange={this.onChangeHandler}
         >
+          <Message
+            hidden={!this.state.feedback}
+            floating={true}
+            positive={true}
+            content={this.state.feedback}
+          />
           {this.state.parameterCategories.map(category =>
             this.renderCategory(category)
           )}
@@ -274,11 +280,6 @@ export default class UpdateServiceType extends React.PureComponent<
               error={true}
               header="Evaluation input data Error"
               content={this.state.error}
-            />
-            <Message
-              hidden={!this.state.feedback}
-              floating={true}
-              content={this.state.feedback}
             />
           </Form.Field>
         </Form>

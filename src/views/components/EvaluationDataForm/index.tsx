@@ -1,51 +1,66 @@
+import { AxiosPromise } from "axios";
 import React from "react";
 import {
   Button,
   Checkbox,
-  Dropdown,
   Form,
   Header,
   List,
   Message,
   TextArea
 } from "semantic-ui-react";
+import { mkOptionsFromUser } from "../../../lib/helper";
+import SearchableDropdown from "../SearchableDropdown";
+import { ParameterCategory } from "../UpdateServiceType";
+import { Profile } from "../UserProfile";
 
 interface Parameter {
   name: string;
   value: string;
 }
 
-interface ParameterCategory {
-  categoryName: string;
-  parameters: Parameter[];
-}
-
-interface Evaluation {
+interface EvalState {
   agentName: string;
   reason: string;
   customer: number;
   date: string;
   comment?: string;
+}
+
+interface Evaluation extends EvalState {
   parameters: string[];
 }
 
-interface AgentNameOptions {
-  key: string;
-  value: string;
-  text: string;
+interface EvalAttrs extends EvalState {
+  service: string;
+  evaluator: string;
 }
+
+export interface CreateEvaluation {
+  evalAttrs: EvalAttrs;
+  parameters: string[];
+}
+
+export const deviation = "deviation";
+export const zeroRated = "zeroRated";
 
 interface State {
   evaluation: Evaluation;
   loading: boolean;
-  errors: string;
+  error: string;
+  feedback?: string;
 }
 
-interface Props {
-  onSubmit: (data: Evaluation) => Promise<void>;
-  loading: boolean;
-  serviceType: string;
-  agents: string[];
+export type SubmitEvaluation = (
+  data: CreateEvaluation
+) => AxiosPromise<{ id: number }>;
+export interface Props {
+  onSubmit: SubmitEvaluation;
+  loading?: boolean;
+  error?: string;
+  service: string;
+  evaluator: string;
+  agents: Profile[];
   parameterCategories: ParameterCategory[];
 }
 
@@ -57,6 +72,7 @@ export default class EvaluationDataForm extends React.Component<Props, State> {
 
   public initialState(): State {
     return {
+      feedback: null,
       evaluation: {
         parameters: [],
         comment: "",
@@ -65,22 +81,22 @@ export default class EvaluationDataForm extends React.Component<Props, State> {
         customer: 0,
         agentName: ""
       },
-      errors: null,
+      error: this.props.error,
       loading: this.props.loading
     };
   }
 
-  public agentNameOptions = (agentNames: string[]): AgentNameOptions[] => {
-    return agentNames.map(
-      (agentName): AgentNameOptions => {
-        return {
-          key: agentName,
-          value: agentName.toLowerCase(),
-          text: agentName
-        };
-      }
-    );
-  };
+  public componentDidUpdate(prevProps: Props) {
+    if (
+      prevProps.loading !== this.props.loading ||
+      prevProps.error !== this.props.error
+    ) {
+      this.setState({
+        error: this.props.error,
+        loading: this.props.loading
+      });
+    }
+  }
 
   public renderParameters = (parameters: Parameter[]) => {
     return parameters.map(parameter => {
@@ -100,8 +116,8 @@ export default class EvaluationDataForm extends React.Component<Props, State> {
   public renderReasons = (parameterCategories: ParameterCategory[]) => {
     return parameterCategories.map(category => {
       return (
-        <Form.Field inline={true} key={category.categoryName}>
-          <Header as="h3">{category.categoryName}</Header>
+        <Form.Field inline={true} key={category.value}>
+          <Header as="h3">{category.name}</Header>
           <ul>{this.renderParameters(category.parameters)}</ul>
         </Form.Field>
       );
@@ -132,42 +148,81 @@ export default class EvaluationDataForm extends React.Component<Props, State> {
 
   public validate = (): boolean => {
     if (!this.state.evaluation.parameters.length) {
-      this.setState({ errors: "Please check at least one parameter" });
+      this.setState({
+        error: "Please check at least one parameter",
+        feedback: null
+      });
       return false;
     }
     if (!this.state.evaluation.agentName) {
-      this.setState({ errors: "Please select an agent" });
+      this.setState({ error: "Please select an agent" });
       return false;
     }
-    this.setState({ errors: null });
+    this.setState({ error: null });
     return true;
   };
+
+  public clearInput() {
+    const evaluation = {
+      ...this.state.evaluation,
+      comment: "",
+      reason: "",
+      customer: 0
+    };
+    this.setState({ evaluation });
+  }
 
   public handleSubmit = async (): Promise<void> => {
     if (this.validate()) {
       this.setState({ loading: true });
-      return this.props.onSubmit(this.state.evaluation);
+      const parameters = this.state.evaluation.parameters;
+      const date = new Date(this.state.evaluation.date);
+
+      const payload: CreateEvaluation = {
+        evalAttrs: {
+          ...this.state.evaluation,
+          service: this.props.service,
+          evaluator: this.props.evaluator,
+          customer: Number(this.state.evaluation.customer),
+          date: date.toISOString()
+        },
+        parameters
+      };
+      this.props
+        .onSubmit(payload)
+        .then(response => {
+          if (response.data.id) {
+            this.setState({ loading: false, feedback: "Added new evaluation" });
+            this.clearInput();
+          }
+        })
+        .catch(error => {
+          this.setState({ loading: false, error: error.toString() });
+        });
     }
   };
 
   public render() {
-    const hasError = !!this.state.errors;
+    const hasError = !!this.state.error;
     return (
       <Form
         onSubmit={this.handleSubmit}
         error={hasError}
         loading={this.state.loading}
       >
+        <Message
+          hidden={!this.state.feedback}
+          positive={true}
+          floating={true}
+          content={this.state.feedback}
+        />
         <Form.Group widths="equal">
           <Form.Field inline={true}>
             <label> Agent Names</label>
-            <Dropdown
+            <SearchableDropdown
               name="agentName"
               placeholder="Select an Agent"
-              fluid={true}
-              search={true}
-              selection={true}
-              options={this.agentNameOptions(this.props.agents)}
+              options={mkOptionsFromUser(this.props.agents)}
               onChange={this.handleDropDownInput}
             />
           </Form.Field>
@@ -188,7 +243,7 @@ export default class EvaluationDataForm extends React.Component<Props, State> {
             name="reason"
             value={this.state.evaluation.reason}
             fluid={true}
-            label={`${this.props.serviceType} reason`}
+            label={`${this.props.service} reason`}
             required={true}
             onChange={this.handleInput}
           />
@@ -220,7 +275,7 @@ export default class EvaluationDataForm extends React.Component<Props, State> {
         <Message
           error={true}
           header="Evaluation input data Error"
-          content={this.state.errors}
+          content={this.state.error}
         />
       </Form>
     );

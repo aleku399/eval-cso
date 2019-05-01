@@ -15,7 +15,7 @@ const agentProfile: Agent = {
   supervisor: "steve"
 };
 
-const agent: Profile = {
+export const agent: Profile = {
   userName: "Thanos",
   email: "thanos_titan@gmail.com",
   fullName: "Thanos",
@@ -40,7 +40,7 @@ const adminProfileB: Profile = {
   userName: "Star",
   fullName: "Star Lord",
   email: "spartoi@missouri.com",
-  role: "Admin"
+  role: ADMIN
 };
 
 const supervisors = [{ ...adminProfileA, role: SUPERVISOR }];
