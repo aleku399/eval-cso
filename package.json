@@ -53,6 +53,7 @@
     "@types/react": "^16.7.0",
     "@types/react-datepicker": "^2.0.3",
     "@types/react-redux": "^7.0.1",
+    "@types/react-table": "^6.8.1",
     "@types/semantic-ui": "^2.2.6",
     "@types/storybook__react": "latest",
     "@zeit/next-css": "0.2.1-canary.4",

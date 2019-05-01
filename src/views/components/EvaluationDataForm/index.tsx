@@ -41,8 +41,10 @@ export interface CreateEvaluation {
   parameters: string[];
 }
 
-export const deviation = "deviation";
-export const zeroRated = "zeroRated";
+export type Categories = "deviation" | "zeroRated";
+
+export const deviation: Categories = "deviation";
+export const zeroRated: Categories = "zeroRated";
 
 interface State {
   evaluation: Evaluation;

@@ -2143,6 +2143,13 @@
     "@types/react" "*"
     redux "^4.0.0"
 
+"@types/react-table@^6.8.1":
+  version "6.8.1"
+  resolved "https://registry.yarnpkg.com/@types/react-table/-/react-table-6.8.1.tgz#ff92b25677a220356064321234fd89ba590db1e3"
+  integrity sha512-56wi1s7+H4eGbtXsppNz/OeBeUiPQZnJYLxia0ZpwcD47VfYFE1EkbVadEoJshJIjR4nbSQSF/AgJHvC/ZwHaQ==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react@*":
   version "16.8.6"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.8.6.tgz#fa1de3fe56cc9b6afeddc73d093d7f30fd5e31cc"
