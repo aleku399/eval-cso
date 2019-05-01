@@ -64,7 +64,7 @@ function UpdateServiceContainer({ jwt, service }: Props) {
   }
 
   const { data, loading, error } = useAxiosGet<ParameterRes[]>(jwt)(
-    `${evaluationServiceApi}/test`
+    `${evaluationServiceApi}${service}`
   );
 
   return (

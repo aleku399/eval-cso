@@ -16,7 +16,21 @@ const agentProfile: Agent = {
 };
 
 export const agent: Profile = {
-  userName: "Thanos",
+  userName: "simon",
+  email: "thanos_titan@gmail.com",
+  fullName: "Thanos",
+  role: AGENT
+};
+
+export const agentB: Profile = {
+  userName: "alex",
+  email: "thanos_titan@gmail.com",
+  fullName: "Alex",
+  role: EVALUATOR
+};
+
+export const agentC: Profile = {
+  userName: "thanos",
   email: "thanos_titan@gmail.com",
   fullName: "Thanos",
   role: AGENT
@@ -45,7 +59,7 @@ const adminProfileB: Profile = {
 
 const supervisors = [{ ...adminProfileA, role: SUPERVISOR }];
 
-const loggedInEvaluator: Profile = {
+export const loggedInEvaluator: Profile = {
   userName: "aleku399",
   fullName: "Alex Ssentongo",
   email: "aleku399@gmail.com",

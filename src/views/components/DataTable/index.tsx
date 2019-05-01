@@ -2,8 +2,16 @@ import _ from "lodash";
 import * as React from "react";
 import ReactTable, { Column, Filter } from "react-table";
 import "react-table/react-table.css";
-import { DropdownItemProps, Form } from "semantic-ui-react";
-import { EvalState, ParamCategoryName, Parameter } from "../EvaluationForm";
+import { DropdownItemProps, Form, Message } from "semantic-ui-react";
+import { mkOptionsFromUser } from "../../../lib/helper";
+import {
+  deviation,
+  EvalState,
+  ParamCategoryName,
+  Parameter,
+  zeroRated
+} from "../EvaluationForm";
+import { EVALUATOR, Profile } from "../UserProfile";
 
 export interface ParameterAttrs extends Parameter {
   category: ParamCategoryName;
@@ -15,13 +23,13 @@ interface EvalAttrs extends EvalState {
   evaluator: string;
 }
 
-interface Evaluation {
+export interface Evaluation {
   evalAttrs: EvalAttrs;
   parameters: ParameterAttrs[];
   score: number;
 }
 
-type EvaluationData = Evaluation[];
+export type EvaluationData = Evaluation[];
 
 interface EvaluationTableData {
   date: string;
@@ -37,8 +45,11 @@ interface EvaluationTableData {
 }
 
 export interface Props {
+  users: Profile[];
   data: EvaluationData;
-  loggedIn: string;
+  loggedIn: Profile;
+  loading?: boolean;
+  error?: string;
 }
 
 export interface State {
@@ -49,6 +60,7 @@ export interface State {
   pageSize: number;
   from: string;
   to: string;
+  evaluatorOptions: DropdownItemProps[];
 }
 
 export interface ColumnRows extends Column<any> {
@@ -61,19 +73,11 @@ export interface ColumnRowsOpt {
   columns: ColumnRows[];
 }
 
-const allEvaluators = "all_evaluators";
-
-const evalOption = (data: EvaluationTableData[]): DropdownItemProps[] => {
-  return data.map(obj => ({
-    key: obj.evaluator,
-    text: obj.evaluator,
-    value: obj.evaluator
-  }));
-};
+const allEvaluators = "All Evaluators";
 
 const all: DropdownItemProps = {
-  key: "All Evaluators",
-  text: "All Evaluators",
+  key: allEvaluators,
+  text: allEvaluators,
   value: allEvaluators
 };
 
@@ -104,7 +108,7 @@ const columns: ColumnRowsOpt[] = [
       {
         Header: "Reasons for Deviation",
         width: 200,
-        accessor: "deviation",
+        accessor: deviation,
         style: { whiteSpace: "unset" },
         id: "deviation",
         Cell: ({ row }) => {
@@ -122,7 +126,7 @@ const columns: ColumnRowsOpt[] = [
       {
         Header: "Reasons for Zero Rating",
         width: 200,
-        accessor: "zeroRated",
+        accessor: zeroRated,
         style: { whiteSpace: "unset" },
         Cell: ({ row }) => {
           const list = row.zeroRated.map((z: ParameterAttrs) => (
@@ -143,41 +147,25 @@ const columns: ColumnRowsOpt[] = [
         width: 200
       },
       {
+        Header: "Duration",
+        accessor: "duration"
+      },
+      {
         Header: "Score",
         id: "score",
         accessor: "score"
-      },
-      {
-        Header: "Duration",
-        accessor: "duration"
       }
     ]
   }
 ];
 
-const EvaluationTableData = (data: EvaluationData): EvaluationTableData[] => {
-  return data.map((obj: Evaluation) => {
-    const paramObj = _.groupBy(
-      obj.parameters,
-      (x: ParameterAttrs) => x.category
-    ) as CategoryObjects;
-    return {
-      ...paramObj,
-      ...obj.evalAttrs,
-      duration: String(obj.evalAttrs.customer),
-      customer: String(obj.evalAttrs.customer),
-      score: String(obj.score)
-    };
-  });
-};
-
 export default class DataTable extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-
     this.state = {
-      data: EvaluationTableData(this.props.data),
-      search: this.props.loggedIn,
+      data: this.getEvaluationTableData(),
+      evaluatorOptions: this.evaluatorSearchOptions(),
+      search: this.getDefaultEvaluatorSearch(),
       page: 0,
       pageSize: 10,
       filtered: [],
@@ -186,9 +174,28 @@ export default class DataTable extends React.Component<Props, State> {
     };
   }
 
+  public componentDidUpdate(prevProps: Props) {
+    if (
+      prevProps.loading !== this.props.loading ||
+      prevProps.data !== this.props.data
+    ) {
+      this.setState({
+        data: this.getEvaluationTableData(),
+        evaluatorOptions: this.evaluatorSearchOptions(),
+        search: this.getDefaultEvaluatorSearch()
+      });
+    }
+  }
+
   public todayDate(): string {
     const today = new Date();
     return today.toISOString().slice(0, 10);
+  }
+
+  public getDefaultEvaluatorSearch() {
+    return this.props.loggedIn && this.props.loggedIn.role === EVALUATOR
+      ? this.props.loggedIn.userName
+      : allEvaluators;
   }
 
   public filterMethod = (filter, row): boolean => {
@@ -224,20 +231,53 @@ export default class DataTable extends React.Component<Props, State> {
       : data;
   }
 
+  public getUser = (userName: string): Profile => {
+    return this.props.users.find(user => user.userName === userName);
+  };
+
+  public getEvaluationTableData = (): EvaluationTableData[] => {
+    return this.props.data.map((obj: Evaluation) => {
+      const paramObj = _.groupBy(
+        obj.parameters,
+        (x: ParameterAttrs) => x.category
+      ) as CategoryObjects;
+
+      const user = this.getUser(obj.evalAttrs.agentName);
+
+      return {
+        deviation: [],
+        zeroRated: [],
+        ...paramObj,
+        ...obj.evalAttrs,
+        duration: String(obj.evalAttrs.customer),
+        customer: String(obj.evalAttrs.customer),
+        score: String(obj.score),
+        agentName: user ? user.fullName : obj.evalAttrs.agentName
+      };
+    });
+  };
+
   public searchByDate(data: EvaluationTableData[]): EvaluationTableData[] {
-    const startDate = new Date(this.state.from).getTime();
-    const endDate = new Date(this.state.to).getTime();
+    const startDate = new Date(this.state.from);
+    const endDate = new Date(this.state.to);
 
     return data.filter(row => {
-      const refDate = new Date(row.date).getTime();
-      return refDate >= startDate && refDate <= endDate;
+      const refDate = new Date(row.date);
+      return (
+        refDate.getTime >= startDate.getTime &&
+        refDate.getTime <= endDate.getTime
+      );
     });
   }
 
-  public evaluatorSearchOptions() {
-    const evalOptions: DropdownItemProps[] = evalOption(
-      EvaluationTableData(this.props.data)
+  public evaluatorSearchOptions(): DropdownItemProps[] {
+    if (!this.props.users.length) {
+      return [all];
+    }
+    const evaluators = this.props.data.map(obj =>
+      this.getUser(obj.evalAttrs.evaluator)
     );
+    const evalOptions: DropdownItemProps[] = mkOptionsFromUser(evaluators);
     const allOptions: DropdownItemProps[] = [...evalOptions, all];
     return _.uniqBy(allOptions, "value");
   }
@@ -246,6 +286,12 @@ export default class DataTable extends React.Component<Props, State> {
     const data = this.searchByDate(this.searchByEvaluator(this.state.data));
     return (
       <div>
+        <Message
+          error={true}
+          hidden={!this.props.error}
+          header="Evaluation data view Error"
+          content={this.props.error}
+        />
         <Form>
           <Form.Group widths="equal">
             <Form.Select
@@ -254,7 +300,7 @@ export default class DataTable extends React.Component<Props, State> {
               defaultValue={this.state.search}
               focus={"true"}
               search={true}
-              options={this.evaluatorSearchOptions()}
+              options={this.state.evaluatorOptions}
               placeholder="Search for evaluator..."
               onChange={this.handleDropdownInput}
             />

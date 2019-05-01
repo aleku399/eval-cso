@@ -13,7 +13,7 @@ interface DispatchedProps extends UserTableProps {
   error?: string;
 }
 
-interface DispatchGetUsers {
+export interface DispatchGetUsers {
   dispatchGetUsers: (jwt: string) => Promise<void>;
 }
 

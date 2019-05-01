@@ -1,18 +1,22 @@
 import { storiesOf } from "@storybook/react";
 import React from "react";
 import { deviation, zeroRated } from "../EvaluationForm";
+import {
+  agent,
+  agentB,
+  agentC,
+  loggedInEvaluator
+} from "../UserProfile/index.stories";
 import DataTable from "./index";
 
-storiesOf("components/DataTable", module).add("default", () => (
-  <DataTable data={testData} loggedIn="Alex" />
-));
+const users = [agentB, agent, agentC, loggedInEvaluator];
 
 const testData = [
   {
     evalAttrs: {
       date: "2016-05-17",
-      evaluator: "Alex",
-      agentName: "Aang",
+      evaluator: "alex",
+      agentName: "thanos",
       reason: "BALANCE REQUEST",
       comment: `Acknowledge the customer, you should have verified to
     confirm the customer details, failed to apologize for failure to
@@ -47,8 +51,8 @@ const testData = [
   {
     evalAttrs: {
       date: "2017-04-13",
-      evaluator: "Simon",
-      agentName: "Mai",
+      evaluator: "simon",
+      agentName: "thanos",
       reason: "BALANCE REQUEST",
       comment: `Acknowledge the customer, you should have verified to
        confirm the customer details, failed to apologize for failure to
@@ -90,8 +94,8 @@ const testData = [
     ],
     evalAttrs: {
       date: "2016-05-17",
-      evaluator: "Alex",
-      agentName: "Aang",
+      evaluator: "aleku399",
+      agentName: "thanos",
       reason: "BALANCE REQUEST",
       customer: 120,
       comment: "comment",
@@ -100,3 +104,7 @@ const testData = [
     score: 0
   }
 ];
+
+storiesOf("components/DataTable", module).add("default", () => (
+  <DataTable data={testData} users={users} loggedIn={loggedInEvaluator} />
+));

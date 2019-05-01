@@ -2,24 +2,19 @@ import React from "react";
 import { connect } from "react-redux";
 import useEffectOnce from "react-use/esm/useEffectOnce";
 import { AnyAction, Dispatch } from "redux";
-import { evaluationApi, evaluationServiceApi } from "../../../lib/apiEndpoints";
-import { authAxios } from "../../../lib/axios";
+import { evaluationApi } from "../../../lib/apiEndpoints";
 import { throwLoginError } from "../../../lib/errors";
 import { useAxiosGet } from "../../../lib/useAxios";
 import { AppState } from "../../../redux/reducers";
 import { getUsers } from "../../../redux/userList/action";
-import EvaluationForm, {
-  SubmitEvaluation
-} from "../../components/EvaluationForm";
-import { ParameterRes } from "../../components/UpdateServiceType";
-import { AGENT, Profile } from "../../components/UserProfile";
-import { toParameterCategories } from "../UpdateServiceType";
+import DataTable, { EvaluationData } from "../../components/DataTable";
+import { Profile } from "../../components/UserProfile";
 import { DispatchGetUsers } from "../UserList";
 
 interface DispatchedProps {
   jwt: string;
   error: string;
-  evaluator: Profile;
+  profile: Profile;
   loading: boolean;
   service: string;
   users: Profile[];
@@ -27,18 +22,12 @@ interface DispatchedProps {
 
 type Props = DispatchedProps & DispatchGetUsers;
 
-const createEvaluation = (
-  jwt: string
-): SubmitEvaluation => async evaluation => {
-  return authAxios(jwt).post(evaluationApi, evaluation);
-};
-
 const mapStateToProps = ({
   service: { active },
   login: { jwt, profile },
   users: { loading, error, users }
 }: AppState): DispatchedProps => ({
-  evaluator: profile,
+  profile,
   service: active,
   users,
   error,
@@ -52,15 +41,13 @@ const mapDispatchToProps = (
   dispatchGetUsers: getUsers(dispatch)
 });
 
-function CreateEvaluation(props: Props) {
-  if (!props.evaluator || !props.jwt) {
+function EvaluationDataView(props: Props) {
+  if (!props.profile || !props.jwt) {
     throwLoginError("Login as evaluator");
   }
 
-  const agents = props.users.filter(user => user.role === AGENT);
-
-  const { data, loading, error } = useAxiosGet<ParameterRes[]>(props.jwt)(
-    `${evaluationServiceApi}${props.service}`
+  const { data, loading, error } = useAxiosGet<EvaluationData>(props.jwt)(
+    `${evaluationApi}${props.service}`
   );
 
   useEffectOnce(() => {
@@ -70,14 +57,12 @@ function CreateEvaluation(props: Props) {
   });
 
   return (
-    <EvaluationForm
-      service={props.service}
-      parameterCategories={toParameterCategories(data)}
-      error={props.error || error}
-      agents={agents}
+    <DataTable
+      data={data || []}
+      users={props.users}
+      loggedIn={props.profile}
       loading={props.loading && loading}
-      evaluator={props.evaluator.userName}
-      onSubmit={createEvaluation(props.jwt)}
+      error={error}
     />
   );
 }
@@ -85,4 +70,4 @@ function CreateEvaluation(props: Props) {
 export default connect<DispatchedProps, DispatchGetUsers>(
   mapStateToProps,
   mapDispatchToProps
-)(CreateEvaluation);
+)(EvaluationDataView);
