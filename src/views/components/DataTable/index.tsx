@@ -3,7 +3,7 @@ import * as React from "react";
 import ReactTable, { Column, Filter } from "react-table";
 import "react-table/react-table.css";
 import { DropdownItemProps, Form } from "semantic-ui-react";
-import { Categories } from "../EvaluationDataForm";
+import { Categories } from "../EvaluationForm";
 
 const evalOption = (data: EvaluationTableData[]): DropdownItemProps[] => {
   return data.map(obj => ({
@@ -179,7 +179,7 @@ const EvaluationTableData = (data: EvaluationData): EvaluationTableData[] => {
   });
 };
 
-export default class EditTable extends React.Component<Props, State> {
+export default class DataTable extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 

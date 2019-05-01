@@ -3,7 +3,7 @@ import { storiesOf } from "@storybook/react";
 import React from "react";
 import { categories } from "../UpdateServiceType";
 import { agent } from "../UserProfile/index.stories";
-import EvaluationDataForm, { deviation, Props, zeroRated } from "./index";
+import EvaluationForm, { deviation, Props, zeroRated } from "./index";
 
 const props: Props = {
   onSubmit: action("submit"),
@@ -51,7 +51,7 @@ const props: Props = {
   ]
 };
 
-storiesOf("components/EvaluationDataForm", module).add(
+storiesOf("components/EvaluationForm", module).add(
   "Evaluation Data Form",
-  () => <EvaluationDataForm {...props} />
+  () => <EvaluationForm {...props} />
 );

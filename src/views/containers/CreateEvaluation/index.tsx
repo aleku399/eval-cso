@@ -8,9 +8,9 @@ import { throwLoginError } from "../../../lib/errors";
 import { useAxiosGet } from "../../../lib/useAxios";
 import { AppState } from "../../../redux/reducers";
 import { getUsers } from "../../../redux/userList/action";
-import EvaluationDataForm, {
+import EvaluationForm, {
   SubmitEvaluation
-} from "../../components/EvaluationDataForm";
+} from "../../components/EvaluationForm";
 import { AGENT, Profile } from "../../components/UserProfile";
 import { ParameterAttrs, toParameterCategories } from "../UpdateServiceType";
 
@@ -75,7 +75,7 @@ function CreateEvaluation(props: Props) {
   console.log("agents", props.users);
 
   return (
-    <EvaluationDataForm
+    <EvaluationForm
       service={props.service}
       parameterCategories={toParameterCategories(data)}
       error={props.error || error}

@@ -1,10 +1,10 @@
 import { storiesOf } from "@storybook/react";
 import React from "react";
-import { deviation, zeroRated } from "../EvaluationDataForm";
-import EditTable from "./index";
+import { deviation, zeroRated } from "../EvaluationForm";
+import DataTable from "./index";
 
-storiesOf("components/EditTable", module).add("default", () => (
-  <EditTable data={testData} loggedIn="Alex" />
+storiesOf("components/DataTable", module).add("default", () => (
+  <DataTable data={testData} loggedIn="Alex" />
 ));
 
 const testData = [

@@ -66,7 +66,7 @@ export interface Props {
   parameterCategories: ParameterCategory[];
 }
 
-export default class EvaluationDataForm extends React.Component<Props, State> {
+export default class EvaluationForm extends React.Component<Props, State> {
   constructor(props) {
     super(props);
     this.state = this.initialState();
