@@ -12,7 +12,7 @@ const testData = [
     evalAttrs: {
       date: "2016-05-17",
       evaluator: "Alex",
-      agent: "Aang",
+      agentName: "Aang",
       reason: "BALANCE REQUEST",
       comment: `Acknowledge the customer, you should have verified to
     confirm the customer details, failed to apologize for failure to
@@ -20,7 +20,7 @@ const testData = [
       duration: 30,
       customer: 10
     },
-    parameterAttrs: [
+    parameters: [
       {
         name: "Breach of confidentiality",
         value: "Breach of confidentiality",
@@ -48,7 +48,7 @@ const testData = [
     evalAttrs: {
       date: "2017-04-13",
       evaluator: "Simon",
-      agent: "Mai",
+      agentName: "Mai",
       reason: "BALANCE REQUEST",
       comment: `Acknowledge the customer, you should have verified to
        confirm the customer details, failed to apologize for failure to
@@ -56,7 +56,7 @@ const testData = [
       duration: 30,
       customer: 10
     },
-    parameterAttrs: [
+    parameters: [
       {
         name: "Null",
         value: "Null",
@@ -76,7 +76,7 @@ const testData = [
     score: 50
   },
   {
-    parameterAttrs: [
+    parameters: [
       {
         name: "Lack of knowledge",
         value: "lack_of_knowledge",
@@ -91,7 +91,7 @@ const testData = [
     evalAttrs: {
       date: "2016-05-17",
       evaluator: "Alex",
-      agent: "Aang",
+      agentName: "Aang",
       reason: "BALANCE REQUEST",
       customer: 120,
       comment: "comment",

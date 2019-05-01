@@ -2,24 +2,25 @@ import { AxiosPromise } from "axios";
 import { flatten, groupBy, snakeCase } from "lodash";
 import * as React from "react";
 import { Button, Form, Header, Input, Message, Table } from "semantic-ui-react";
+import { ParameterAttrs } from "../DataTable";
+import { ParamCategoryName } from "../EvaluationForm";
 
-export interface Parameter {
-  value: string;
+export interface ParameterRes extends ParameterAttrs {
   weight: number;
-  name: string;
   isNew?: boolean;
-  category: string;
+  description?: string;
+  group?: string;
 }
 
 export interface ParameterCategory {
   name: string;
-  value: string;
-  parameters: Parameter[];
+  value: ParamCategoryName;
+  parameters: ParameterRes[];
 }
 
 interface CreateParameters {
   service: string;
-  parameters: Parameter[];
+  parameters: ParameterRes[];
 }
 
 export type SubmitCreateParameters = (
@@ -35,7 +36,7 @@ export interface Props {
 }
 
 export interface ParameterStates {
-  [parameterValue: string]: Parameter;
+  [parameterValue: string]: ParameterRes;
 }
 
 export interface State {
@@ -45,7 +46,9 @@ export interface State {
   parameterCategories: ParameterCategory[];
 }
 
-export const categories = {
+type CategoryMap = { [P in ParamCategoryName]: string };
+
+export const categories: CategoryMap = {
   deviation: "Reasons for deviation",
   zeroRated: "Reasons for Zero rating"
 };
@@ -152,7 +155,7 @@ export default class UpdateServiceType extends React.PureComponent<
   };
 
   public submitForm = async (): Promise<void> => {
-    const parameters: Parameter[] = flatten(
+    const parameters: ParameterRes[] = flatten(
       this.state.parameterCategories.map(obj => obj.parameters)
     ).map(param => {
       if (param.isNew) {
@@ -181,10 +184,10 @@ export default class UpdateServiceType extends React.PureComponent<
       });
   };
 
-  public addNewParameterField = (categoryValue: string) => () => {
+  public addNewParameterField = (categoryValue: ParamCategoryName) => () => {
     this.autoParamCounter += 1;
 
-    const emptyParameter: Parameter = {
+    const emptyParameter: ParameterRes = {
       name: "",
       value: `${categoryValue}_${this.autoParamCounter}`,
       weight: 0,
@@ -241,7 +244,7 @@ export default class UpdateServiceType extends React.PureComponent<
         </Form.Field>
         <Form.Field>
           <Button onClick={this.addNewParameterField(category.value)}>
-            Add new {category.name} Parameter
+            Add new {category.name} ParameterRes
           </Button>
         </Form.Field>
       </Form.Field>

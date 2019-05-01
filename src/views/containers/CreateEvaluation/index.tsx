@@ -11,8 +11,9 @@ import { getUsers } from "../../../redux/userList/action";
 import EvaluationForm, {
   SubmitEvaluation
 } from "../../components/EvaluationForm";
+import { ParameterRes } from "../../components/UpdateServiceType";
 import { AGENT, Profile } from "../../components/UserProfile";
-import { ParameterAttrs, toParameterCategories } from "../UpdateServiceType";
+import { toParameterCategories } from "../UpdateServiceType";
 
 interface DispatchedProps {
   jwt: string;
@@ -61,7 +62,7 @@ function CreateEvaluation(props: Props) {
 
   const agents = props.users.filter(user => user.role === AGENT);
 
-  const { data, loading, error } = useAxiosGet<ParameterAttrs[]>(props.jwt)(
+  const { data, loading, error } = useAxiosGet<ParameterRes[]>(props.jwt)(
     `${evaluationServiceApi}${props.service}`
   );
 

@@ -1,6 +1,7 @@
 import { action } from "@storybook/addon-actions";
 import { storiesOf } from "@storybook/react";
 import React from "react";
+import { deviation, zeroRated } from "../EvaluationForm";
 import UpdateServiceType from "./index";
 
 const props = {
@@ -9,37 +10,37 @@ const props = {
   parameterCategories: [
     {
       name: "Reasons for deviation",
-      value: "deviation",
+      value: deviation,
       parameters: [
         {
           name: "Breach",
           value: "breach",
           weight: 5,
-          category: "deviation"
+          category: deviation
         },
         {
           name: "Knowledge",
           value: "knowledge",
           weight: 5,
-          category: "deviation"
+          category: deviation
         }
       ]
     },
     {
       name: "Reasons for Zero rating",
-      value: "zeroRated",
+      value: zeroRated,
       parameters: [
         {
           name: "Confidence",
           value: "confidence",
           weight: -10,
-          category: "zeroRated"
+          category: zeroRated
         },
         {
           name: "Language",
           value: "language",
           weight: -10,
-          category: "zeroRated"
+          category: zeroRated
         }
       ]
     }
@@ -52,12 +53,12 @@ const createParametersProps = {
   parameterCategories: [
     {
       name: "Reasons for deviation",
-      value: "deviation",
+      value: deviation,
       parameters: []
     },
     {
       name: "Reasons for Zero rating",
-      value: "zeroRated",
+      value: zeroRated,
       parameters: []
     }
   ]

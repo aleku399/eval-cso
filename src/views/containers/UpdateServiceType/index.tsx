@@ -6,9 +6,11 @@ import { authAxios } from "../../../lib/axios";
 import { throwLoginError } from "../../../lib/errors";
 import { useAxiosGet } from "../../../lib/useAxios";
 import { AppState } from "../../../redux/reducers";
+import { ParamCategoryName } from "../../components/EvaluationForm";
 import UpdateServiceType, {
   categories,
   ParameterCategory,
+  ParameterRes,
   SubmitCreateParameters
 } from "../../components/UpdateServiceType";
 
@@ -23,15 +25,6 @@ const createParameters = (
   return authAxios(jwt).post(evaluationServiceApi, payload);
 };
 
-export interface ParameterAttrs {
-  value: string;
-  name: string;
-  weight: number;
-  description?: string;
-  category: string;
-  group?: string;
-}
-
 const mapStateToProps = ({
   service: { active },
   login: { jwt }
@@ -41,23 +34,27 @@ const mapStateToProps = ({
 });
 
 export function toParameterCategories(
-  data?: ParameterAttrs[]
+  data?: ParameterRes[]
 ): ParameterCategory[] {
   if (!data) {
     return Object.keys(categories).map(categoryName => {
       return {
-        value: categoryName,
+        value: categoryName as ParamCategoryName,
         name: categories[categoryName],
         parameters: []
       };
     });
   }
 
-  const categoryGroups = groupBy(data, obj => obj.category);
+  const categoryGroups = groupBy<ParameterRes>(data, obj => obj.category);
 
   return Object.keys(categoryGroups).map(key => {
-    const group = categoryGroups[key];
-    return { value: key, name: categories[key], parameters: group };
+    const group: ParameterRes[] = categoryGroups[key];
+    return {
+      value: key as ParamCategoryName,
+      name: categories[key],
+      parameters: group
+    };
   });
 }
 
@@ -66,7 +63,7 @@ function UpdateServiceContainer({ jwt, service }: Props) {
     throwLoginError();
   }
 
-  const { data, loading, error } = useAxiosGet<ParameterAttrs[]>(jwt)(
+  const { data, loading, error } = useAxiosGet<ParameterRes[]>(jwt)(
     `${evaluationServiceApi}/test`
   );
 

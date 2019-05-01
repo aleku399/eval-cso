@@ -3,45 +3,21 @@ import * as React from "react";
 import ReactTable, { Column, Filter } from "react-table";
 import "react-table/react-table.css";
 import { DropdownItemProps, Form } from "semantic-ui-react";
-import { Categories } from "../EvaluationForm";
+import { EvalState, ParamCategoryName, Parameter } from "../EvaluationForm";
 
-const evalOption = (data: EvaluationTableData[]): DropdownItemProps[] => {
-  return data.map(obj => ({
-    key: obj.evaluator,
-    text: obj.evaluator,
-    value: obj.evaluator
-  }));
-};
-
-const allEvaluators = "all_evaluators";
-
-const all: DropdownItemProps = {
-  key: "All Evaluators",
-  text: "All Evaluators",
-  value: allEvaluators
-};
-
-interface ParameterAttrs {
-  name: string;
-  value: string;
-  category: Categories;
+export interface ParameterAttrs extends Parameter {
+  category: ParamCategoryName;
 }
 
-type CategoryObjects = { [k in Categories]: ParameterAttrs[] };
+type CategoryObjects = { [k in ParamCategoryName]: ParameterAttrs[] };
 
-interface EvalAttrs {
-  date: string;
-  duration: number;
-  reason: string;
+interface EvalAttrs extends EvalState {
   evaluator: string;
-  agent: string;
-  comment: string;
-  customer: number;
 }
 
 interface Evaluation {
   evalAttrs: EvalAttrs;
-  parameterAttrs: ParameterAttrs[];
+  parameters: ParameterAttrs[];
   score: number;
 }
 
@@ -52,7 +28,7 @@ interface EvaluationTableData {
   duration: string;
   reason: string;
   evaluator: string;
-  agent: string;
+  agentName: string;
   customer: string;
   comment: string;
   score: string;
@@ -85,6 +61,22 @@ export interface ColumnRowsOpt {
   columns: ColumnRows[];
 }
 
+const allEvaluators = "all_evaluators";
+
+const evalOption = (data: EvaluationTableData[]): DropdownItemProps[] => {
+  return data.map(obj => ({
+    key: obj.evaluator,
+    text: obj.evaluator,
+    value: obj.evaluator
+  }));
+};
+
+const all: DropdownItemProps = {
+  key: "All Evaluators",
+  text: "All Evaluators",
+  value: allEvaluators
+};
+
 const columns: ColumnRowsOpt[] = [
   {
     Header: "Data View",
@@ -96,7 +88,7 @@ const columns: ColumnRowsOpt[] = [
       },
       {
         Header: "Agent Name",
-        accessor: "agent"
+        accessor: "agentName"
       },
       {
         Header: "Customer",
@@ -166,7 +158,7 @@ const columns: ColumnRowsOpt[] = [
 const EvaluationTableData = (data: EvaluationData): EvaluationTableData[] => {
   return data.map((obj: Evaluation) => {
     const paramObj = _.groupBy(
-      obj.parameterAttrs,
+      obj.parameters,
       (x: ParameterAttrs) => x.category
     ) as CategoryObjects;
     return {
@@ -189,9 +181,14 @@ export default class DataTable extends React.Component<Props, State> {
       page: 0,
       pageSize: 10,
       filtered: [],
-      from: "2016-05-17",
-      to: "2016-05-17"
+      from: "2016-01-01",
+      to: this.todayDate()
     };
+  }
+
+  public todayDate(): string {
+    const today = new Date();
+    return today.toISOString().slice(0, 10);
   }
 
   public filterMethod = (filter, row): boolean => {

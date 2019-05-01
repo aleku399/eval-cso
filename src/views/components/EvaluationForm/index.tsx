@@ -14,17 +14,18 @@ import SearchableDropdown from "../SearchableDropdown";
 import { ParameterCategory } from "../UpdateServiceType";
 import { Profile } from "../UserProfile";
 
-interface Parameter {
+export interface Parameter {
   name: string;
   value: string;
 }
 
-interface EvalState {
+export interface EvalState {
   agentName: string;
   reason: string;
   customer: number;
   date: string;
-  comment?: string;
+  comment: string;
+  duration: number;
 }
 
 interface Evaluation extends EvalState {
@@ -41,10 +42,10 @@ export interface CreateEvaluation {
   parameters: string[];
 }
 
-export type Categories = "deviation" | "zeroRated";
+export type ParamCategoryName = "deviation" | "zeroRated";
 
-export const deviation: Categories = "deviation";
-export const zeroRated: Categories = "zeroRated";
+export const deviation: ParamCategoryName = "deviation";
+export const zeroRated: ParamCategoryName = "zeroRated";
 
 interface State {
   evaluation: Evaluation;
@@ -81,7 +82,8 @@ export default class EvaluationForm extends React.Component<Props, State> {
         date: "",
         reason: "",
         customer: 0,
-        agentName: ""
+        agentName: "",
+        duration: 0
       },
       error: this.props.error,
       loading: this.props.loading
@@ -186,6 +188,9 @@ export default class EvaluationForm extends React.Component<Props, State> {
           service: this.props.service,
           evaluator: this.props.evaluator,
           customer: Number(this.state.evaluation.customer),
+          duration: this.state.evaluation.duration
+            ? Number(this.state.evaluation.duration)
+            : null,
           date: date.toISOString()
         },
         parameters
@@ -262,15 +267,25 @@ export default class EvaluationForm extends React.Component<Props, State> {
         <Form.Group widths="equal">
           {this.renderReasons(this.props.parameterCategories)}
         </Form.Group>
-        <Form.Field width="8">
-          <TextArea
-            type="text"
-            name="comment"
-            value={this.state.evaluation.comment}
-            placeholder="Write your comment"
+        <Form.Group widths="equal">
+          <Form.Field inline={true}>
+            <TextArea
+              type="text"
+              name="comment"
+              value={this.state.evaluation.comment}
+              placeholder="Write your comment"
+              onChange={this.handleInput}
+            />
+          </Form.Field>
+          <Form.Input
+            type="number"
+            fluid={true}
+            label="Duration"
+            name="duration"
+            value={this.state.evaluation.duration || ""}
             onChange={this.handleInput}
           />
-        </Form.Field>
+        </Form.Group>
         <Form.Field>
           <Button type="submit">Submit</Button>
         </Form.Field>
