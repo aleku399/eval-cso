@@ -46,6 +46,7 @@
     "@storybook/addon-storyshots": "5.0.5",
     "@storybook/react": "5.0.5",
     "@types/jest": "^24.0.6",
+    "@types/lodash": "^4.14.123",
     "@types/next": "^8.0.1",
     "@types/node": "^11.9.4",
     "@types/qs": "^6.5.1",

@@ -14,6 +14,10 @@ interface Props {
 export default class ErrorBoundary extends React.Component<Props, State> {
   constructor(props: any) {
     super(props);
+    this.state = {
+      error: null,
+      errorInfo: null
+    };
   }
 
   public componentDidCatch(error, errorInfo) {

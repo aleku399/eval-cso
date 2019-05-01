@@ -5,6 +5,7 @@ import useEffectOnce from "react-use/esm/useEffectOnce";
 import { AnyAction, Dispatch } from "redux";
 import { agentApi } from "../../../lib/apiEndpoints";
 import { authAxios } from "../../../lib/axios";
+import { throwLoginError } from "../../../lib/errors";
 import { AgentData, getAgentData } from "../../../redux/AgentData/action";
 import { AppState } from "../../../redux/reducers";
 import UserProfile, {
@@ -12,6 +13,7 @@ import UserProfile, {
   Profile,
   ProfileUpdate
 } from "../../components/UserProfile";
+import { deleteUser } from "../UpdateUserProfile";
 
 interface DispatchedProps extends AgentData {
   jwt: string;
@@ -25,10 +27,6 @@ interface DispatchGetAgentData {
 }
 
 type Props = DispatchedProps & DispatchGetAgentData;
-
-const deleteUser = (_jwt: string) => (_userName: string): Promise<void> => {
-  return Promise.reject("currently not supported");
-};
 
 const createAgent = (jwt: string) => async (
   profile: ProfileUpdate
@@ -59,7 +57,7 @@ const mapDispatchToProps = (
 
 function UpdateUserProfile(props: Props) {
   if (!props.loggedInUser || !props.jwt) {
-    throw new Error("Please login");
+    throwLoginError();
   }
 
   const emptyUser = {

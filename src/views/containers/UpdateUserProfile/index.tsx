@@ -5,6 +5,7 @@ import useEffectOnce from "react-use/esm/useEffectOnce";
 import { AnyAction, Dispatch } from "redux";
 import { agentApi, userApi } from "../../../lib/apiEndpoints";
 import { authAxios } from "../../../lib/axios";
+import { throwLoginError } from "../../../lib/errors";
 import { useAxiosGet } from "../../../lib/useAxios";
 import { AgentData, getAgentData } from "../../../redux/AgentData/action";
 import { AppState } from "../../../redux/reducers";
@@ -60,7 +61,9 @@ function useFetchAgentProfileData(
   return agentProfile;
 }
 
-const deleteUser = (_jwt: string) => (_userName: string): Promise<void> => {
+export const deleteUser = (_jwt: string) => (
+  _userName: string
+): Promise<void> => {
   return Promise.reject("currently not supported");
 };
 
@@ -96,7 +99,7 @@ const mapDispatchToProps = (
 // updates either currently logged in User Profile or Profile of a different user
 function UpdateUserProfile(props: Props) {
   if (!props.loggedInUser || !props.jwt) {
-    throw new Error("Please login");
+    throwLoginError();
   }
 
   const { data, loading, error } = useAxiosGet<Profile>(props.jwt)(

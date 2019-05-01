@@ -28,10 +28,7 @@ export const useAxios = <T>(jwt?: string) => (
         setResponse({ ...defaultState, loading: false, data: res.data });
       })
       .catch(err => {
-        const errorMsg =
-          (err && err.response && err.response.data) ||
-          `HTTP request error for ${request.url}`;
-        setResponse({ ...defaultState, loading: false, error: errorMsg });
+        setResponse({ ...defaultState, loading: false, error: err.toString() });
       });
   });
   return response;

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { AnyAction, Dispatch } from "redux";
 import { Loader, Message } from "semantic-ui-react";
+import { throwLoginError } from "../../../lib/errors";
 import { AppState } from "../../../redux/reducers";
 import { getUsers } from "../../../redux/userList/action";
 import UserTable, { Props as UserTableProps } from "../../components/UserTable";
@@ -29,6 +30,10 @@ const mapStateToProps = ({
 });
 
 function UserList({ users, error, loading, jwt, dispatchGetUsers }: Props) {
+  if (!jwt) {
+    throwLoginError();
+  }
+
   useEffect(() => {
     if (!users && !error) {
       dispatchGetUsers(jwt);
