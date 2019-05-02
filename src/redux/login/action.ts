@@ -53,6 +53,6 @@ export const loginUser = (dispatch: Dispatch) => (credentials: Credentials) => {
       dispatch(receiveLoginSuccess(jwt, data.user));
     })
     .catch(error => {
-      dispatch(receiveLoginFailure(error.response.data));
+      dispatch(receiveLoginFailure(error.toString()));
     });
 };

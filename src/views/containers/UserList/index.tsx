@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { connect } from "react-redux";
+import useEffectOnce from "react-use/esm/useEffectOnce";
 import { AnyAction, Dispatch } from "redux";
-import { Loader, Message } from "semantic-ui-react";
 import { throwLoginError } from "../../../lib/errors";
 import { AppState } from "../../../redux/reducers";
 import { getUsers } from "../../../redux/userList/action";
@@ -34,19 +34,13 @@ function UserList({ users, error, loading, jwt, dispatchGetUsers }: Props) {
     throwLoginError();
   }
 
-  useEffect(() => {
-    if (!users && !error) {
+  useEffectOnce(() => {
+    if (!users.length) {
       dispatchGetUsers(jwt);
     }
   });
 
-  return (
-    <div>
-      <Loader active={loading} />
-      {users && users.length ? <UserTable users={users} /> : null}
-      <Message error={!!error} header="Users List Error" content={error} />
-    </div>
-  );
+  return <UserTable users={users} loading={loading} error={error} />;
 }
 
 const mapDispatchToProps = (

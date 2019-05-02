@@ -8,7 +8,6 @@ export const RECEIVES_AGENT_FAILURE = "RECEIVES_AGENT";
 export const RECEIVES_AGENT_SUCCESS = "RECEIVES_AGENT_SUCCESS";
 
 const agentDataApi = `${agentApi}data`;
-const agentError = "Error getting AgentData, Check you are logged in";
 
 export interface AgentData {
   branches: string[];
@@ -61,8 +60,6 @@ export const getAgentData = (dispatch: Dispatch) => (): Promise<void> => {
       dispatch(receiveAgentDataSuccess(response.data));
     })
     .catch(error => {
-      const errorMsg =
-        (error && error.response && error.response.data) || agentError;
-      dispatch(receiveAgentDataFailure(errorMsg));
+      dispatch(receiveAgentDataFailure(error.toString()));
     });
 };

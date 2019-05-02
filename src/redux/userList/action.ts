@@ -45,9 +45,6 @@ export const getUsers = (dispatch: Dispatch) => (jwt: string) => {
       dispatch(receiveUsersSuccess(response.data));
     })
     .catch(error => {
-      const errorMsg =
-        (error && error.response && error.response.data) ||
-        "Error getting users, Check you are logged in";
-      dispatch(receiveUsersFailure(errorMsg));
+      dispatch(receiveUsersFailure(error.toString()));
     });
 };

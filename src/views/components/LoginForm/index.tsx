@@ -26,7 +26,6 @@ class LoginForm extends React.Component<Props, Credentials> {
   public handleInput = event => {
     const name = event.target.name;
     const value = event.target.value;
-
     this.setState({
       ...this.state,
       [name]: value
@@ -55,6 +54,11 @@ class LoginForm extends React.Component<Props, Credentials> {
           loading={this.props.loading}
           error={hasError}
         >
+          <Message
+            error={true}
+            header="Login Error"
+            content={this.props.error}
+          />
           <Form.Field>
             <Input
               icon="user"
@@ -81,11 +85,6 @@ class LoginForm extends React.Component<Props, Credentials> {
             />
           </Form.Field>
           <Button type="submit">Login</Button>
-          <Message
-            error={true}
-            header="Login Error"
-            content={this.props.error}
-          />
         </Form>
       </div>
     );

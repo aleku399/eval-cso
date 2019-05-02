@@ -22,6 +22,7 @@ export function loginReducer(
         ...state,
         loading: false,
         jwt: action.jwt,
+        error: null,
         profile: action.profile
       };
     case RECEIVES_LOGIN_FAILURE:

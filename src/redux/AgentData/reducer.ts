@@ -24,6 +24,7 @@ export function agentDataReducer(
       return {
         ...state,
         loading: false,
+        error: null,
         branches: action.branches,
         services: action.services,
         supervisors: action.supervisors

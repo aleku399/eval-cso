@@ -1,7 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
 import { AnyAction, Dispatch } from "redux";
-
 import { loginUser } from "../../../redux/login/action";
 import { AppState } from "../../../redux/reducers";
 import LoginForm, { Props } from "../../components/LoginForm";

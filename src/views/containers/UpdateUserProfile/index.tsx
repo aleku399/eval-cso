@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios";
-import React, { useState } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import useEffectOnce from "react-use/esm/useEffectOnce";
 import { AnyAction, Dispatch } from "redux";
@@ -48,17 +48,10 @@ function useFetchAgentProfileData(
   if (role !== AGENT) {
     return { agent: null, loading: false, error: null };
   }
-  const [agentProfile, setAgentProfile] = useState({
-    agent: null,
-    loading: true,
-    error: null
-  });
-
   const { data, loading, error } = useAxiosGet<Agent>(jwt)(
     `${agentApi}${userName}`
   );
-  setAgentProfile({ agent: data, loading, error });
-  return agentProfile;
+  return { agent: data, loading, error };
 }
 
 export const deleteUser = (_jwt: string) => (
@@ -74,6 +67,13 @@ const updateUser = (jwt: string) => async (
   if (profile.agent.supervisor || profile.agent.branch) {
     await httpRequest.put(`${agentApi}${profile.userName}`, profile.agent);
   }
+
+  if (profile.password) {
+    await httpRequest.patch(
+      `${userApi}${profile.userName}/${profile.password}`
+    );
+  }
+
   return httpRequest.put(`${userApi}${profile.userName}`, profile.user);
 };
 

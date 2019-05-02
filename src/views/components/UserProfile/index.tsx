@@ -26,6 +26,7 @@ export interface Profile {
 export interface ProfileUpdate {
   userName: string;
   user: Profile;
+  password?: string;
   agent?: Agent;
 }
 
@@ -44,6 +45,7 @@ export interface Props {
 export interface State {
   editUser?: Profile;
   agent?: Agent;
+  password?: string;
   error?: string;
   feedback?: string;
   loading?: boolean;
@@ -55,8 +57,20 @@ class UserProfile extends React.Component<Props, State> {
   public state: State;
   constructor(props) {
     super(props);
+    this.state = this.initState();
+  }
 
-    this.state = {
+  public componentDidUpdate(prevProps: Props) {
+    if (
+      prevProps.loading !== this.props.loading ||
+      prevProps.error !== this.props.error
+    ) {
+      this.setState(this.initState());
+    }
+  }
+
+  public initState() {
+    return {
       agent: this.props.agent || { supervisor: null, branch: null },
       editUser: this.props.editUser,
       loading: this.props.loading,
@@ -67,9 +81,9 @@ class UserProfile extends React.Component<Props, State> {
   public handleInput = event => {
     const name = event.target.name;
     const value = event.target.value;
-
+    const password = name === "password" ? value : null;
     const editUser = { ...this.state.editUser, [name]: value };
-    this.setState({ editUser });
+    this.setState({ editUser, password });
   };
 
   public handleDropdownInput = (_event, { name, value }) => {
@@ -94,9 +108,11 @@ class UserProfile extends React.Component<Props, State> {
         .onSubmit({
           user: this.state.editUser,
           agent: this.state.agent,
+          password: this.state.password,
           userName: this.props.editUser.userName
         })
         .then(() => {
+          // TODO: logout user after altering password
           this.setState({
             loading: false,
             feedback: "Submitted data Successfully"
@@ -152,12 +168,30 @@ class UserProfile extends React.Component<Props, State> {
   public renderAdminRoleField = (activeUserRole: string) => {
     return activeUserRole === ADMIN ? (
       <Form.Field>
-        <label>Roles</label>
-        <SearchableDropdown
-          name="role"
-          values={roles}
-          defaultValue={this.state.editUser.role}
-          onChange={this.handleDropdownInput}
+        <Form.Field>
+          <label>Roles</label>
+          <SearchableDropdown
+            name="role"
+            values={roles}
+            defaultValue={this.state.editUser.role}
+            onChange={this.handleDropdownInput}
+          />
+        </Form.Field>
+      </Form.Field>
+    ) : null;
+  };
+
+  public renderPasswordField = (activeUserRole: string) => {
+    return activeUserRole === ADMIN && this.props.editUser.userName ? (
+      <Form.Field>
+        <label>Password</label>
+        <Input
+          placeholder="New Password"
+          type="password"
+          name="password"
+          minLength={5}
+          value={this.state.password}
+          onChange={this.handleInput}
         />
       </Form.Field>
     ) : null;
@@ -205,6 +239,11 @@ class UserProfile extends React.Component<Props, State> {
             hidden={!this.state.feedback}
             content={this.state.feedback}
           />
+          <Message
+            error={true}
+            header="User Profile Errors"
+            content={this.state.error}
+          />
           <Form.Field>
             <label>UserName</label>
             <Input
@@ -241,20 +280,16 @@ class UserProfile extends React.Component<Props, State> {
             />
           </Form.Field>
           {this.renderAdminRoleField(this.props.loggedInUser.role)}
+          {this.renderPasswordField(this.props.loggedInUser.role)}
           {this.renderAgentFields(this.props.editUser.role)}
           <Form.Field>
             <Button type="submit">Submit</Button>
           </Form.Field>
-          <Message
-            error={true}
-            header="User Profile Errors"
-            content={this.state.error}
-          />
+          {this.deleteUser(
+            this.props.loggedInUser.role,
+            this.props.editUser.role
+          )}
         </Form>
-        {this.deleteUser(
-          this.props.loggedInUser.role,
-          this.props.editUser.role
-        )}
       </Container>
     );
   }

@@ -19,7 +19,7 @@ export function userListReducer(
     case REQUESTS_USERS:
       return { ...state, loading: true };
     case RECEIVES_USERS_SUCCESS:
-      return { ...state, loading: false, users: action.users };
+      return { ...state, loading: false, users: action.users, error: null };
     case RECEIVES_USERS_FAILURE:
       return { ...state, loading: false, error: action.error };
     default:
