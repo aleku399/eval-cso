@@ -30,6 +30,7 @@ class Search extends React.Component<Props, State> {
   public onSubmit = e => {
     e.preventDefault();
     this.props.onChange(this.state.value);
+    this.setState({ value: null });
   };
 
   public render() {

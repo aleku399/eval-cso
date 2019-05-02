@@ -59,9 +59,21 @@ class ClaimEvaluation extends React.Component<Props, State> {
     };
   }
 
+  public clearInput = () => {
+    const claim = {
+      ...this.state.claim,
+      claimType: "",
+      workflowNumber: 0,
+      comments: "",
+      allParametersMet: false
+    };
+    this.setState({ claim });
+  };
+
   public submitForm = async (): Promise<void> => {
     if (this.validate()) {
-      return this.props.onSubmit(this.state.claim);
+      this.props.onSubmit(this.state.claim);
+      this.clearInput();
     }
   };
 
