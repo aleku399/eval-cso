@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
-import Home from "src/views/templates/Index";
+import UserProfile from "src/views/templates/UserProfile";
 
-const page = () => <Home />;
+const page = () => <UserProfile />;
 
 export default connect()(page);

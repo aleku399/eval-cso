@@ -8,7 +8,7 @@ storiesOf("components/SearchableDropdown", module)
     <SearchableDropdown
       name="test"
       values={["school", "hospital"]}
-      defaultValue={"school"}
+      value={"school"}
       onChange={action("search-select")}
     />
   ))
@@ -16,7 +16,7 @@ storiesOf("components/SearchableDropdown", module)
     <SearchableDropdown
       name="test"
       options={[{ value: "hospital", text: "Hospital", key: "hospital" }]}
-      defaultValue={"hospital"}
+      value={"hospital"}
       onChange={action("search-select")}
     />
   ));

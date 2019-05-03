@@ -1,20 +1,17 @@
 import { AxiosResponse } from "axios";
 import React from "react";
 import { connect } from "react-redux";
-import useEffectOnce from "react-use/esm/useEffectOnce";
 import { AnyAction, Dispatch } from "redux";
 import { agentApi, userApi } from "../../../lib/apiEndpoints";
 import { authAxios } from "../../../lib/axios";
 import { throwLoginError } from "../../../lib/errors";
-import { useAxiosGet } from "../../../lib/useAxios";
 import { AgentData, getAgentData } from "../../../redux/AgentData/action";
 import { AppState } from "../../../redux/reducers";
 import UserProfile, {
   Agent,
   AGENT,
   Profile,
-  ProfileUpdate,
-  Role
+  ProfileUpdate
 } from "../../components/UserProfile";
 
 interface DispatchedProps extends AgentData {
@@ -24,58 +21,11 @@ interface DispatchedProps extends AgentData {
   error?: string;
 }
 
-interface FetchedAgentProfileData {
-  agent: Agent;
-  loading: boolean;
-  error: string;
-}
-
 interface DispatchGetAgentData {
   dispatchGetAgentData: () => Promise<void>;
 }
 
-interface OwnProps {
-  userName: string;
-}
-
-type Props = DispatchedProps & DispatchGetAgentData & OwnProps;
-
-function useFetchAgentProfileData(
-  jwt: string,
-  userName: string,
-  role?: Role
-): FetchedAgentProfileData {
-  if (role !== AGENT) {
-    return { agent: null, loading: false, error: null };
-  }
-  const { data, loading, error } = useAxiosGet<Agent>(jwt)(
-    `${agentApi}${userName}`
-  );
-  return { agent: data, loading, error };
-}
-
-export const deleteUser = (_jwt: string) => (
-  _userName: string
-): Promise<void> => {
-  return Promise.reject("currently not supported");
-};
-
-const updateUser = (jwt: string) => async (
-  profile: ProfileUpdate
-): Promise<AxiosResponse<any>> => {
-  const httpRequest = authAxios(jwt);
-  if (profile.agent.supervisor || profile.agent.branch) {
-    await httpRequest.put(`${agentApi}${profile.userName}`, profile.agent);
-  }
-
-  if (profile.password) {
-    await httpRequest.patch(
-      `${userApi}${profile.userName}/${profile.password}`
-    );
-  }
-
-  return httpRequest.put(`${userApi}${profile.userName}`, profile.user);
-};
+type Props = DispatchedProps & DispatchGetAgentData;
 
 const mapStateToProps = ({
   agentData: { branches, supervisors, services, error, loading },
@@ -96,47 +46,113 @@ const mapDispatchToProps = (
   dispatchGetAgentData: getAgentData(dispatch)
 });
 
-// updates either currently logged in User Profile or Profile of a different user
-function UpdateUserProfile(props: Props) {
-  if (!props.loggedInUser || !props.jwt) {
-    throwLoginError();
-  }
+export const deleteUser = (_jwt: string) => (
+  _userName: string
+): Promise<void> => {
+  return Promise.reject("currently not supported");
+};
 
-  const { data, loading, error } = useAxiosGet<Profile>(props.jwt)(
-    `${userApi}${props.userName}`
-  );
-  const userRole = (data && data.role) || props.loggedInUser.role;
-
-  const agentProfile = useFetchAgentProfileData(
-    props.jwt,
-    props.userName,
-    userRole
-  );
-
-  const defaultProfile = {
-    error: props.error || error || agentProfile.error,
-    loading: props.loading && loading && agentProfile.loading,
-    agent: agentProfile.agent,
-    editUser: data || props.loggedInUser
-  };
-
-  useEffectOnce(() => {
-    props.dispatchGetAgentData();
-  });
-
-  return (
-    <UserProfile
-      {...defaultProfile}
-      supervisors={props.supervisors}
-      branches={props.branches}
-      deleteUserHandler={deleteUser(props.jwt)}
-      loggedInUser={props.loggedInUser}
-      onSubmit={updateUser(props.jwt)}
-    />
-  );
+interface State {
+  user: Profile;
+  agent?: Agent;
+  loading: boolean;
+  error: string;
 }
 
-export default connect<DispatchedProps, DispatchGetAgentData, OwnProps>(
+class UpdateUserProfile extends React.Component<Props, State> {
+  constructor(props) {
+    super(props);
+    if (!props.loggedInUser || !props.jwt) {
+      throwLoginError();
+    }
+
+    this.state = {
+      loading: props.loading,
+      error: props.error,
+      user: props.loggedInUser
+    };
+  }
+
+  public componentDidMount() {
+    this.props.dispatchGetAgentData();
+    this.getProfileData();
+  }
+
+  public getUserName(): string {
+    const { pathname, search } = window.location;
+    return pathname.startsWith("/user")
+      ? search.substring(1)
+      : this.props.loggedInUser.userName;
+  }
+
+  public async getProfileData(): Promise<void> {
+    try {
+      const userName = this.getUserName();
+      const user = await this.getUserData(userName);
+
+      const agent =
+        user.role === AGENT
+          ? await this.getAgentData(userName)
+          : this.state.agent;
+
+      this.setState({ user, loading: false, agent });
+    } catch (error) {
+      this.setState({ error: error.toString(), loading: false });
+    }
+  }
+
+  public async getUserData(userName: string): Promise<Profile> {
+    this.setState({ loading: true });
+    const { data } = await authAxios(this.props.jwt).get<Profile>(
+      `${userApi}${userName}`
+    );
+    return data;
+  }
+
+  public async getAgentData(userName: string): Promise<Agent> {
+    this.setState({ loading: true });
+    const { data } = await authAxios(this.props.jwt).get<Agent>(
+      `${agentApi}${userName}`
+    );
+    return data;
+  }
+
+  public updateUser = async (
+    profile: ProfileUpdate
+  ): Promise<AxiosResponse<any>> => {
+    const httpRequest = authAxios(this.props.jwt);
+    if (profile.agent.supervisor || profile.agent.branch) {
+      await httpRequest.put(`${agentApi}${profile.userName}`, profile.agent);
+    }
+
+    if (profile.password) {
+      await httpRequest.patch(
+        `${userApi}${profile.userName}/${profile.password}`
+      );
+    }
+
+    return httpRequest.put(`${userApi}${profile.userName}`, profile.user);
+  };
+
+  public render() {
+    const { user, agent, loading, error } = this.state;
+    return (
+      <UserProfile
+        editUser={user}
+        agent={agent}
+        loading={loading}
+        error={this.props.error || error}
+        supervisors={this.props.supervisors}
+        branches={this.props.branches}
+        deleteUserHandler={deleteUser(this.props.jwt)}
+        loggedInUser={this.props.loggedInUser}
+        onSubmit={this.updateUser}
+      />
+    );
+  }
+}
+
+export default connect<DispatchedProps, DispatchGetAgentData>(
   mapStateToProps,
   mapDispatchToProps
 )(UpdateUserProfile);

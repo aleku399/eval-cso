@@ -1,9 +1,10 @@
+import Link from "next/link";
 import * as React from "react";
 import { Message } from "semantic-ui-react";
 import { Development } from "../../../lib/envs";
 
 interface State {
-  error?: string;
+  error?: string | Error;
   errorInfo?: any;
 }
 
@@ -25,9 +26,14 @@ export default class ErrorBoundary extends React.Component<Props, State> {
   }
 
   public render() {
+    const err = this.state.error;
     return this.state.errorInfo ? (
       <Message error={true} floating={true}>
-        {this.state.error && this.state.error.toString()}
+        {err && err.toString()}
+        <br />
+        <Link href="/login">
+          <a>Login</a>
+        </Link>
         <br />
         {process.env.NODE_ENV === Development
           ? this.state.errorInfo.componentStack

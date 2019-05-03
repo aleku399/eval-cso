@@ -1,8 +1,8 @@
 import { storiesOf } from "@storybook/react";
 import React from "react";
+import DataView from ".";
 import withReduxProvider from "../../../storybook/provider";
-import UpdateUserProfile from "./";
 
-storiesOf("containers/UpdateUserProfile", module)
+storiesOf("Templates/DataView", module)
   .addDecorator(withReduxProvider)
-  .add("default", () => <UpdateUserProfile />);
+  .add("default", () => <DataView />);

@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import useEffectOnce from "react-use/esm/useEffectOnce";
+import useEffectOnce from "react-use/lib/useEffectOnce";
 import { AnyAction, Dispatch } from "redux";
 import { throwLoginError } from "../../../lib/errors";
 import { AppState } from "../../../redux/reducers";
@@ -35,9 +35,7 @@ function UserList({ users, error, loading, jwt, dispatchGetUsers }: Props) {
   }
 
   useEffectOnce(() => {
-    if (!users.length) {
-      dispatchGetUsers(jwt);
-    }
+    dispatchGetUsers(jwt);
   });
 
   return <UserTable users={users} loading={loading} error={error} />;

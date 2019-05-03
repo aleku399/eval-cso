@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
-import Home from "src/views/templates/Index";
+import EditService from "src/views/templates/EditService";
 
-const page = () => <Home />;
+const page = () => <EditService />;
 
 export default connect()(page);

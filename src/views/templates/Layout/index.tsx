@@ -1,10 +1,30 @@
 import * as React from "react";
-import { Container } from "semantic-ui-react";
+import { Container, Grid } from "semantic-ui-react";
 import ErrorBoundary from "../../components/ErrorBoundary";
+import NavBar from "../../containers/NavBar";
+import ServicesMenu from "../../containers/ServicesMenu";
+import UserSideBar from "../../containers/UserSideBar";
 
 const Layout = ({ children }) => (
-  <Container fluid={true}>
-    <ErrorBoundary>{children}></ErrorBoundary>
+  <Container fluid={true} style={{ padding: "1rem" }}>
+    <ErrorBoundary>
+      <Grid>
+        <Grid.Column width={3}>
+          <UserSideBar />
+          <ServicesMenu />
+        </Grid.Column>
+        <Grid.Column width={13}>
+          <Container>
+            <Grid.Row>
+              <NavBar />
+            </Grid.Row>
+            <Grid.Row>
+              <section style={{ paddingTop: "2rem" }}>{children}</section>
+            </Grid.Row>
+          </Container>
+        </Grid.Column>
+      </Grid>
+    </ErrorBoundary>
   </Container>
 );
 

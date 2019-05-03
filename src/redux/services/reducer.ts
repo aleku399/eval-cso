@@ -1,18 +1,11 @@
-import {
-  CHANGE_SERVICE,
-  CHANGE_SERVICE_VIEW,
-  ServiceActions,
-  ServiceView
-} from "./actions";
+import { CHANGE_SERVICE, ServiceActions } from "./actions";
 
 export interface ServiceState {
   active: string;
-  serviceView: ServiceView;
 }
 
 const initialState: ServiceState = {
-  active: "call",
-  serviceView: "data-view"
+  active: "call"
 };
 
 export function serviceReducer(
@@ -22,8 +15,6 @@ export function serviceReducer(
   switch (action.type) {
     case CHANGE_SERVICE:
       return { ...state, active: action.service };
-    case CHANGE_SERVICE_VIEW:
-      return { ...state, serviceView: action.serviceView };
     default:
       return state;
   }

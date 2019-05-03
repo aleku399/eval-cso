@@ -1,3 +1,4 @@
+import Router from "next/router";
 import React from "react";
 import { connect } from "react-redux";
 import { AnyAction, bindActionCreators, Dispatch } from "redux";
@@ -12,7 +13,8 @@ const items = [
   { name: "Call", id: "call" },
   { name: "SMS", id: "sms" },
   { name: "Email", id: "email" },
-  { name: "Claims", id: "claims" }
+  { name: "Whatsapp", id: "whatsapp" },
+  { name: "Web", id: "web" }
 ];
 
 interface Props {
@@ -20,9 +22,20 @@ interface Props {
   activeItem: string;
 }
 
-function SideBarMenu(props: Props) {
+const setActiveAndRoute = (setService: SetActiveMenuItem) => (item: string) => {
+  setService(item);
+  return Router.push("/evaluation");
+};
+
+function ServicesMenu(props: Props) {
   return (
-    <NavMenu {...props} items={items} header="Services" alignment={vertical} />
+    <NavMenu
+      activeItem={props.activeItem}
+      setActiveMenuItem={setActiveAndRoute(props.setActiveMenuItem)}
+      items={items}
+      header="Services"
+      alignment={vertical}
+    />
   );
 }
 
@@ -40,4 +53,4 @@ const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(SideBarMenu);
+)(ServicesMenu);

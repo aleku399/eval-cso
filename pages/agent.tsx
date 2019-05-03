@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
-import Home from "src/views/templates/Index";
+import CreateAgent from "src/views/templates/CreateAgent";
 
-const page = () => <Home />;
+const page = () => <CreateAgent />;
 
 export default connect()(page);

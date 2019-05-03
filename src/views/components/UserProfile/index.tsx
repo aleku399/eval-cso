@@ -55,6 +55,8 @@ const roles = [ADMIN, AGENT, SUPERVISOR, EVALUATOR];
 
 class UserProfile extends React.Component<Props, State> {
   public state: State;
+  public defaultAgent: Agent = { supervisor: "", branch: "" };
+
   constructor(props) {
     super(props);
     this.state = this.initState();
@@ -71,7 +73,7 @@ class UserProfile extends React.Component<Props, State> {
 
   public initState() {
     return {
-      agent: this.props.agent || { supervisor: null, branch: null },
+      agent: this.props.agent || this.defaultAgent,
       editUser: this.props.editUser,
       loading: this.props.loading,
       error: this.props.error
@@ -88,7 +90,11 @@ class UserProfile extends React.Component<Props, State> {
 
   public handleDropdownInput = (_event, { name, value }) => {
     const agent = { ...this.state.agent, [name]: value.length ? value : null };
-    this.setState({ agent });
+    const editUser =
+      name === "role"
+        ? { ...this.state.editUser, role: value }
+        : this.state.editUser;
+    this.setState({ agent, editUser });
   };
 
   public validate = (): boolean => {
@@ -173,7 +179,8 @@ class UserProfile extends React.Component<Props, State> {
           <SearchableDropdown
             name="role"
             values={roles}
-            defaultValue={this.state.editUser.role}
+            search={false}
+            value={this.state.editUser.role}
             onChange={this.handleDropdownInput}
           />
         </Form.Field>
@@ -206,8 +213,9 @@ class UserProfile extends React.Component<Props, State> {
             placeholder="Supervisor"
             name="supervisor"
             options={mkOptionsFromUser(this.props.supervisors)}
+            search={false}
             onChange={this.handleDropdownInput}
-            defaultValue={this.state.agent.supervisor}
+            value={this.state.agent.supervisor}
           />
         </Form.Field>
         <Form.Field>
@@ -217,7 +225,7 @@ class UserProfile extends React.Component<Props, State> {
             name="branch"
             values={this.props.branches}
             onChange={this.handleDropdownInput}
-            defaultValue={this.state.agent.branch}
+            value={this.state.agent.branch}
           />
         </Form.Field>
       </Form.Field>

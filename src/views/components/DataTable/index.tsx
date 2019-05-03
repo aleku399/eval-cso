@@ -297,7 +297,7 @@ export default class DataTable extends React.Component<Props, State> {
             <Form.Select
               fluid={true}
               label="Search"
-              defaultValue={this.state.search}
+              value={this.state.search}
               focus={"true"}
               search={true}
               options={this.state.evaluatorOptions}

@@ -14,11 +14,18 @@ export function authAxios(jwt: string): AxiosInstance {
   return instance;
 }
 
-interface JsonError {
+export interface JsonError {
   message: string;
   status: number;
 }
 
+export interface ApiData<T> {
+  data: T;
+  loading: boolean;
+  error: string;
+}
+
+// TODO make it return AxiosResponse<ApiData>
 instance.interceptors.response.use(
   response => response,
   error => {

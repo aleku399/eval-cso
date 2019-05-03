@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios";
 import React from "react";
 import { connect } from "react-redux";
-import useEffectOnce from "react-use/esm/useEffectOnce";
+import useEffectOnce from "react-use/lib/useEffectOnce";
 import { AnyAction, Dispatch } from "redux";
 import { agentApi } from "../../../lib/apiEndpoints";
 import { authAxios } from "../../../lib/axios";

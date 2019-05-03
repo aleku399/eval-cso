@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from "axios";
 import { useState } from "react";
-import useEffectOnce from "react-use/esm/useEffectOnce";
+import useEffectOnce from "react-use/lib/useEffectOnce";
 import axios, { authAxios } from "./axios";
 
 export interface Response<T> {

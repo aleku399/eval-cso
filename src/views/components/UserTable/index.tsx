@@ -20,7 +20,9 @@ const columns = [
         filterable: true,
         accessor: "userName",
         Cell: ({ row }) => (
-          <Link href={`/user/${row.userName}`}>{row.userName}</Link>
+          <Link href={`/user/?${row.userName}`}>
+            <a>{row.fullName}</a>
+          </Link>
         )
       },
       {

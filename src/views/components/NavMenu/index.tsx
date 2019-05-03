@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Menu, SemanticWIDTHS } from "semantic-ui-react";
 
-export interface SideBarItem {
+export interface MenuItem {
   name: string;
   id: string;
 }
@@ -14,7 +14,7 @@ export const horizontal: Alignment = "horizontal";
 export type SetActiveMenuItem = (val: string) => void;
 
 export interface Props {
-  items: SideBarItem[];
+  items: MenuItem[];
   header?: string;
   widths?: SemanticWIDTHS;
   alignment?: Alignment;
@@ -23,6 +23,7 @@ export interface Props {
 }
 
 interface State {
+  items: MenuItem[];
   activeItem: string;
 }
 
@@ -31,18 +32,25 @@ class NavMenu extends Component<Props, State> {
     super(props);
 
     this.state = {
+      items: this.props.items,
       activeItem: this.props.activeItem
     };
   }
 
-  public handleItemClick = (_e, { name }) => {
-    this.setState({ activeItem: name });
-    this.props.setActiveMenuItem(name);
+  public handleItemClick = (_e, { value }) => {
+    this.setState({ activeItem: value });
+    this.props.setActiveMenuItem(value);
   };
 
+  public componentDidUpdate(prevProps: Props) {
+    if (prevProps.items !== this.props.items) {
+      this.setState({ items: this.props.items });
+    }
+  }
+
   public render() {
-    const { activeItem } = this.state;
-    const { items, alignment, header, widths } = this.props;
+    const { activeItem, items } = this.state;
+    const { alignment, header, widths } = this.props;
     return (
       <Menu vertical={vertical === alignment} fluid={true} widths={widths}>
         {header ? (
@@ -54,6 +62,7 @@ class NavMenu extends Component<Props, State> {
           <Menu.Item
             name={item.name}
             key={item.id}
+            value={item.id}
             active={activeItem === item.id}
             onClick={this.handleItemClick}
           />

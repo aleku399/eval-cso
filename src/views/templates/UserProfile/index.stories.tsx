@@ -1,8 +1,8 @@
 import { storiesOf } from "@storybook/react";
 import React from "react";
-import Services from ".";
+import Home from ".";
 import withReduxProvider from "../../../storybook/provider";
 
-storiesOf("Templates/Service", module)
+storiesOf("Templates/UserProfile", module)
   .addDecorator(withReduxProvider)
-  .add("default", () => <Services />);
+  .add("default", () => <Home />);
