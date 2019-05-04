@@ -26,7 +26,6 @@ Run `npm run prettier` before you commit.
 - Emotion for JS in CSS styling
 - Storybook
 - Next.js
-- storybook
 - Semantic-ui
 
 ## Gotchas
