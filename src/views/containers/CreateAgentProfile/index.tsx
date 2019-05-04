@@ -73,6 +73,7 @@ function UpdateUserProfile(props: Props) {
 
   return (
     <UserProfile
+      isInCreatAgentMode={true}
       loading={props.loading}
       editUser={emptyUser}
       supervisors={props.supervisors}

@@ -39,6 +39,7 @@ export interface Props {
   onSubmit: (data: ProfileUpdate) => Promise<any>;
   supervisors: Profile[];
   branches: string[];
+  isInCreatAgentMode?: boolean;
   deleteUserHandler: (userName: string) => Promise<void>;
 }
 
@@ -53,9 +54,18 @@ export interface State {
 
 const roles = [ADMIN, AGENT, SUPERVISOR, EVALUATOR];
 
+type RolePrecedence = { [k in Role]: number };
+
+const rolePrecedence: RolePrecedence = {
+  admin: 4,
+  supervisor: 3,
+  evaluator: 2,
+  agent: 1
+};
+
 class UserProfile extends React.Component<Props, State> {
   public state: State;
-  public defaultAgent: Agent = { supervisor: "", branch: "" };
+  public defaultAgent: Agent = { supervisor: null, branch: null };
 
   constructor(props) {
     super(props);
@@ -162,6 +172,10 @@ class UserProfile extends React.Component<Props, State> {
   };
 
   public deleteUser = (activeUserRole: string, editUserRole: string) => {
+    if (this.props.isInCreatAgentMode) {
+      return null;
+    }
+
     return activeUserRole === ADMIN && editUserRole === AGENT
       ? this.deleteUserButton()
       : activeUserRole === ADMIN && editUserRole === ADMIN
@@ -171,16 +185,33 @@ class UserProfile extends React.Component<Props, State> {
       : null;
   };
 
-  public renderAdminRoleField = (activeUserRole: string) => {
-    return activeUserRole === ADMIN ? (
+  public setRoles(activeUserRole: Role) {
+    if (this.props.isInCreatAgentMode) {
+      return [AGENT];
+    }
+    if (activeUserRole === ADMIN) {
+      return roles;
+    }
+    return activeUserRole === SUPERVISOR
+      ? roles.filter(role => role !== ADMIN)
+      : [EVALUATOR, AGENT];
+  }
+
+  public showRoleField(activeUserRole: Role, editUserRole: Role) {
+    return rolePrecedence[activeUserRole] >= rolePrecedence[editUserRole];
+  }
+
+  public renderRoleField = (activeUserRole: Role, editUserRole: Role) => {
+    return activeUserRole !== AGENT &&
+      this.showRoleField(activeUserRole, editUserRole) ? (
       <Form.Field>
         <Form.Field>
           <label>Roles</label>
           <SearchableDropdown
             name="role"
-            values={roles}
+            values={this.setRoles(activeUserRole)}
             search={false}
-            value={this.state.editUser.role}
+            value={editUserRole}
             onChange={this.handleDropdownInput}
           />
         </Form.Field>
@@ -203,7 +234,6 @@ class UserProfile extends React.Component<Props, State> {
       </Form.Field>
     ) : null;
   };
-
   public renderAgentFields = (editedUserRole: Role) => {
     return editedUserRole === AGENT ? (
       <Form.Field>
@@ -287,7 +317,10 @@ class UserProfile extends React.Component<Props, State> {
               required={true}
             />
           </Form.Field>
-          {this.renderAdminRoleField(this.props.loggedInUser.role)}
+          {this.renderRoleField(
+            this.props.loggedInUser.role,
+            this.state.editUser.role
+          )}
           {this.renderPasswordField(this.props.loggedInUser.role)}
           {this.renderAgentFields(this.props.editUser.role)}
           <Form.Field>
