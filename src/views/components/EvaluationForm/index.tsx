@@ -223,6 +223,11 @@ export default class EvaluationForm extends React.Component<Props, State> {
           floating={true}
           content={this.state.feedback}
         />
+        <Message
+          error={true}
+          header="Evaluation input data Error"
+          content={this.state.error}
+        />
         <Form.Group widths="equal">
           <Form.Field inline={true}>
             <label> Agent Names</label>
@@ -289,11 +294,6 @@ export default class EvaluationForm extends React.Component<Props, State> {
         <Form.Field>
           <Button type="submit">Submit</Button>
         </Form.Field>
-        <Message
-          error={true}
-          header="Evaluation input data Error"
-          content={this.state.error}
-        />
       </Form>
     );
   }

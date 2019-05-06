@@ -1,44 +1,48 @@
+import { AxiosPromise } from "axios";
 import * as React from "react";
 import {
   Button,
   Checkbox,
-  Dropdown,
+  DropdownItemProps,
   Form,
   Message,
   TextArea
 } from "semantic-ui-react";
+import { mkOptionsFromUser } from "../../../lib/helper";
+import SearchableDropdown from "../SearchableDropdown";
+import { ClaimType } from "../UpdateClaimTypes";
+import { Profile } from "../UserProfile";
 
-export interface Props {
-  agents: string[];
-  claimTypes: string[];
-  evaluator: string;
-  onSubmit: (data: ClaimsEvaluation) => Promise<void>;
-  loading: boolean;
-}
-
-interface ClaimsEvaluation {
+interface Evaluation {
   claimType: string;
   workflowNumber: number;
-  agent: string;
-  comments: string;
+  agentName: string;
+  comment: string;
   allParametersMet: boolean;
 }
 
-interface AgentOptions {
-  key: string;
-  value: string;
-  text: string;
+interface ClaimPayload extends Evaluation {
+  evaluator: string;
 }
 
-interface ClaimTypeOptions {
-  key: string;
-  value: string;
-  text: string;
+export type SubmitClaimEvaluation = (
+  data: ClaimPayload
+) => AxiosPromise<{ id: number }>;
+
+export interface Props {
+  agents: Profile[];
+  claimTypes: ClaimType[];
+  evaluator: string;
+  onSubmit: SubmitClaimEvaluation;
+  loading?: boolean;
+  error?: string;
 }
 
 export interface State {
-  claim: ClaimsEvaluation;
-  dropdownError: string;
+  claim: Evaluation;
+  error: string;
+  loading: boolean;
+  feedback?: string;
 }
 
 class ClaimEvaluation extends React.Component<Props, State> {
@@ -51,11 +55,12 @@ class ClaimEvaluation extends React.Component<Props, State> {
       claim: {
         claimType: "",
         workflowNumber: 0,
-        agent: "",
-        comments: "",
+        agentName: "",
+        comment: "",
         allParametersMet: false
       },
-      dropdownError: null
+      loading: props.loading,
+      error: props.error
     };
   }
 
@@ -64,7 +69,7 @@ class ClaimEvaluation extends React.Component<Props, State> {
       ...this.state.claim,
       claimType: "",
       workflowNumber: 0,
-      comments: "",
+      comment: "",
       allParametersMet: false
     };
     this.setState({ claim });
@@ -72,22 +77,32 @@ class ClaimEvaluation extends React.Component<Props, State> {
 
   public submitForm = async (): Promise<void> => {
     if (this.validate()) {
-      this.props.onSubmit(this.state.claim);
-      this.clearInput();
+      this.setState({ loading: true });
+      this.props
+        .onSubmit({ ...this.state.claim, evaluator: this.props.evaluator })
+        .then(response => {
+          if (response.data.id) {
+            this.setState({ loading: false, feedback: "Added new evaluation" });
+            this.clearInput();
+          }
+        })
+        .catch(error => {
+          this.setState({ loading: false, error: error.toString() });
+        });
     }
   };
 
   public validate = (): boolean => {
-    if (!this.state.claim.agent) {
-      this.setState({ dropdownError: "Please select an agent" });
+    if (!this.state.claim.agentName) {
+      this.setState({ error: "Please select an agent" });
       return false;
     }
 
     if (!this.state.claim.claimType) {
-      this.setState({ dropdownError: "Please select a claim" });
+      this.setState({ error: "Please select a claim" });
       return false;
     }
-    this.setState({ dropdownError: null });
+    this.setState({ error: null });
     return true;
   };
 
@@ -101,28 +116,14 @@ class ClaimEvaluation extends React.Component<Props, State> {
     return this.setState({ claim });
   };
 
-  public agentOptions = (agents: string[]): AgentOptions[] => {
-    return agents.map(
-      (agent): AgentOptions => {
-        return {
-          key: agent,
-          value: agent.toLowerCase(),
-          text: agent
-        };
-      }
-    );
-  };
-
-  public claimTypeOptions = (claimTypes: string[]): ClaimTypeOptions[] => {
-    return claimTypes.map(
-      (claimType): ClaimTypeOptions => {
-        return {
-          key: claimType,
-          value: claimType.toLowerCase(),
-          text: claimType
-        };
-      }
-    );
+  public claimTypeOptions = (claimTypes: ClaimType[]): DropdownItemProps[] => {
+    return claimTypes.map(claimType => {
+      return {
+        key: claimType.value,
+        value: claimType.value,
+        text: claimType.name
+      };
+    });
   };
 
   public handleInput = (event): any => {
@@ -136,32 +137,37 @@ class ClaimEvaluation extends React.Component<Props, State> {
   };
 
   public render() {
-    const hasError = !!this.state.dropdownError;
+    const hasError = !!this.state.error;
     return (
       <Form
         loading={this.props.loading}
         error={hasError}
         onSubmit={this.submitForm}
       >
+        <Message
+          hidden={!this.state.feedback}
+          positive={true}
+          floating={true}
+          content={this.state.feedback}
+        />
+        <Message
+          error={true}
+          header="Evaluation input data Error"
+          content={this.state.error}
+        />
         <Form.Field>
           <label>Agents</label>
-          <Dropdown
-            placeholder="Select Agent"
-            fluid={true}
-            search={true}
-            selection={true}
-            options={this.agentOptions(this.props.agents)}
+          <SearchableDropdown
+            placeholder="Select an Agent"
+            options={mkOptionsFromUser(this.props.agents)}
             onChange={this.handleDropDownInput}
-            name="agent"
+            name="agentName"
           />
         </Form.Field>
         <Form.Field>
           <label>Type of claim</label>
-          <Dropdown
-            placeholder="Select claim"
-            fluid={true}
-            search={true}
-            selection={true}
+          <SearchableDropdown
+            placeholder="Select a claim type"
             options={this.claimTypeOptions(this.props.claimTypes)}
             onChange={this.handleDropDownInput}
             name="claimType"
@@ -191,8 +197,8 @@ class ClaimEvaluation extends React.Component<Props, State> {
           <TextArea
             placeholder="Add comment"
             onChange={this.handleInput}
-            value={this.state.claim.comments}
-            name="comments"
+            value={this.state.claim.comment}
+            name="comment"
           />
         </Form.Field>
         <Button className="ui submit button" type="submit">
@@ -201,7 +207,7 @@ class ClaimEvaluation extends React.Component<Props, State> {
         <Message
           error={true}
           header="Agents and Claim are mandatory"
-          content={this.state.dropdownError}
+          content={this.state.error}
         />
       </Form>
     );
