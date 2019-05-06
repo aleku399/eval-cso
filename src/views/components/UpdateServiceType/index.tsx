@@ -244,7 +244,7 @@ export default class UpdateServiceType extends React.PureComponent<
         </Form.Field>
         <Form.Field>
           <Button onClick={this.addNewParameterField(category.value)}>
-            Add new {category.name} ParameterRes
+            Add new {category.name}
           </Button>
         </Form.Field>
       </Form.Field>
