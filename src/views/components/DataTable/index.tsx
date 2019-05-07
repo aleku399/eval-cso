@@ -158,8 +158,8 @@ export default class DataTable<T> extends React.Component<Props<T>, State<T>> {
       .sortedData;
 
     const dataToDownload: Array<DownloadData<T>> = currentRecords.map(
-      (obj: { _original: any }) => {
-        const requiredObj: State<T>["data"] = obj._original;
+      (obj: { _original: State<T>["data"] }) => {
+        const requiredObj = obj._original;
 
         return _.mapValues(requiredObj, value => {
           if (Array.isArray(value)) {

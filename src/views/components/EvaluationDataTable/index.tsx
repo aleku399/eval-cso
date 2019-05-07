@@ -1,8 +1,6 @@
 import _ from "lodash";
 import * as React from "react";
-import { Filter } from "react-table";
 import "react-table/react-table.css";
-import { DropdownItemProps } from "semantic-ui-react";
 import DataTable, { ColumnRowsOpt, TableData } from "../DataTable";
 import {
   deviation,
@@ -42,17 +40,6 @@ export interface Props {
   loggedIn: Profile;
   loading?: boolean;
   error?: string;
-}
-
-export interface State {
-  data: EvaluationTableData[];
-  filtered: Filter[];
-  search: string;
-  page: number;
-  pageSize: number;
-  from: string;
-  to: string;
-  evaluatorOptions: DropdownItemProps[];
 }
 
 const columns: ColumnRowsOpt[] = [
