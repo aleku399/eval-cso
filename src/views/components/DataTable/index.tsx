@@ -5,6 +5,7 @@ import ReactTable, { Column, Filter } from "react-table";
 import "react-table/react-table.css";
 import { Button, DropdownItemProps, Form, Message } from "semantic-ui-react";
 import { mkOptionsFromUser } from "../../../lib/helper";
+import SearchableDropdown from "../SearchableDropdown";
 import { EVALUATOR, Profile } from "../UserProfile";
 
 export interface ColumnRowsOpt {
@@ -188,15 +189,12 @@ export default class DataTable<T> extends React.Component<Props<T>, State<T>> {
         />
         <Form>
           <Form.Group widths="equal">
-            <Form.Select
-              fluid={true}
-              label="Search"
+            <SearchableDropdown
               value={this.state.search}
-              focus={"true"}
-              search={true}
               options={this.state.evaluatorOptions}
               placeholder="Search for evaluator..."
               onChange={this.handleDropdownInput}
+              name="evaluatorOptions"
             />
             <Form.Input
               fluid={true}
