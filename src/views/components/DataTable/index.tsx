@@ -1,8 +1,9 @@
 import _ from "lodash";
 import * as React from "react";
+import { CSVLink } from "react-csv";
 import ReactTable, { Column, Filter } from "react-table";
 import "react-table/react-table.css";
-import { DropdownItemProps, Form, Message } from "semantic-ui-react";
+import { Button, DropdownItemProps, Form, Message } from "semantic-ui-react";
 import { mkOptionsFromUser } from "../../../lib/helper";
 import {
   deviation,
@@ -44,6 +45,19 @@ interface EvaluationTableData {
   deviation: ParameterAttrs[];
 }
 
+export interface DataToDownload {
+  date: string;
+  duration: string;
+  reason: string;
+  evaluator: string | any;
+  agentName: string;
+  customer: string;
+  comment: string;
+  score: string;
+  zeroRated: string;
+  deviation: string;
+}
+
 export interface Props {
   users: Profile[];
   data: EvaluationData;
@@ -61,11 +75,39 @@ export interface State {
   from: string;
   to: string;
   evaluatorOptions: DropdownItemProps[];
+  dataToDownload: Array<{}>;
 }
 
-export interface ColumnRows extends Column<any> {
-  foldable?: boolean;
-  columns?: ColumnRows[];
+export interface Cell {
+  render: (type: string) => any;
+  getCellProps: () => any;
+  column: Column;
+  row: Row;
+  state: any;
+  value: any;
+}
+
+export interface Row {
+  index: number;
+  cells: Cell[];
+  getRowProps: () => any;
+  originalRow: any;
+  deviation: ParameterAttrs[];
+  zeroRated: ParameterAttrs[];
+}
+
+interface Style {
+  whiteSpace: string;
+}
+
+export interface ColumnRows {
+  Header: string;
+  accessor: string;
+  filterable?: boolean;
+  style?: Style;
+  width?: number;
+  Cell?: string | ((cell: Cell) => JSX.Element | string);
+  filterMethod?: (filter: Filter, row: any) => boolean;
 }
 
 export interface ColumnRowsOpt {
@@ -100,7 +142,6 @@ const columns: ColumnRowsOpt[] = [
       },
       {
         Header: "Call Reason",
-        id: "reason",
         accessor: "reason",
         style: { whiteSpace: "unset" },
         width: 200
@@ -110,7 +151,6 @@ const columns: ColumnRowsOpt[] = [
         width: 200,
         accessor: deviation,
         style: { whiteSpace: "unset" },
-        id: "deviation",
         Cell: ({ row }) => {
           const list = row.deviation.map((z: ParameterAttrs) => (
             <li key={z.name}>{z.name}</li>
@@ -152,7 +192,6 @@ const columns: ColumnRowsOpt[] = [
       },
       {
         Header: "Score",
-        id: "score",
         accessor: "score"
       }
     ]
@@ -160,6 +199,9 @@ const columns: ColumnRowsOpt[] = [
 ];
 
 export default class DataTable extends React.Component<Props, State> {
+  private reactTable: React.RefObject<any>;
+  private csvLink: React.RefObject<any>;
+
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -170,8 +212,11 @@ export default class DataTable extends React.Component<Props, State> {
       pageSize: 10,
       filtered: [],
       from: "2016-01-01",
-      to: this.todayDate()
+      to: this.todayDate(),
+      dataToDownload: []
     };
+    this.reactTable = React.createRef();
+    this.csvLink = React.createRef();
   }
 
   public componentDidUpdate(prevProps: Props) {
@@ -282,6 +327,40 @@ export default class DataTable extends React.Component<Props, State> {
     return _.uniqBy(allOptions, "value");
   }
 
+  public download = () => {
+    const { search, evaluatorOptions } = this.state;
+    const evalObj: DropdownItemProps = evaluatorOptions.find(
+      (obj: DropdownItemProps) => obj.value === search
+    );
+    const currentRecords = this.reactTable.current.getResolvedState()
+      .sortedData;
+    const dataToDownload: DataToDownload[] = currentRecords.map(
+      (_data, index) => {
+        return columns.reduce(
+          (acc: DataToDownload, prev: ColumnRowsOpt): DataToDownload => {
+            prev.columns.forEach((objCol: ColumnRows) => {
+              if (objCol.Header.includes("Reasons")) {
+                const arr = currentRecords[index][objCol.accessor];
+                const strArr: string[] = arr.map(
+                  (pobj: ParameterAttrs) => pobj.value
+                );
+                acc[objCol.Header] = strArr.join(",\n");
+              } else {
+                acc[objCol.Header] = currentRecords[index][objCol.accessor];
+              }
+            });
+            return { ...acc, evaluator: evalObj.text };
+          },
+          {}
+        );
+      }
+    );
+    this.setState({ dataToDownload }, () => {
+      // click the CSVLink component to trigger the CSV download
+      this.csvLink.current.link.click();
+    });
+  };
+
   public render() {
     const data = this.searchByDate(this.searchByEvaluator(this.state.data));
     return (
@@ -323,6 +402,7 @@ export default class DataTable extends React.Component<Props, State> {
           </Form.Group>
         </Form>
         <ReactTable
+          ref={this.reactTable}
           data={data}
           columns={columns}
           filterable={true}
@@ -336,6 +416,14 @@ export default class DataTable extends React.Component<Props, State> {
           defaultPageSize={10}
           className="-striped -highlight"
         />
+        <CSVLink
+          data={this.state.dataToDownload}
+          filename="data.csv"
+          className="hidden"
+          ref={this.csvLink}
+          target="_blank"
+        />
+        <Button onClick={this.download}>Download CSV</Button>
       </div>
     );
   }
