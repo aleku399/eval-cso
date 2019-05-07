@@ -7,7 +7,9 @@ import { throwLoginError } from "../../../lib/errors";
 import { useAxiosGet } from "../../../lib/useAxios";
 import { AppState } from "../../../redux/reducers";
 import { getUsers } from "../../../redux/userList/action";
-import DataTable, { EvaluationData } from "../../components/DataTable";
+import EvaluationDataTable, {
+  EvaluationData
+} from "../../components/EvaluationDataTable";
 import { Profile } from "../../components/UserProfile";
 import { DispatchGetUsers } from "../UserList";
 
@@ -57,7 +59,7 @@ function EvaluationDataView(props: Props) {
   });
 
   return (
-    <DataTable
+    <EvaluationDataTable
       data={data || []}
       users={props.users}
       loggedIn={props.profile}

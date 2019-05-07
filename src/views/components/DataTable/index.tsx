@@ -5,114 +5,42 @@ import ReactTable, { Column, Filter } from "react-table";
 import "react-table/react-table.css";
 import { Button, DropdownItemProps, Form, Message } from "semantic-ui-react";
 import { mkOptionsFromUser } from "../../../lib/helper";
-import {
-  deviation,
-  EvalState,
-  ParamCategoryName,
-  Parameter,
-  zeroRated
-} from "../EvaluationForm";
 import { EVALUATOR, Profile } from "../UserProfile";
 
-export interface ParameterAttrs extends Parameter {
-  category: ParamCategoryName;
+export interface ColumnRowsOpt {
+  Header: string;
+  columns: Array<Column<any>>;
 }
 
-type CategoryObjects = { [k in ParamCategoryName]: ParameterAttrs[] };
-
-interface EvalAttrs extends EvalState {
+export interface TableData {
+  date: string;
+  agentName: string;
   evaluator: string;
-}
-
-export interface Evaluation {
-  evalAttrs: EvalAttrs;
-  parameters: ParameterAttrs[];
+  comment: string;
   score: number;
 }
 
-export type EvaluationData = Evaluation[];
-
-interface EvaluationTableData {
-  date: string;
-  duration: string;
-  reason: string;
-  evaluator: string;
-  agentName: string;
-  customer: string;
-  comment: string;
-  score: string;
-  zeroRated: ParameterAttrs[];
-  deviation: ParameterAttrs[];
-}
-
-export interface DataToDownload {
-  date: string;
-  duration: string;
-  reason: string;
-  evaluator: string | any;
-  agentName: string;
-  customer: string;
-  comment: string;
-  score: string;
-  zeroRated: string;
-  deviation: string;
-}
-
-export interface Props {
+export interface Props<T> {
   users: Profile[];
-  data: EvaluationData;
+  data: Array<T & TableData>;
   loggedIn: Profile;
   loading?: boolean;
   error?: string;
+  columns: ColumnRowsOpt[];
 }
 
-export interface State {
-  data: EvaluationTableData[];
+type DownloadData<T> = { [k in keyof TableData & T]?: string | number };
+
+export interface State<T> {
+  data: Array<T & TableData>;
   filtered: Filter[];
   search: string;
   page: number;
   pageSize: number;
   from: string;
   to: string;
+  dataToDownload: Array<DownloadData<T>>;
   evaluatorOptions: DropdownItemProps[];
-  dataToDownload: Array<{}>;
-}
-
-export interface Cell {
-  render: (type: string) => any;
-  getCellProps: () => any;
-  column: Column;
-  row: Row;
-  state: any;
-  value: any;
-}
-
-export interface Row {
-  index: number;
-  cells: Cell[];
-  getRowProps: () => any;
-  originalRow: any;
-  deviation: ParameterAttrs[];
-  zeroRated: ParameterAttrs[];
-}
-
-interface Style {
-  whiteSpace: string;
-}
-
-export interface ColumnRows {
-  Header: string;
-  accessor: string;
-  filterable?: boolean;
-  style?: Style;
-  width?: number;
-  Cell?: string | ((cell: Cell) => JSX.Element | string);
-  filterMethod?: (filter: Filter, row: any) => boolean;
-}
-
-export interface ColumnRowsOpt {
-  Header: string;
-  columns: ColumnRows[];
 }
 
 const allEvaluators = "All Evaluators";
@@ -123,89 +51,14 @@ const all: DropdownItemProps = {
   value: allEvaluators
 };
 
-const columns: ColumnRowsOpt[] = [
-  {
-    Header: "Data View",
-    columns: [
-      {
-        Header: "Date",
-        accessor: "date",
-        filterable: false
-      },
-      {
-        Header: "Agent Name",
-        accessor: "agentName"
-      },
-      {
-        Header: "Customer",
-        accessor: "customer"
-      },
-      {
-        Header: "Call Reason",
-        accessor: "reason",
-        style: { whiteSpace: "unset" },
-        width: 200
-      },
-      {
-        Header: "Reasons for Deviation",
-        width: 200,
-        accessor: deviation,
-        style: { whiteSpace: "unset" },
-        Cell: ({ row }) => {
-          const list = row.deviation.map((z: ParameterAttrs) => (
-            <li key={z.name}>{z.name}</li>
-          ));
-          return <ul style={{ marginTop: "2px" }}>{list}</ul>;
-        },
-        filterMethod: (filter, row) => {
-          return row.deviation.some(x =>
-            x.toLowerCase().includes(filter.value)
-          );
-        }
-      },
-      {
-        Header: "Reasons for Zero Rating",
-        width: 200,
-        accessor: zeroRated,
-        style: { whiteSpace: "unset" },
-        Cell: ({ row }) => {
-          const list = row.zeroRated.map((z: ParameterAttrs) => (
-            <li key={z.name}>{z.name}</li>
-          ));
-          return <ul style={{ marginTop: "2px" }}>{list}</ul>;
-        },
-        filterMethod: (filter, row) => {
-          return row.zeroRated.some(x =>
-            x.toLowerCase().includes(filter.value)
-          );
-        }
-      },
-      {
-        Header: "Comment",
-        accessor: "comment",
-        style: { whiteSpace: "unset" },
-        width: 200
-      },
-      {
-        Header: "Duration",
-        accessor: "duration"
-      },
-      {
-        Header: "Score",
-        accessor: "score"
-      }
-    ]
-  }
-];
-
-export default class DataTable extends React.Component<Props, State> {
+export default class DataTable<T> extends React.Component<Props<T>, State<T>> {
   private reactTable: React.RefObject<any>;
   private csvLink: React.RefObject<any>;
 
-  constructor(props: Props) {
+  constructor(props: Props<T>) {
     super(props);
     this.state = {
-      data: this.getEvaluationTableData(),
+      data: this.props.data,
       evaluatorOptions: this.evaluatorSearchOptions(),
       search: this.getDefaultEvaluatorSearch(),
       page: 0,
@@ -219,13 +72,13 @@ export default class DataTable extends React.Component<Props, State> {
     this.csvLink = React.createRef();
   }
 
-  public componentDidUpdate(prevProps: Props) {
+  public componentDidUpdate(prevProps: Props<T>) {
     if (
       prevProps.loading !== this.props.loading ||
       prevProps.data !== this.props.data
     ) {
       this.setState({
-        data: this.getEvaluationTableData(),
+        data: this.props.data,
         evaluatorOptions: this.evaluatorSearchOptions(),
         search: this.getDefaultEvaluatorSearch()
       });
@@ -238,16 +91,13 @@ export default class DataTable extends React.Component<Props, State> {
   }
 
   public getDefaultEvaluatorSearch() {
-    return this.props.loggedIn && this.props.loggedIn.role === EVALUATOR
+    return this.props.loggedIn.role === EVALUATOR
       ? this.props.loggedIn.userName
       : allEvaluators;
   }
 
   public filterMethod = (filter, row): boolean => {
-    const id = filter.pivotId || filter.id;
-    return row[id] !== undefined
-      ? String(row[id].toLowerCase()).startsWith(filter.value.toLowerCase())
-      : true;
+    return String(row[filter.id]).startsWith(filter.value);
   };
 
   public handleDropdownInput = (_event, { value }) => {
@@ -268,7 +118,7 @@ export default class DataTable extends React.Component<Props, State> {
 
   public onPageChange = page => this.setState({ page });
 
-  public searchByEvaluator(data: EvaluationTableData[]): EvaluationTableData[] {
+  public searchByEvaluator(data: TableData[]): TableData[] {
     return this.state.search && this.state.search !== allEvaluators
       ? data.filter(row => {
           return row.evaluator.includes(this.state.search);
@@ -280,29 +130,7 @@ export default class DataTable extends React.Component<Props, State> {
     return this.props.users.find(user => user.userName === userName);
   };
 
-  public getEvaluationTableData = (): EvaluationTableData[] => {
-    return this.props.data.map((obj: Evaluation) => {
-      const paramObj = _.groupBy(
-        obj.parameters,
-        (x: ParameterAttrs) => x.category
-      ) as CategoryObjects;
-
-      const user = this.getUser(obj.evalAttrs.agentName);
-
-      return {
-        deviation: [],
-        zeroRated: [],
-        ...paramObj,
-        ...obj.evalAttrs,
-        duration: String(obj.evalAttrs.customer),
-        customer: String(obj.evalAttrs.customer),
-        score: String(obj.score),
-        agentName: user ? user.fullName : obj.evalAttrs.agentName
-      };
-    });
-  };
-
-  public searchByDate(data: EvaluationTableData[]): EvaluationTableData[] {
+  public searchByDate(data: TableData[]): TableData[] {
     const startDate = new Date(this.state.from);
     const endDate = new Date(this.state.to);
 
@@ -319,42 +147,29 @@ export default class DataTable extends React.Component<Props, State> {
     if (!this.props.users.length) {
       return [all];
     }
-    const evaluators = this.props.data.map(obj =>
-      this.getUser(obj.evalAttrs.evaluator)
-    );
+    const evaluators = this.props.data.map(obj => this.getUser(obj.evaluator));
     const evalOptions: DropdownItemProps[] = mkOptionsFromUser(evaluators);
     const allOptions: DropdownItemProps[] = [...evalOptions, all];
     return _.uniqBy(allOptions, "value");
   }
 
   public download = () => {
-    const { search, evaluatorOptions } = this.state;
-    const evalObj: DropdownItemProps = evaluatorOptions.find(
-      (obj: DropdownItemProps) => obj.value === search
-    );
     const currentRecords = this.reactTable.current.getResolvedState()
       .sortedData;
-    const dataToDownload: DataToDownload[] = currentRecords.map(
-      (_data, index) => {
-        return columns.reduce(
-          (acc: DataToDownload, prev: ColumnRowsOpt): DataToDownload => {
-            prev.columns.forEach((objCol: ColumnRows) => {
-              if (objCol.Header.includes("Reasons")) {
-                const arr = currentRecords[index][objCol.accessor];
-                const strArr: string[] = arr.map(
-                  (pobj: ParameterAttrs) => pobj.value
-                );
-                acc[objCol.Header] = strArr.join(",\n");
-              } else {
-                acc[objCol.Header] = currentRecords[index][objCol.accessor];
-              }
-            });
-            return { ...acc, evaluator: evalObj.text };
-          },
-          {}
-        );
+
+    const dataToDownload: Array<DownloadData<T>> = currentRecords.map(
+      (obj: { _original: any }) => {
+        const requiredObj: State<T>["data"] = obj._original;
+
+        return _.mapValues(requiredObj, value => {
+          if (Array.isArray(value)) {
+            return value.map(valueObj => valueObj.name).join(",\n");
+          }
+          return value;
+        });
       }
     );
+
     this.setState({ dataToDownload }, () => {
       // click the CSVLink component to trigger the CSV download
       this.csvLink.current.link.click();
@@ -404,7 +219,7 @@ export default class DataTable extends React.Component<Props, State> {
         <ReactTable
           ref={this.reactTable}
           data={data}
-          columns={columns}
+          columns={this.props.columns}
           filterable={true}
           defaultFilterMethod={this.filterMethod}
           page={this.state.page}

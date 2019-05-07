@@ -2,7 +2,7 @@ import { AxiosPromise } from "axios";
 import { flatten, groupBy, snakeCase } from "lodash";
 import * as React from "react";
 import { Button, Form, Header, Input, Message, Table } from "semantic-ui-react";
-import { ParameterAttrs } from "../DataTable";
+import { ParameterAttrs } from "../EvaluationDataTable";
 import { ParamCategoryName } from "../EvaluationForm";
 
 export interface ParameterRes extends ParameterAttrs {
