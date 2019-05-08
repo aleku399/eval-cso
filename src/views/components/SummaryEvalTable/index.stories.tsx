@@ -14,11 +14,11 @@ const users = [agentB, agent, agentC, loggedInEvaluator];
 const testData = [
   {
     evalAttrs: {
-      date: "2016-01-01",
+      date: "2019-01-01",
       evaluator: "alex",
       agentName: "thanos",
       reason: "BALANCE REQUEST",
-      comment: `Acknowledge the customer`,
+      comment: "Acknowledge the customer",
       duration: 30,
       customer: 10
     },
@@ -33,7 +33,7 @@ const testData = [
   },
   {
     evalAttrs: {
-      date: "2017-01-01",
+      date: "2019-02-01",
       evaluator: "simon",
       agentName: "thanos",
       reason: "BALANCE REQUEST",
@@ -64,12 +64,12 @@ const testData = [
       }
     ],
     evalAttrs: {
-      date: "2018-01-01",
+      date: "2019-03-01",
       evaluator: "aleku399",
       agentName: "thanos",
       reason: "BALANCE REQUEST",
       customer: 120,
-      comment: "comment",
+      comment: "good comment",
       duration: 30
     },
     score: 0

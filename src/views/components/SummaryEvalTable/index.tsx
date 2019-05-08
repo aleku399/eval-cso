@@ -32,6 +32,7 @@ interface EvalSummaryData {
   agentName: string;
   zeroRated: ParameterAttrs[];
   deviation: ParameterAttrs[];
+  comments: string[];
   score: number;
   to: string;
   from: string;
@@ -52,6 +53,23 @@ const columns: ColumnRowsOpt[] = [
       {
         Header: "Agent Name",
         accessor: "agentName"
+      },
+      {
+        Header: "Comments",
+        width: 200,
+        accessor: "comments",
+        style: { whiteSpace: "unset" },
+        Cell: ({ row }) => {
+          const list = row.comments.map((comment: string) => (
+            <li key={comment.split(" ")[0]}>{comment}</li>
+          ));
+          return <ul style={{ marginTop: "2px" }}>{list}</ul>;
+        },
+        filterMethod: (filter, row) => {
+          return row.comments.some((comment: string) =>
+            comment.toLowerCase().startsWith(filter.value)
+          );
+        }
       },
       {
         Header: "Reasons for Deviation",
@@ -116,6 +134,7 @@ function aggregate(data: EvaluationTableData[]): EvalSummaryData[] {
 
       const deviationArr = _.flatten(values.map(value => value.deviation));
       const zeroRatedArr = _.flatten(values.map(value => value.zeroRated));
+      const comments = _.flatten(values.map(value => value.comment));
       const { from, to } = getDateRange(values.map(value => value.date));
 
       return {
@@ -124,7 +143,8 @@ function aggregate(data: EvaluationTableData[]): EvalSummaryData[] {
         zeroRated: _.uniqBy(zeroRatedArr, item => item.value),
         from,
         to,
-        score
+        score,
+        comments
       };
     }
   );

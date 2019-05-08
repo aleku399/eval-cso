@@ -12,7 +12,7 @@ const users = [agentB, agent, agentC, loggedInEvaluator];
 
 const testData = [
   {
-    date: "2016-05-17",
+    date: "2019-04-17",
     evaluator: "alex",
     agentName: "thanos",
     reason: "BALANCE REQUEST",
@@ -24,7 +24,7 @@ const testData = [
     workflowNumber: 10
   },
   {
-    date: "2017-04-13",
+    date: "2019-04-13",
     evaluator: "simon",
     agentName: "thanos",
     reason: "BALANCE REQUEST",
@@ -36,7 +36,7 @@ const testData = [
     claimType: "cvt"
   },
   {
-    date: "2016-05-17",
+    date: "2019-04-17",
     evaluator: "aleku399",
     agentName: "thanos",
     reason: "BALANCE REQUEST",

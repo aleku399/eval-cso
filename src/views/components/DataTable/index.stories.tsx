@@ -45,7 +45,7 @@ const columns: ColumnRowsOpt[] = [
 
 const testData = [
   {
-    date: "2017-05-17",
+    date: "2019-05-17",
     evaluator: "aleku399",
     agentName: "thanos",
     reason: "BALANCE REQUEST",
@@ -54,7 +54,7 @@ const testData = [
     score: 40
   },
   {
-    date: "2017-04-13",
+    date: "2019-04-13",
     evaluator: "simon",
     agentName: "thanos",
     reason: "BALANCE REQUEST",

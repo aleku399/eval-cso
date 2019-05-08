@@ -73,7 +73,7 @@ export default class DataTable<T, S> extends React.Component<
       page: 0,
       pageSize: 10,
       filtered: [],
-      from: "2016-01-01",
+      from: "2019-01-01",
       to: this.todayDate(),
       dataToDownload: []
     };
