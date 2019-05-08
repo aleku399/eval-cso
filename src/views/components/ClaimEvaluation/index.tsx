@@ -15,6 +15,7 @@ import { Profile } from "../UserProfile";
 
 interface Evaluation {
   claimType: string;
+  details: string;
   workflowNumber: number;
   agentName: string;
   comment: string;
@@ -54,9 +55,10 @@ class ClaimEvaluation extends React.Component<Props, State> {
     this.state = {
       claim: {
         claimType: "",
+        details: "",
+        comment: "",
         workflowNumber: 0,
         agentName: "",
-        comment: "",
         allParametersMet: false
       },
       loading: props.loading,
@@ -192,12 +194,23 @@ class ClaimEvaluation extends React.Component<Props, State> {
             name={this.workflowNumber}
           />
         </Form.Field>
+
         <Form.Field>
           <label>comment</label>
           <TextArea
             placeholder="Add comment"
             onChange={this.handleInput}
             value={this.state.claim.comment}
+            name="comment"
+          />
+        </Form.Field>
+
+        <Form.Field>
+          <label>Details</label>
+          <TextArea
+            placeholder="Add detail"
+            onChange={this.handleInput}
+            value={this.state.claim.details}
             name="comment"
           />
         </Form.Field>

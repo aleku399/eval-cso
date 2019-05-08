@@ -5,6 +5,7 @@ import { AnyAction, Dispatch } from "redux";
 import { evaluationApi, evaluationServiceApi } from "../../../lib/apiEndpoints";
 import { authAxios } from "../../../lib/axios";
 import { throwLoginError } from "../../../lib/errors";
+import { reasons } from "../../../lib/reasons";
 import { useAxiosGet } from "../../../lib/useAxios";
 import { AppState } from "../../../redux/reducers";
 import { getUsers } from "../../../redux/userList/action";
@@ -78,6 +79,7 @@ function CreateEvaluation(props: Props) {
       loading={props.loading && loading}
       evaluator={props.evaluator.userName}
       onSubmit={createEvaluation(props.jwt)}
+      reasons={reasons[props.service]}
     />
   );
 }

@@ -21,11 +21,10 @@ export interface Parameter {
 
 export interface EvalState {
   agentName: string;
-  reason: string;
-  customer: number;
+  customerTel: number;
   date: string;
   comment: string;
-  duration: number;
+  details: string;
 }
 
 interface Evaluation extends EvalState {
@@ -65,6 +64,7 @@ export interface Props {
   evaluator: string;
   agents: Profile[];
   parameterCategories: ParameterCategory[];
+  reasons: string[];
 }
 
 export default class EvaluationForm extends React.Component<Props, State> {
@@ -80,10 +80,9 @@ export default class EvaluationForm extends React.Component<Props, State> {
         parameters: [],
         comment: "",
         date: "",
-        reason: "",
-        customer: 0,
+        customerTel: 0,
         agentName: "",
-        duration: 0
+        details: ""
       },
       error: this.props.error,
       loading: this.props.loading
@@ -187,10 +186,7 @@ export default class EvaluationForm extends React.Component<Props, State> {
           ...this.state.evaluation,
           service: this.props.service,
           evaluator: this.props.evaluator,
-          customer: Number(this.state.evaluation.customer),
-          duration: this.state.evaluation.duration
-            ? Number(this.state.evaluation.duration)
-            : null,
+          customerTel: Number(this.state.evaluation.customerTel),
           date: date.toISOString()
         },
         parameters
@@ -239,27 +235,28 @@ export default class EvaluationForm extends React.Component<Props, State> {
             />
           </Form.Field>
           <Form.Input
-            type="number"
+            type="tel"
             fluid={true}
-            label="Customer Number"
-            name="customer"
-            value={this.state.evaluation.customer || ""}
+            label="Phone Number"
+            name="customerTel"
+            minLength={10}
+            maxLength={10}
+            pattern="[0]{1}[0-9]{9}"
+            value={this.state.evaluation.customerTel || ""}
             required={true}
             onChange={this.handleInput}
           />
         </Form.Group>
 
         <Form.Group widths="equal">
-          <Form.Input
-            type="text"
-            name="reason"
-            value={this.state.evaluation.reason}
-            fluid={true}
-            label={`${this.props.service} reason`}
-            required={true}
-            onChange={this.handleInput}
-          />
-
+          <Form.Field inline={true}>
+            <SearchableDropdown
+              placeholder="reason"
+              name="reason"
+              values={this.props.reasons}
+              onChange={this.handleDropDownInput}
+            />
+          </Form.Field>
           <Form.Input
             type="date"
             name="date"
@@ -274,6 +271,7 @@ export default class EvaluationForm extends React.Component<Props, State> {
         </Form.Group>
         <Form.Group widths="equal">
           <Form.Field inline={true}>
+            <label>Comments</label>
             <TextArea
               type="text"
               name="comment"
@@ -282,14 +280,16 @@ export default class EvaluationForm extends React.Component<Props, State> {
               onChange={this.handleInput}
             />
           </Form.Field>
-          <Form.Input
-            type="number"
-            fluid={true}
-            label="Duration"
-            name="duration"
-            value={this.state.evaluation.duration || ""}
-            onChange={this.handleInput}
-          />
+          <Form.Field inline={true}>
+            <label>Details</label>
+            <TextArea
+              type="text"
+              name="details"
+              value={this.state.evaluation.details}
+              placeholder="Add details"
+              onChange={this.handleInput}
+            />
+          </Form.Field>
         </Form.Group>
         <Form.Field>
           <Button type="submit">Submit</Button>

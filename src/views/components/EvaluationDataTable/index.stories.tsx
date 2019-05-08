@@ -17,12 +17,11 @@ const testData = [
       date: "2019-04-17",
       evaluator: "alex",
       agentName: "thanos",
-      reason: "BALANCE REQUEST",
       comment: `Acknowledge the customer, you should have verified to
     confirm the customer details, failed to apologize for failure to
     use the APP, did not probe enough to find out why the customer was failing to use the APP`,
-      duration: 30,
-      customer: 10
+      customerTel: 10,
+      details: "failed to use the application"
     },
     parameters: [
       {
@@ -53,12 +52,11 @@ const testData = [
       date: "2019-04-13",
       evaluator: "simon",
       agentName: "thanos",
-      reason: "BALANCE REQUEST",
       comment: `Acknowledge the customer, you should have verified to
        confirm the customer details, failed to apologize for failure to
        use the APP, did not probe enough to find out why the customer was failing to use the APP`,
-      duration: 30,
-      customer: 10
+      customerTel: 10,
+      details: "wanted to know how much balance is left on his account"
     },
     parameters: [
       {
@@ -96,10 +94,9 @@ const testData = [
       date: "2019-04-17",
       evaluator: "aleku399",
       agentName: "thanos",
-      reason: "BALANCE REQUEST",
-      customer: 120,
+      customerTel: 120,
       comment: "comment",
-      duration: 30
+      details: "details"
     },
     score: 0
   }
