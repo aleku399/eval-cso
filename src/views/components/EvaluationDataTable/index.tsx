@@ -19,6 +19,8 @@ type CategoryObjects = { [k in ParamCategoryName]: ParameterAttrs[] };
 
 interface EvalAttrs extends EvalState {
   evaluator: string;
+  supervisor: string;
+  branch: string;
 }
 
 export interface Evaluation {
@@ -30,6 +32,7 @@ export interface Evaluation {
 export type EvaluationData = Evaluation[];
 
 export interface EvaluationTableData extends TableData {
+  branch: string;
   zeroRated: ParameterAttrs[];
   deviation: ParameterAttrs[];
 }
@@ -108,8 +111,10 @@ const columns: ColumnRowsOpt[] = [
         width: 200
       },
       {
-        Header: "Duration",
-        accessor: "duration"
+        Header: "Details",
+        accessor: "details",
+        style: { whiteSpace: "unset" },
+        width: 200
       },
       {
         Header: "Score",
@@ -134,6 +139,8 @@ export const getEvaluationTableData = (
       ...paramObj,
       ...obj.evalAttrs,
       score: obj.score,
+      branch: obj.evalAttrs.branch,
+      supervisor: obj.evalAttrs.supervisor,
       agentName: obj.evalAttrs.agentName
     };
   });

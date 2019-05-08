@@ -5,7 +5,10 @@ import DataTable, { ColumnRowsOpt, TableData } from "../DataTable";
 import { Profile } from "../UserProfile";
 
 export interface Claims extends TableData {
+  branch: string;
   claimType: string;
+  details: string;
+  supervisor: string;
   workflowNumber: number;
 }
 
@@ -41,6 +44,12 @@ const columns: ColumnRowsOpt[] = [
       {
         Header: "Comment",
         accessor: "comment",
+        style: { whiteSpace: "unset" },
+        width: 200
+      },
+      {
+        Header: "Details",
+        accessor: "details",
         style: { whiteSpace: "unset" },
         width: 200
       },

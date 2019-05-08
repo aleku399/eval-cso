@@ -1,27 +1,22 @@
 import { storiesOf } from "@storybook/react";
 import React from "react";
-import {
-  agent,
-  agentB,
-  agentC,
-  loggedInEvaluator
-} from "../UserProfile/index.stories";
+import { loggedInEvaluator, users } from "../UserProfile/index.stories";
 import ClaimsTable from "./index";
 
-const users = [agentB, agent, agentC, loggedInEvaluator];
-
-const testData = [
+export const claimsTestData = [
   {
     date: "2019-04-17",
     evaluator: "alex",
     agentName: "thanos",
     reason: "BALANCE REQUEST",
-    comment: `Acknowledge the score, you should have verified to
-    confirm the score details, failed to apologize for failure to
-    use the APP, did not probe enough to find out why the score was failing to use the APP`,
+    comment:
+      "use the APP, did not probe enough to find out why the score was failing to use the",
     claimType: "cvt",
+    details: "details",
     score: 40,
-    workflowNumber: 10
+    workflowNumber: 10,
+    branch: "Kampala",
+    supervisor: "bob"
   },
   {
     date: "2019-04-13",
@@ -32,21 +27,31 @@ const testData = [
        confirm the score details, failed to apologize for failure to
        use the APP, did not probe enough to find out why the score was failing to use the APP`,
     workflowNumber: 30,
+    branch: "Kampala",
+    details: "details",
     score: 10,
+    supervisor: "bob",
     claimType: "cvt"
   },
   {
     date: "2019-04-17",
     evaluator: "aleku399",
     agentName: "thanos",
+    branch: "Kampala",
+    details: "details",
     reason: "BALANCE REQUEST",
     score: 120,
     comment: "comment",
     workflowNumber: 30,
+    supervisor: "steve",
     claimType: "cvt"
   }
 ];
 
 storiesOf("components/ClaimsTable", module).add("default", () => (
-  <ClaimsTable data={testData} users={users} loggedIn={loggedInEvaluator} />
+  <ClaimsTable
+    data={claimsTestData}
+    users={users}
+    loggedIn={loggedInEvaluator}
+  />
 ));

@@ -57,7 +57,14 @@ const adminProfileB: Profile = {
   role: ADMIN
 };
 
-const supervisors = [{ ...adminProfileA, role: SUPERVISOR }];
+const supervisor: Profile = {
+  userName: "bob",
+  fullName: "Bob Kyagulanyi",
+  email: "spartoi@missouri.com",
+  role: SUPERVISOR
+};
+
+const supervisors = [{ ...adminProfileA, role: SUPERVISOR }, supervisor];
 
 export const loggedInEvaluator: Profile = {
   userName: "aleku399",
@@ -67,6 +74,8 @@ export const loggedInEvaluator: Profile = {
 };
 
 const branches = ["Nakawa", "Jinja", "Luzira"];
+
+export const users = [agentB, agent, agentC, loggedInEvaluator];
 
 storiesOf("components/Profile", module).add(
   "Evaluator editing own Profile",

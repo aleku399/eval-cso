@@ -51,7 +51,9 @@ const testData = [
     reason: "BALANCE REQUEST",
     comment: "Acknowledge the customer",
     customer: "14",
-    score: 40
+    score: 40,
+    supervisor: "bob",
+    branch: "Kampala"
   },
   {
     date: "2019-04-13",
@@ -60,6 +62,8 @@ const testData = [
     reason: "BALANCE REQUEST",
     comment: "Acknowledge the customer",
     customer: "15",
+    branch: "Nakawa",
+    supervisor: "steve",
     score: 50
   }
 ];

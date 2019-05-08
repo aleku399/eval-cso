@@ -1,27 +1,21 @@
 import { storiesOf } from "@storybook/react";
 import React from "react";
+import EvaluationDataTable from ".";
 import { deviation, zeroRated } from "../EvaluationForm";
-import {
-  agent,
-  agentB,
-  agentC,
-  loggedInEvaluator
-} from "../UserProfile/index.stories";
-import EvaluationDataTable from "./index";
+import { loggedInEvaluator, users } from "../UserProfile/index.stories";
 
-const users = [agentB, agent, agentC, loggedInEvaluator];
-
-const testData = [
+export const evalTestData = [
   {
     evalAttrs: {
       date: "2019-04-17",
       evaluator: "alex",
       agentName: "thanos",
-      comment: `Acknowledge the customer, you should have verified to
-    confirm the customer details, failed to apologize for failure to
-    use the APP, did not probe enough to find out why the customer was failing to use the APP`,
+      comment: "Acknowledge the customer, you should have verified to",
       customerTel: 10,
-      details: "failed to use the application"
+      details: "failed to use the application",
+      customer: 10,
+      supervisor: "bob",
+      branch: "Kampala"
     },
     parameters: [
       {
@@ -56,7 +50,9 @@ const testData = [
        confirm the customer details, failed to apologize for failure to
        use the APP, did not probe enough to find out why the customer was failing to use the APP`,
       customerTel: 10,
-      details: "wanted to know how much balance is left on his account"
+      details: "wanted to know how much balance is left on his account",
+      supervisor: "bob",
+      branch: "Kampala"
     },
     parameters: [
       {
@@ -93,10 +89,14 @@ const testData = [
     evalAttrs: {
       date: "2019-04-17",
       evaluator: "aleku399",
-      agentName: "thanos",
       customerTel: 120,
       comment: "comment",
-      details: "details"
+      details: "details",
+      agentName: "simon",
+      reason: "BALANCE REQUEST",
+      duration: 30,
+      supervisor: "bob",
+      branch: "Nakawa"
     },
     score: 0
   }
@@ -104,7 +104,7 @@ const testData = [
 
 storiesOf("components/EvaluationDataTable", module).add("default", () => (
   <EvaluationDataTable
-    data={testData}
+    data={evalTestData}
     users={users}
     loggedIn={loggedInEvaluator}
   />

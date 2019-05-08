@@ -33,6 +33,7 @@ interface EvalSummaryData {
   zeroRated: ParameterAttrs[];
   deviation: ParameterAttrs[];
   comments: string[];
+  branch: string;
   score: number;
   to: string;
   from: string;
@@ -144,7 +145,8 @@ function aggregate(data: EvaluationTableData[]): EvalSummaryData[] {
         from,
         to,
         score,
-        comments
+        comments,
+        branch: values[0].branch
       };
     }
   );

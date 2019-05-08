@@ -4,6 +4,7 @@ import { CSVLink } from "react-csv";
 import ReactTable, { Column, Filter } from "react-table";
 import "react-table/react-table.css";
 import { Button, DropdownItemProps, Form, Message } from "semantic-ui-react";
+import SearchableDropdown from "../SearchableDropdown";
 import { AGENT, EVALUATOR, Profile } from "../UserProfile";
 
 export interface ColumnRowsOpt {
@@ -17,6 +18,8 @@ export interface TableData {
   evaluator: string;
   comment: string;
   score: number;
+  branch?: string;
+  supervisor?: string;
   from?: string;
   to?: string;
 }
@@ -40,10 +43,14 @@ type DownloadData<T> = { [k in keyof TableData & T]?: string | number };
 
 export interface State<T> {
   filtered: Filter[];
-  search: string;
+  evaluatorSearch: string;
   page: number;
   data: InputData<T>;
   pageSize: number;
+  branches: string[];
+  branchSearch: string;
+  supervisors: string[];
+  supervisorSearch: string;
   from: string;
   to: string;
   dataToDownload: Array<DownloadData<T>>;
@@ -52,11 +59,15 @@ export interface State<T> {
 
 const allEvaluators = "All Evaluators";
 
-const all: DropdownItemProps = {
+const evaluatorAllOption: DropdownItemProps = {
   key: allEvaluators,
   text: allEvaluators,
   value: allEvaluators
 };
+
+const allBranches = "All Service Points";
+
+const allSupervisors = "All Supervisors";
 
 export default class DataTable<T, S> extends React.Component<
   Props<T>,
@@ -69,7 +80,11 @@ export default class DataTable<T, S> extends React.Component<
     super(props);
     this.state = {
       evaluatorOptions: this.evaluatorSearchOptions(),
-      search: this.getDefaultEvaluatorSearch(),
+      evaluatorSearch: this.getDefaultEvaluatorSearch(),
+      branches: this.getBranches(),
+      branchSearch: allBranches,
+      supervisors: this.getSupervisors(),
+      supervisorSearch: allSupervisors,
       data: this.initialData(this.props.data),
       page: 0,
       pageSize: 10,
@@ -89,8 +104,10 @@ export default class DataTable<T, S> extends React.Component<
     ) {
       this.setState({
         data: this.initialData(this.props.data),
+        branches: this.getBranches(),
+        supervisors: this.getSupervisors(),
         evaluatorOptions: this.evaluatorSearchOptions(),
-        search: this.getDefaultEvaluatorSearch()
+        evaluatorSearch: this.getDefaultEvaluatorSearch()
       });
     }
   }
@@ -102,10 +119,20 @@ export default class DataTable<T, S> extends React.Component<
     return tomorrow.toISOString().slice(0, 10);
   }
 
-  public getDefaultEvaluatorSearch() {
+  public getDefaultEvaluatorSearch(): string {
     return this.props.loggedIn.role === EVALUATOR
       ? this.props.loggedIn.fullName
       : allEvaluators;
+  }
+
+  public getBranches(): string[] {
+    const branches = _.uniq(this.props.data.map(obj => obj.branch));
+    return [allBranches, ...branches];
+  }
+
+  public getSupervisors(): string[] {
+    const supervisors = _.uniq(this.props.data.map(obj => obj.supervisor));
+    return [allSupervisors, ...supervisors];
   }
 
   public agentData(data: InputData<T>): InputData<T> {
@@ -131,8 +158,9 @@ export default class DataTable<T, S> extends React.Component<
     return String(row[filter.id]).startsWith(filter.value);
   };
 
-  public handleDropdownInput = (_event, { value }) => {
-    this.setState({ search: value });
+  public handleDropdownInput = (_event, { value, name }) => {
+    // tslint:disable-next-line: no-object-literal-type-assertion
+    this.setState({ [name]: value } as State<T>);
   };
 
   public onChange = event => {
@@ -150,9 +178,25 @@ export default class DataTable<T, S> extends React.Component<
   public onPageChange = page => this.setState({ page });
 
   public searchByEvaluator(data: InputData<T>): InputData<T> {
-    return this.state.search && this.state.search !== allEvaluators
+    return this.state.evaluatorSearch !== allEvaluators
       ? data.filter(row => {
-          return row.evaluator.includes(this.state.search);
+          return row.evaluator.includes(this.state.evaluatorSearch);
+        })
+      : data;
+  }
+
+  public searchBySupervisor(data: InputData<T>): InputData<T> {
+    return this.state.supervisorSearch !== allSupervisors
+      ? data.filter(row => {
+          return row.supervisor.includes(this.state.supervisorSearch);
+        })
+      : data;
+  }
+
+  public searchByBranch(data: InputData<T>): InputData<T> {
+    return this.state.branchSearch !== allBranches
+      ? data.filter(row => {
+          return row.branch.includes(this.state.branchSearch);
         })
       : data;
   }
@@ -175,7 +219,7 @@ export default class DataTable<T, S> extends React.Component<
 
   public evaluatorSearchOptions(): DropdownItemProps[] {
     if (!this.props.users.length) {
-      return [all];
+      return [evaluatorAllOption];
     }
     const evaluators = this.props.data.map(obj => this.getUser(obj.evaluator));
     const evalOptions: DropdownItemProps[] = evaluators.map(user => ({
@@ -184,7 +228,10 @@ export default class DataTable<T, S> extends React.Component<
       text: user.fullName
     }));
 
-    const allOptions: DropdownItemProps[] = [...evalOptions, all];
+    const allOptions: DropdownItemProps[] = [
+      ...evalOptions,
+      evaluatorAllOption
+    ];
     return _.uniqBy(allOptions, "value");
   }
 
@@ -213,7 +260,9 @@ export default class DataTable<T, S> extends React.Component<
 
   public renderedData() {
     const sortedData = this.searchByDate(
-      this.searchByEvaluator(this.state.data)
+      this.searchByBranch(
+        this.searchBySupervisor(this.searchByEvaluator(this.state.data))
+      )
     );
 
     return this.props.isSummaryTable
@@ -233,26 +282,48 @@ export default class DataTable<T, S> extends React.Component<
         />
         <Form>
           <Form.Group widths="equal">
-            <Form.Select
-              fluid={true}
-              label="Search"
-              value={this.state.search}
-              focus={"true"}
-              search={true}
-              options={this.state.evaluatorOptions}
-              placeholder="Search for evaluator..."
-              onChange={this.handleDropdownInput}
-            />
+            <Form.Field inline={true}>
+              <label>Evaluators</label>
+              <SearchableDropdown
+                value={this.state.evaluatorSearch}
+                name="evaluatorSearch"
+                options={this.state.evaluatorOptions}
+                placeholder="Evaluator"
+                onChange={this.handleDropdownInput}
+              />
+            </Form.Field>
+            <Form.Field inline={true}>
+              <label>Supervisors</label>
+              <SearchableDropdown
+                value={this.state.supervisorSearch}
+                name="supervisorSearch"
+                values={this.state.supervisors}
+                placeholder="Supervisor"
+                onChange={this.handleDropdownInput}
+              />
+            </Form.Field>
+            <Form.Field inline={true}>
+              <label>Service Points</label>
+              <SearchableDropdown
+                value={this.state.branchSearch}
+                name="branchSearch"
+                values={this.state.branches}
+                placeholder="Service Point"
+                onChange={this.handleDropdownInput}
+              />
+            </Form.Field>
             <Form.Input
               fluid={true}
               label="From"
               type="date"
               name="from"
+              inline={true}
               value={this.state.from}
               onChange={this.onChange}
             />
             <Form.Input
               label="To"
+              inline={true}
               fluid={true}
               type="date"
               name="to"
