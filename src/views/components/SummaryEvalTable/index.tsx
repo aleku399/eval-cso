@@ -115,7 +115,7 @@ const columns: ColumnRowsOpt[] = [
   }
 ];
 
-function getDateRange(dates: string[]): DateRange {
+export function getDateRange(dates: string[]): DateRange {
   const datesWithTime: DateWithTime[] = dates.map(dateStr => {
     const dateValue = new Date(dateStr);
     return { time: dateValue.getTime(), date: dateStr };
