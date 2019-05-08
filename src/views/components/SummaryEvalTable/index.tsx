@@ -1,10 +1,15 @@
 import _ from "lodash";
 import * as React from "react";
 import "react-table/react-table.css";
-import DataTable, { ColumnRowsOpt, TableData } from "../DataTable";
+import DataTable, { ColumnRowsOpt } from "../DataTable";
+import {
+  Evaluation,
+  EvaluationData,
+  EvaluationTableData,
+  getEvaluationTableData
+} from "../EvaluationDataTable";
 import {
   deviation,
-  EvalState,
   ParamCategoryName,
   Parameter,
   zeroRated
@@ -15,25 +20,6 @@ export interface ParameterAttrs extends Parameter {
   category: ParamCategoryName;
 }
 
-type CategoryObjects = { [k in ParamCategoryName]: ParameterAttrs[] };
-
-interface EvalAttrs extends EvalState {
-  evaluator: string;
-}
-
-export interface Evaluation {
-  evalAttrs: EvalAttrs;
-  parameters: ParameterAttrs[];
-  score: number;
-}
-
-export type EvaluationData = Evaluation[];
-
-export interface EvaluationTableData extends TableData {
-  zeroRated: ParameterAttrs[];
-  deviation: ParameterAttrs[];
-}
-
 export interface Props {
   users: Profile[];
   data: EvaluationData;
@@ -42,29 +28,30 @@ export interface Props {
   error?: string;
 }
 
+interface EvalSummaryData {
+  agentName: string;
+  zeroRated: ParameterAttrs[];
+  deviation: ParameterAttrs[];
+  score: number;
+  to: string;
+  from: string;
+}
+
+interface DateRange {
+  from: string;
+  to: string;
+}
+interface DateWithTime {
+  date: string;
+  time: number;
+}
 const columns: ColumnRowsOpt[] = [
   {
-    Header: "Data View",
+    Header: "Summary View",
     columns: [
-      {
-        Header: "Date",
-        accessor: "date",
-        filterable: false
-      },
       {
         Header: "Agent Name",
         accessor: "agentName"
-      },
-      {
-        Header: "Customer",
-        accessor: "customer"
-      },
-      {
-        Header: "Call Reason",
-        id: "reason",
-        accessor: "reason",
-        style: { whiteSpace: "unset" },
-        width: 200
       },
       {
         Header: "Reasons for Deviation",
@@ -102,16 +89,6 @@ const columns: ColumnRowsOpt[] = [
         }
       },
       {
-        Header: "Comment",
-        accessor: "comment",
-        style: { whiteSpace: "unset" },
-        width: 200
-      },
-      {
-        Header: "Duration",
-        accessor: "duration"
-      },
-      {
         Header: "Score",
         id: "score",
         accessor: "score"
@@ -120,30 +97,50 @@ const columns: ColumnRowsOpt[] = [
   }
 ];
 
-export const getEvaluationTableData = (
-  data: Evaluation[]
-): EvaluationTableData[] => {
-  return data.map((obj: Evaluation) => {
-    const paramObj = _.groupBy(
-      obj.parameters,
-      (x: ParameterAttrs) => x.category
-    ) as CategoryObjects;
-    return {
-      deviation: [],
-      zeroRated: [],
-      ...paramObj,
-      ...obj.evalAttrs,
-      score: obj.score,
-      agentName: obj.evalAttrs.agentName
-    };
+function getDateRange(dates: string[]): DateRange {
+  const datesWithTime: DateWithTime[] = dates.map(dateStr => {
+    const dateValue = new Date(dateStr);
+    return { time: dateValue.getTime(), date: dateStr };
   });
-};
+  const sortedDates = _.sortBy(datesWithTime, obj => obj.time);
+  return { from: sortedDates[0].date, to: _.last(sortedDates).date };
+}
 
-export default function EvaluationDataTable(props: Props) {
+function aggregate(data: EvaluationTableData[]): EvalSummaryData[] {
+  const groupedByAgent = _.groupBy(data, obj => obj.agentName);
+
+  const aggregatedByAgent = _.mapValues(
+    groupedByAgent,
+    (values: EvaluationTableData[]) => {
+      const score = _.round(_.meanBy(values, value => value.score), 2);
+
+      const deviationArr = _.flatten(values.map(value => value.deviation));
+      const zeroRatedArr = _.flatten(values.map(value => value.zeroRated));
+      const { from, to } = getDateRange(values.map(value => value.date));
+
+      return {
+        agentName: values[0].agentName,
+        deviation: _.uniqBy(deviationArr, item => item.value),
+        zeroRated: _.uniqBy(zeroRatedArr, item => item.value),
+        from,
+        to,
+        score
+      };
+    }
+  );
+  return _.values(aggregatedByAgent);
+}
+
+const getSummaryTableData = (data: Evaluation[]): EvaluationTableData[] =>
+  getEvaluationTableData(data);
+
+export default function SummaryEvalTable(props: Props) {
   return (
     <DataTable
-      data={getEvaluationTableData(props.data)}
+      data={getSummaryTableData(props.data)}
       users={props.users}
+      isSummaryTable={true}
+      aggregate={aggregate}
       columns={columns}
       loggedIn={props.loggedIn}
       loading={props.loading}

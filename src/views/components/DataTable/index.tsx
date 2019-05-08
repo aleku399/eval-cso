@@ -5,7 +5,6 @@ import ReactTable, { Column, Filter } from "react-table";
 import "react-table/react-table.css";
 import { Button, DropdownItemProps, Form, Message } from "semantic-ui-react";
 import { mkOptionsFromUser } from "../../../lib/helper";
-import SearchableDropdown from "../SearchableDropdown";
 import { EVALUATOR, Profile } from "../UserProfile";
 
 export interface ColumnRowsOpt {
@@ -19,13 +18,21 @@ export interface TableData {
   evaluator: string;
   comment: string;
   score: number;
+  from?: string;
+  to?: string;
 }
 
-export interface Props<T> {
+type InputData<T> = Array<T & TableData>;
+
+export type AggregateFn<T, S = any> = (data: InputData<T>) => S[];
+
+export interface Props<T, S = any> {
   users: Profile[];
-  data: Array<T & TableData>;
+  data: InputData<T>;
   loggedIn: Profile;
   loading?: boolean;
+  isSummaryTable?: boolean;
+  aggregate?: AggregateFn<T, S>;
   error?: string;
   columns: ColumnRowsOpt[];
 }
@@ -33,7 +40,6 @@ export interface Props<T> {
 type DownloadData<T> = { [k in keyof TableData & T]?: string | number };
 
 export interface State<T> {
-  data: Array<T & TableData>;
   filtered: Filter[];
   search: string;
   page: number;
@@ -52,14 +58,16 @@ const all: DropdownItemProps = {
   value: allEvaluators
 };
 
-export default class DataTable<T> extends React.Component<Props<T>, State<T>> {
+export default class DataTable<T, S> extends React.Component<
+  Props<T>,
+  State<T>
+> {
   private reactTable: React.RefObject<any>;
   private csvLink: React.RefObject<any>;
 
-  constructor(props: Props<T>) {
+  constructor(props: Props<T, S>) {
     super(props);
     this.state = {
-      data: this.props.data,
       evaluatorOptions: this.evaluatorSearchOptions(),
       search: this.getDefaultEvaluatorSearch(),
       page: 0,
@@ -79,7 +87,6 @@ export default class DataTable<T> extends React.Component<Props<T>, State<T>> {
       prevProps.data !== this.props.data
     ) {
       this.setState({
-        data: this.props.data,
         evaluatorOptions: this.evaluatorSearchOptions(),
         search: this.getDefaultEvaluatorSearch()
       });
@@ -88,7 +95,9 @@ export default class DataTable<T> extends React.Component<Props<T>, State<T>> {
 
   public todayDate(): string {
     const today = new Date();
-    return today.toISOString().slice(0, 10);
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+    return tomorrow.toISOString().slice(0, 10);
   }
 
   public getDefaultEvaluatorSearch() {
@@ -119,7 +128,7 @@ export default class DataTable<T> extends React.Component<Props<T>, State<T>> {
 
   public onPageChange = page => this.setState({ page });
 
-  public searchByEvaluator(data: TableData[]): TableData[] {
+  public searchByEvaluator(data: InputData<T>): InputData<T> {
     return this.state.search && this.state.search !== allEvaluators
       ? data.filter(row => {
           return row.evaluator.includes(this.state.search);
@@ -131,15 +140,14 @@ export default class DataTable<T> extends React.Component<Props<T>, State<T>> {
     return this.props.users.find(user => user.userName === userName);
   };
 
-  public searchByDate(data: TableData[]): TableData[] {
+  public searchByDate(data: InputData<T>): InputData<T> {
     const startDate = new Date(this.state.from);
     const endDate = new Date(this.state.to);
-
     return data.filter(row => {
       const refDate = new Date(row.date);
       return (
-        refDate.getTime >= startDate.getTime &&
-        refDate.getTime <= endDate.getTime
+        refDate.getTime() >= startDate.getTime() &&
+        refDate.getTime() <= endDate.getTime()
       );
     });
   }
@@ -159,7 +167,7 @@ export default class DataTable<T> extends React.Component<Props<T>, State<T>> {
       .sortedData;
 
     const dataToDownload: Array<DownloadData<T>> = currentRecords.map(
-      (obj: { _original: State<T>["data"] }) => {
+      (obj: { _original: InputData<T> }) => {
         const requiredObj = obj._original;
 
         return _.mapValues(requiredObj, value => {
@@ -178,7 +186,12 @@ export default class DataTable<T> extends React.Component<Props<T>, State<T>> {
   };
 
   public render() {
-    const data = this.searchByDate(this.searchByEvaluator(this.state.data));
+    const sortedData = this.searchByDate(
+      this.searchByEvaluator(this.props.data)
+    );
+    const data = this.props.isSummaryTable
+      ? this.props.aggregate(sortedData)
+      : sortedData;
     return (
       <div>
         <Message
@@ -189,12 +202,15 @@ export default class DataTable<T> extends React.Component<Props<T>, State<T>> {
         />
         <Form>
           <Form.Group widths="equal">
-            <SearchableDropdown
+            <Form.Select
+              fluid={true}
+              label="Search"
               value={this.state.search}
+              focus={"true"}
+              search={true}
               options={this.state.evaluatorOptions}
               placeholder="Search for evaluator..."
               onChange={this.handleDropdownInput}
-              name="evaluatorOptions"
             />
             <Form.Input
               fluid={true}

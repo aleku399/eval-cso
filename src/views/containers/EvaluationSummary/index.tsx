@@ -7,9 +7,9 @@ import { throwLoginError } from "../../../lib/errors";
 import { useAxiosGet } from "../../../lib/useAxios";
 import { AppState } from "../../../redux/reducers";
 import { getUsers } from "../../../redux/userList/action";
-import EvaluationDataTable, {
-  EvaluationData
-} from "../../components/EvaluationDataTable";
+
+import { EvaluationData } from "../../components/EvaluationDataTable";
+import SummaryEvalTable from "../../components/SummaryEvalTable";
 import { Profile } from "../../components/UserProfile";
 import { DispatchGetUsers } from "../UserList";
 
@@ -43,11 +43,9 @@ const mapDispatchToProps = (
   dispatchGetUsers: getUsers(dispatch)
 });
 
-// TODO: abstract into function that takes a react component so that
-// it can be re-used in summary component
-function EvaluationDataView(props: Props) {
+function EvaluationSummary(props: Props) {
   if (!props.profile || !props.jwt) {
-    throwLoginError("Login as evaluator");
+    throwLoginError();
   }
 
   const { data, loading, error } = useAxiosGet<EvaluationData>(props.jwt)(
@@ -61,7 +59,7 @@ function EvaluationDataView(props: Props) {
   });
 
   return (
-    <EvaluationDataTable
+    <SummaryEvalTable
       data={data || []}
       users={props.users}
       loggedIn={props.profile}
@@ -74,4 +72,4 @@ function EvaluationDataView(props: Props) {
 export default connect<DispatchedProps, DispatchGetUsers>(
   mapStateToProps,
   mapDispatchToProps
-)(EvaluationDataView);
+)(EvaluationSummary);
