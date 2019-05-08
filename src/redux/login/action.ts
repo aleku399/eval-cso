@@ -50,6 +50,7 @@ export const loginUser = (dispatch: Dispatch) => (credentials: Credentials) => {
     .then(({ data }) => {
       const jwt = data.token;
       window.localStorage.setItem("token", jwt);
+      window.localStorage.setItem("profile", JSON.stringify(data.user));
       dispatch(receiveLoginSuccess(jwt, data.user));
     })
     .catch(error => {

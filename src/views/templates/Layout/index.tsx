@@ -1,9 +1,11 @@
 import * as React from "react";
-import { Container, Grid } from "semantic-ui-react";
+import { Container, Grid, Loader } from "semantic-ui-react";
 import ErrorBoundary from "../../components/ErrorBoundary";
 import NavBar from "../../containers/NavBar";
 import ServicesMenu from "../../containers/ServicesMenu";
 import UserSideBar from "../../containers/UserSideBar";
+
+const isServer = typeof window === "undefined";
 
 const Layout = ({ children }) => (
   <Container fluid={true} style={{ padding: "1rem" }}>
@@ -19,7 +21,9 @@ const Layout = ({ children }) => (
               <NavBar />
             </Grid.Row>
             <Grid.Row>
-              <section style={{ paddingTop: "2rem" }}>{children}</section>
+              <section style={{ paddingTop: "2rem" }}>
+                {isServer ? <Loader active={true} /> : children}
+              </section>
             </Grid.Row>
           </Container>
         </Grid.Column>

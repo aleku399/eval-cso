@@ -11,6 +11,7 @@ const nonLoggedInMenu = [
 ];
 
 const loggedInMenu = [
+  { name: "Sign out", id: "login" },
   { name: "User List", id: "users" },
   { name: "Create Agent", id: "agent" }
 ];
@@ -24,7 +25,7 @@ const setMenuItems = (role?: Role, userName?: string): MenuItem[] => {
     return nonLoggedInMenu;
   }
 
-  const editProfile = { name: "Update Profile", id: `user/${userName}` };
+  const editProfile = { name: "Update Profile", id: `user/?${userName}` };
 
   if (role !== AGENT) {
     return [editProfile, ...loggedInMenu];
@@ -36,6 +37,10 @@ const setMenuItems = (role?: Role, userName?: string): MenuItem[] => {
 };
 
 function setActiveMenuItem(item: string) {
+  if (item === "login") {
+    localStorage.removeItem("token");
+    localStorage.removeItem("profile");
+  }
   Router.push(`/${item}`);
 }
 

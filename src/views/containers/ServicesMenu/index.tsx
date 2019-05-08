@@ -24,7 +24,7 @@ interface Props {
 
 const setActiveAndRoute = (setService: SetActiveMenuItem) => (item: string) => {
   setService(item);
-  return Router.push("/evaluation");
+  return Router.push("/");
 };
 
 function ServicesMenu(props: Props) {
