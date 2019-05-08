@@ -17,8 +17,8 @@ const agentProfile: Agent = {
 
 export const agent: Profile = {
   userName: "simon",
-  email: "thanos_titan@gmail.com",
-  fullName: "Thanos",
+  email: "simon@gmail.com",
+  fullName: "Simon Marlow",
   role: AGENT
 };
 
@@ -32,7 +32,7 @@ export const agentB: Profile = {
 export const agentC: Profile = {
   userName: "thanos",
   email: "thanos_titan@gmail.com",
-  fullName: "Thanos",
+  fullName: "Thanos Avengers",
   role: AGENT
 };
 
@@ -43,7 +43,7 @@ const emptyAgent = {
   email: ""
 };
 
-const adminProfileA = {
+export const adminProfileA = {
   userName: "steve",
   role: ADMIN,
   fullName: "Steve Rogers",

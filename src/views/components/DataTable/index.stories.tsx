@@ -1,14 +1,14 @@
 import { storiesOf } from "@storybook/react";
 import React from "react";
 import {
+  adminProfileA,
   agent,
-  agentB,
   agentC,
   loggedInEvaluator
 } from "../UserProfile/index.stories";
 import DataTable, { ColumnRowsOpt } from "./index";
 
-const users = [agentB, agent, agentC, loggedInEvaluator];
+const users = [adminProfileA, agent, agentC, loggedInEvaluator];
 
 const columns: ColumnRowsOpt[] = [
   {
@@ -45,7 +45,7 @@ const columns: ColumnRowsOpt[] = [
 
 const testData = [
   {
-    date: "2019-05-17",
+    date: "2019-01-05",
     evaluator: "aleku399",
     agentName: "thanos",
     reason: "BALANCE REQUEST",
@@ -55,8 +55,8 @@ const testData = [
   },
   {
     date: "2019-04-13",
-    evaluator: "simon",
-    agentName: "thanos",
+    evaluator: "steve",
+    agentName: "simon",
     reason: "BALANCE REQUEST",
     comment: "Acknowledge the customer",
     customer: "15",
@@ -64,11 +64,20 @@ const testData = [
   }
 ];
 
-storiesOf("components/DataTable", module).add("default", () => (
-  <DataTable
-    columns={columns}
-    data={testData}
-    users={users}
-    loggedIn={loggedInEvaluator}
-  />
-));
+storiesOf("components/DataTable", module)
+  .add("with evaluator loggedIn", () => (
+    <DataTable
+      columns={columns}
+      data={testData}
+      users={users}
+      loggedIn={loggedInEvaluator}
+    />
+  ))
+  .add("with agent loggedIn", () => (
+    <DataTable
+      columns={columns}
+      data={testData}
+      users={users}
+      loggedIn={agent}
+    />
+  ));

@@ -4,8 +4,7 @@ import { CSVLink } from "react-csv";
 import ReactTable, { Column, Filter } from "react-table";
 import "react-table/react-table.css";
 import { Button, DropdownItemProps, Form, Message } from "semantic-ui-react";
-import { mkOptionsFromUser } from "../../../lib/helper";
-import { EVALUATOR, Profile } from "../UserProfile";
+import { AGENT, EVALUATOR, Profile } from "../UserProfile";
 
 export interface ColumnRowsOpt {
   Header: string;
@@ -43,6 +42,7 @@ export interface State<T> {
   filtered: Filter[];
   search: string;
   page: number;
+  data: InputData<T>;
   pageSize: number;
   from: string;
   to: string;
@@ -70,6 +70,7 @@ export default class DataTable<T, S> extends React.Component<
     this.state = {
       evaluatorOptions: this.evaluatorSearchOptions(),
       search: this.getDefaultEvaluatorSearch(),
+      data: this.initialData(this.props.data),
       page: 0,
       pageSize: 10,
       filtered: [],
@@ -87,6 +88,7 @@ export default class DataTable<T, S> extends React.Component<
       prevProps.data !== this.props.data
     ) {
       this.setState({
+        data: this.initialData(this.props.data),
         evaluatorOptions: this.evaluatorSearchOptions(),
         search: this.getDefaultEvaluatorSearch()
       });
@@ -102,8 +104,27 @@ export default class DataTable<T, S> extends React.Component<
 
   public getDefaultEvaluatorSearch() {
     return this.props.loggedIn.role === EVALUATOR
-      ? this.props.loggedIn.userName
+      ? this.props.loggedIn.fullName
       : allEvaluators;
+  }
+
+  public agentData(data: InputData<T>): InputData<T> {
+    return data.filter(obj => obj.agentName === this.props.loggedIn.userName);
+  }
+
+  public addFullNames(data: InputData<T>): InputData<T> {
+    const usersMap = _.groupBy(this.props.users, user => user.userName);
+    return data.map(obj => {
+      const agentFullName = usersMap[obj.agentName][0].fullName;
+      const evaluatorFullName = usersMap[obj.evaluator][0].fullName;
+      return { ...obj, agentName: agentFullName, evaluator: evaluatorFullName };
+    });
+  }
+
+  public initialData(data: InputData<T>): InputData<T> {
+    const dataByUser =
+      this.props.loggedIn.role === AGENT ? this.agentData(data) : data;
+    return this.addFullNames(dataByUser);
   }
 
   public filterMethod = (filter, row): boolean => {
@@ -157,7 +178,12 @@ export default class DataTable<T, S> extends React.Component<
       return [all];
     }
     const evaluators = this.props.data.map(obj => this.getUser(obj.evaluator));
-    const evalOptions: DropdownItemProps[] = mkOptionsFromUser(evaluators);
+    const evalOptions: DropdownItemProps[] = evaluators.map(user => ({
+      key: user.userName,
+      value: user.fullName,
+      text: user.fullName
+    }));
+
     const allOptions: DropdownItemProps[] = [...evalOptions, all];
     return _.uniqBy(allOptions, "value");
   }
@@ -185,13 +211,18 @@ export default class DataTable<T, S> extends React.Component<
     });
   };
 
-  public render() {
+  public renderedData() {
     const sortedData = this.searchByDate(
-      this.searchByEvaluator(this.props.data)
+      this.searchByEvaluator(this.state.data)
     );
-    const data = this.props.isSummaryTable
+
+    return this.props.isSummaryTable
       ? this.props.aggregate(sortedData)
       : sortedData;
+  }
+
+  public render() {
+    const data = this.renderedData();
     return (
       <div>
         <Message
