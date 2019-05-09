@@ -211,7 +211,7 @@ class ClaimEvaluation extends React.Component<Props, State> {
             placeholder="Add detail"
             onChange={this.handleInput}
             value={this.state.claim.details}
-            name="comment"
+            name="details"
           />
         </Form.Field>
         <Button className="ui submit button" type="submit">

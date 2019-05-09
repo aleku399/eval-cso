@@ -29,7 +29,7 @@ export default function SearchableDropdown(props: Props) {
   const { fluid = true, search = true } = props;
   const options = props.values ? makeOptions(props.values) : props.options;
   if (!options) {
-    throw new Error("Selection Options missing");
+    throw new Error(`Selection Options missing for ${props.name}`);
   }
   return (
     <Dropdown

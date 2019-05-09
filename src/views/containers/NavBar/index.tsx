@@ -2,9 +2,10 @@ import Link from "next/link";
 import Router from "next/router";
 import React from "react";
 import { connect } from "react-redux";
+import useLocation from "react-use/lib/useLocation";
 import { SemanticWIDTHS } from "semantic-ui-react";
 import { AppState } from "../../../redux/reducers";
-import NavMenu, { horizontal } from "../../components/NavMenu";
+import NavMenu, { horizontal, MenuItem } from "../../components/NavMenu";
 import { ADMIN, AGENT, Profile } from "../../components/UserProfile";
 
 const defaultMenu = [
@@ -14,30 +15,60 @@ const defaultMenu = [
 
 interface Props {
   user: Profile;
+  service: string;
 }
 
-function setActiveMenuItem(item: string) {
-  Router.push(`/${item}`);
+const evaluation: string = "evaluation";
+const claim: string = "claim";
+
+const getRoutePath = (activeService: string, item: string) => {
+  if (item === evaluation) {
+    return activeService === claim ? `/${claim}` : "/";
+  }
+  return activeService === claim ? `/${claim}-${item}` : `/${item}`;
+};
+
+const setActiveMenuItem = (activeService: string) => (item: string) => {
+  const path = getRoutePath(activeService, item);
+  Router.push(path);
+};
+
+function adminMenuItem(activeService: string): MenuItem {
+  return activeService === claim
+    ? { name: "ClaimTypes", id: "types" }
+    : { name: "Service", id: "service" };
+}
+
+function useSetService(service: string): string {
+  const location = useLocation();
+  if (!location.hostname) {
+    return service;
+  }
+  const pathName = location && location.pathname.substring(1);
+  return pathName && pathName.includes(claim) ? claim : service;
 }
 
 function NavbarMenu(props: Props) {
   const { user } = props;
   const role = user && user.role;
-  const loggedInMenu =
+
+  const service = useSetService(props.service);
+
+  const loggedInMenu: MenuItem[] =
     role !== AGENT
-      ? [{ name: "Evaluation", id: "evaluation" }, ...defaultMenu]
+      ? [{ name: "Evaluation", id: evaluation }, ...defaultMenu]
       : defaultMenu;
-  const items =
-    role === ADMIN
-      ? [...loggedInMenu, { name: "Service", id: "service" }]
-      : loggedInMenu;
+
+  const items: MenuItem[] =
+    role === ADMIN ? [...loggedInMenu, adminMenuItem(service)] : loggedInMenu;
+
   const widths = items.length as SemanticWIDTHS;
   return (
     <div>
       {user ? (
         <NavMenu
-          activeItem="evaluation"
-          setActiveMenuItem={setActiveMenuItem}
+          activeItem={evaluation}
+          setActiveMenuItem={setActiveMenuItem(service)}
           items={items}
           alignment={horizontal}
           widths={widths}
@@ -51,7 +82,11 @@ function NavbarMenu(props: Props) {
   );
 }
 
-const mapStateToProps = ({ login: { profile } }: AppState) => ({
+const mapStateToProps = ({
+  login: { profile },
+  service: { active }
+}: AppState) => ({
+  service: active,
   user: profile
 });
 

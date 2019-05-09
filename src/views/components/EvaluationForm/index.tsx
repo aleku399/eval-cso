@@ -134,8 +134,7 @@ export default class EvaluationForm extends React.Component<Props, State> {
 
   public handleChange = async (_event, { name, checked }): Promise<void> => {
     const parameterValue = name;
-    const isChecked = checked;
-    const parameters = isChecked
+    const parameters = checked
       ? [...this.state.evaluation.parameters, parameterValue]
       : this.state.evaluation.parameters;
     const evaluation = { ...this.state.evaluation, parameters };
@@ -186,7 +185,7 @@ export default class EvaluationForm extends React.Component<Props, State> {
           ...this.state.evaluation,
           service: this.props.service,
           evaluator: this.props.evaluator,
-          customerTel: Number(this.state.evaluation.customerTel),
+          customerTel: this.state.evaluation.customerTel,
           date: date.toISOString()
         },
         parameters
@@ -195,7 +194,10 @@ export default class EvaluationForm extends React.Component<Props, State> {
         .onSubmit(payload)
         .then(response => {
           if (response.data.id) {
-            this.setState({ loading: false, feedback: "Added new evaluation" });
+            this.setState({
+              loading: false,
+              feedback: "Added New Claim Evaluation"
+            });
             this.clearInput();
           }
         })

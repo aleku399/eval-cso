@@ -1,7 +1,6 @@
+const commonReasons = ["inquiry", "claims"];
+
 export const reasons = {
-  basicReasons: ["inquiry", "claims"],
-  reasons: {
-    call: this.basicReasons,
-    sms: [this.basicReasons, "sms inquiry"]
-  }
+  call: commonReasons,
+  sms: [commonReasons, "sms inquiry"]
 };

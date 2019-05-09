@@ -257,10 +257,9 @@ export default class UpdateServiceType extends React.PureComponent<
         <Header
           as="h3"
           textAlign="center"
-          style={{ textTransform: "capitalize" }}
-        >
-          {this.props.serviceType} Service
-        </Header>
+          block={true}
+          content={`Update ${this.props.serviceType} Service`}
+        />
         <Form
           loading={this.state.loading}
           error={!!this.state.error}

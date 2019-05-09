@@ -14,7 +14,8 @@ const items = [
   { name: "SMS", id: "sms" },
   { name: "Email", id: "email" },
   { name: "Whatsapp", id: "whatsapp" },
-  { name: "Web", id: "web" }
+  { name: "Web", id: "web" },
+  { name: "Claim", id: "claim" }
 ];
 
 interface Props {
@@ -24,7 +25,7 @@ interface Props {
 
 const setActiveAndRoute = (setService: SetActiveMenuItem) => (item: string) => {
   setService(item);
-  return Router.push("/");
+  return item === "claim" ? Router.push("/claim") : Router.push("/");
 };
 
 function ServicesMenu(props: Props) {
