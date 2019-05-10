@@ -74,7 +74,7 @@ function CreateClaim(props: Props) {
       error={props.error || error}
       agents={agents}
       loading={props.loading && loading}
-      evaluator={props.evaluator.userName}
+      evaluator={props.evaluator}
       onSubmit={createClaim(props.jwt)}
     />
   );

@@ -77,7 +77,7 @@ function CreateEvaluation(props: Props) {
       error={props.error || error}
       agents={agents}
       loading={props.loading && loading}
-      evaluator={props.evaluator.userName}
+      evaluator={props.evaluator}
       onSubmit={createEvaluation(props.jwt)}
       reasons={reasons[props.service]}
     />

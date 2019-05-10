@@ -12,7 +12,7 @@ import {
 import { mkOptionsFromUser } from "../../../lib/helper";
 import SearchableDropdown from "../SearchableDropdown";
 import { ParameterCategory } from "../UpdateServiceType";
-import { Profile } from "../UserProfile";
+import { ADMIN, Profile } from "../UserProfile";
 
 export interface Parameter {
   name: string;
@@ -61,7 +61,7 @@ export interface Props {
   loading?: boolean;
   error?: string;
   service: string;
-  evaluator: string;
+  evaluator: Profile;
   agents: Profile[];
   parameterCategories: ParameterCategory[];
   reasons: string[];
@@ -178,13 +178,15 @@ export default class EvaluationForm extends React.Component<Props, State> {
     if (this.validate()) {
       this.setState({ loading: true });
       const parameters = this.state.evaluation.parameters;
-      const date = new Date(this.state.evaluation.date);
+      const date = this.state.evaluation.date
+        ? new Date(this.state.evaluation.date)
+        : new Date();
 
       const payload: CreateEvaluation = {
         evalAttrs: {
           ...this.state.evaluation,
           service: this.props.service,
-          evaluator: this.props.evaluator,
+          evaluator: this.props.evaluator.userName,
           customerTel: this.state.evaluation.customerTel,
           date: date.toISOString()
         },
@@ -250,23 +252,30 @@ export default class EvaluationForm extends React.Component<Props, State> {
           />
         </Form.Group>
 
-        <Form.Group widths="equal">
-          <Form.Field inline={true}>
+        <Form.Group widths={this.props.evaluator.role === ADMIN ? "equal" : 8}>
+          <Form.Field
+            inline={true}
+            width={this.props.evaluator.role === ADMIN ? 16 : 8}
+          >
+            <label>Reasons</label>
             <SearchableDropdown
               placeholder="reason"
               name="reason"
+              fluid={true}
               values={this.props.reasons}
               onChange={this.handleDropDownInput}
             />
           </Form.Field>
-          <Form.Input
-            type="date"
-            name="date"
-            value={this.state.evaluation.date}
-            label="Submit date"
-            required={true}
-            onChange={this.handleInput}
-          />
+          {this.props.evaluator.role === ADMIN ? (
+            <Form.Input
+              type="date"
+              name="date"
+              value={this.state.evaluation.date}
+              label="Submit date"
+              required={true}
+              onChange={this.handleInput}
+            />
+          ) : null}
         </Form.Group>
         <Form.Group widths="equal">
           {this.renderReasons(this.props.parameterCategories)}

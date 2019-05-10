@@ -50,7 +50,7 @@ type CategoryMap = { [P in ParamCategoryName]: string };
 
 export const categories: CategoryMap = {
   deviation: "Reasons for deviation",
-  zeroRated: "Reasons for Zero rating"
+  zeroRated: "Reasons for zero rating"
 };
 
 export default class UpdateServiceType extends React.PureComponent<

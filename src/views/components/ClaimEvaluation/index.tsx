@@ -11,7 +11,7 @@ import {
 import { mkOptionsFromUser } from "../../../lib/helper";
 import SearchableDropdown from "../SearchableDropdown";
 import { ClaimType } from "../UpdateClaimTypes";
-import { Profile } from "../UserProfile";
+import { ADMIN, Profile } from "../UserProfile";
 
 interface Evaluation {
   claimType: string;
@@ -19,6 +19,7 @@ interface Evaluation {
   workflowNumber: number;
   agentName: string;
   comment: string;
+  date: string;
   allParametersMet: boolean;
 }
 
@@ -33,7 +34,7 @@ export type SubmitClaimEvaluation = (
 export interface Props {
   agents: Profile[];
   claimTypes: ClaimType[];
-  evaluator: string;
+  evaluator: Profile;
   onSubmit: SubmitClaimEvaluation;
   loading?: boolean;
   error?: string;
@@ -56,6 +57,7 @@ class ClaimEvaluation extends React.Component<Props, State> {
       claim: {
         claimType: "",
         details: "",
+        date: "",
         comment: "",
         workflowNumber: 0,
         agentName: "",
@@ -80,8 +82,16 @@ class ClaimEvaluation extends React.Component<Props, State> {
   public submitForm = async (): Promise<void> => {
     if (this.validate()) {
       this.setState({ loading: true });
+      const date = this.state.claim.date
+        ? new Date(this.state.claim.date)
+        : new Date();
+      const claim = {
+        ...this.state.claim,
+        evaluator: this.props.evaluator.userName,
+        date: date.toISOString()
+      };
       this.props
-        .onSubmit({ ...this.state.claim, evaluator: this.props.evaluator })
+        .onSubmit(claim)
         .then(response => {
           if (response.data.id) {
             this.setState({ loading: false, feedback: "Added new evaluation" });
@@ -194,7 +204,18 @@ class ClaimEvaluation extends React.Component<Props, State> {
             name={this.workflowNumber}
           />
         </Form.Field>
-
+        {this.props.evaluator.role === ADMIN ? (
+          <Form.Field>
+            <Form.Input
+              type="date"
+              name="date"
+              value={this.state.claim.date}
+              label="Submit date"
+              required={true}
+              onChange={this.handleInput}
+            />
+          </Form.Field>
+        ) : null}
         <Form.Field>
           <label>comment</label>
           <TextArea

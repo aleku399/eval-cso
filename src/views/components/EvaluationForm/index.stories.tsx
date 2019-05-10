@@ -2,14 +2,18 @@ import { action } from "@storybook/addon-actions";
 import { storiesOf } from "@storybook/react";
 import React from "react";
 import { categories } from "../UpdateServiceType";
-import { agent } from "../UserProfile/index.stories";
+import {
+  adminProfileA,
+  agent,
+  loggedInEvaluator
+} from "../UserProfile/index.stories";
 import EvaluationForm, { deviation, Props, zeroRated } from "./index";
 
 const props: Props = {
   onSubmit: action("submit"),
   loading: false,
   service: "Call",
-  evaluator: "allan",
+  evaluator: loggedInEvaluator,
   agents: [agent],
   reasons: ["Breach of confidentiality", "inquiry"],
   parameterCategories: [
@@ -52,7 +56,8 @@ const props: Props = {
   ]
 };
 
-storiesOf("components/EvaluationForm", module).add(
-  "Evaluation Data Form",
-  () => <EvaluationForm {...props} />
-);
+const adminProps = { ...props, evaluator: adminProfileA };
+
+storiesOf("components/EvaluationForm", module)
+  .add("with evaluator", () => <EvaluationForm {...props} />)
+  .add("with admin", () => <EvaluationForm {...adminProps} />);
