@@ -9,10 +9,12 @@ import { Profile } from "../UserProfile";
 export interface ClaimsSummaryData {
   claimTypes: string[];
   comments: string[];
+  agentName: string;
   branch: string;
   score: number;
   to: string;
   from: string;
+  supervisor: string;
 }
 
 export interface Props {
@@ -86,6 +88,7 @@ function aggregate(data: Claims[]): ClaimsSummaryData[] {
     return {
       agentName: values[0].agentName,
       branch: values[0].branch,
+      supervisor: values[0].supervisor,
       claimTypes: _.uniq(claimTypes),
       from,
       to,

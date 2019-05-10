@@ -25,7 +25,7 @@ export const agent: Profile = {
 export const agentB: Profile = {
   userName: "alex",
   email: "thanos_titan@gmail.com",
-  fullName: "Alex",
+  fullName: "Alex Lukwago",
   role: EVALUATOR
 };
 
@@ -75,7 +75,7 @@ export const loggedInEvaluator: Profile = {
 
 const branches = ["Nakawa", "Jinja", "Luzira"];
 
-export const users = [agentB, agent, agentC, loggedInEvaluator];
+export const users = [agentB, agent, agentC, loggedInEvaluator, adminProfileA];
 
 storiesOf("components/Profile", module).add(
   "Evaluator editing own Profile",

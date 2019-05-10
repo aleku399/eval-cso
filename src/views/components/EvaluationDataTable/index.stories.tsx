@@ -24,11 +24,6 @@ export const evalTestData = [
         category: zeroRated
       },
       {
-        name: "Null",
-        value: "Null",
-        category: deviation
-      },
-      {
         name: "confidentiality",
         value: "confidentiality",
         category: deviation
@@ -46,9 +41,7 @@ export const evalTestData = [
       date: "2019-04-13",
       evaluator: "simon",
       agentName: "thanos",
-      comment: `Acknowledge the customer, you should have verified to
-       confirm the customer details, failed to apologize for failure to
-       use the APP, did not probe enough to find out why the customer was failing to use the APP`,
+      comment: "failed to apologize for failure to",
       customerTel: 10,
       details: "wanted to know how much balance is left on his account",
       supervisor: "bob",
@@ -56,22 +49,12 @@ export const evalTestData = [
     },
     parameters: [
       {
-        name: "Null",
-        value: "Null",
-        category: zeroRated
-      },
-      {
-        name: "Acknowledgement",
-        value: "Acknowledgement",
-        category: deviation
-      },
-      {
-        name: "Null",
-        value: "Null",
+        name: "Very loud",
+        value: "very_loud",
         category: deviation
       }
     ],
-    score: 50
+    score: 80
   },
   {
     parameters: [

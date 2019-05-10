@@ -45,6 +45,47 @@ export interface Props {
   error?: string;
 }
 
+interface TableRowData {
+  row: EvaluationTableData;
+}
+
+const parameterCellFormatter = (accessor: ParamCategoryName) => ({
+  row
+}: TableRowData): JSX.Element => {
+  const list = row[accessor].map((param: ParameterAttrs) => (
+    <li key={param.name}>{param.name}</li>
+  ));
+  return <ul style={{ marginTop: "2px" }}>{list}</ul>;
+};
+
+const parameterCellFilter = (accessor: ParamCategoryName) => (
+  filter: { value: string },
+  row: EvaluationTableData
+): boolean => {
+  return row[accessor].some((param: ParameterAttrs) =>
+    param.name.toLowerCase().includes(filter.value)
+  );
+};
+
+export const parameterCategoryColumns = [
+  {
+    Header: "Reasons for Deviation",
+    width: 200,
+    accessor: deviation,
+    style: { whiteSpace: "unset" },
+    Cell: parameterCellFormatter(deviation),
+    filterMethod: parameterCellFilter(deviation)
+  },
+  {
+    Header: "Reasons for Zero Rating",
+    width: 200,
+    accessor: zeroRated,
+    style: { whiteSpace: "unset" },
+    Cell: parameterCellFormatter(zeroRated),
+    filterMethod: parameterCellFilter(zeroRated)
+  }
+];
+
 const columns: ColumnRowsOpt[] = [
   {
     Header: "Data View",
@@ -69,41 +110,7 @@ const columns: ColumnRowsOpt[] = [
         style: { whiteSpace: "unset" },
         width: 200
       },
-      {
-        Header: "Reasons for Deviation",
-        width: 200,
-        accessor: deviation,
-        style: { whiteSpace: "unset" },
-        id: "deviation",
-        Cell: ({ row }) => {
-          const list = row.deviation.map((z: ParameterAttrs) => (
-            <li key={z.name}>{z.name}</li>
-          ));
-          return <ul style={{ marginTop: "2px" }}>{list}</ul>;
-        },
-        filterMethod: (filter, row) => {
-          return row.deviation.some(x =>
-            x.toLowerCase().includes(filter.value)
-          );
-        }
-      },
-      {
-        Header: "Reasons for Zero Rating",
-        width: 200,
-        accessor: zeroRated,
-        style: { whiteSpace: "unset" },
-        Cell: ({ row }) => {
-          const list = row.zeroRated.map((z: ParameterAttrs) => (
-            <li key={z.name}>{z.name}</li>
-          ));
-          return <ul style={{ marginTop: "2px" }}>{list}</ul>;
-        },
-        filterMethod: (filter, row) => {
-          return row.zeroRated.some(x =>
-            x.toLowerCase().includes(filter.value)
-          );
-        }
-      },
+      ...parameterCategoryColumns,
       {
         Header: "Comment",
         accessor: "comment",

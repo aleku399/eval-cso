@@ -17,7 +17,7 @@ interface Props {
   value?: string;
 }
 
-function makeOptions(values: string[]): DropdownItemProps[] {
+export function makeOptions(values: string[]): DropdownItemProps[] {
   return values.map(value => ({
     text: upperFirst(value),
     key: value,

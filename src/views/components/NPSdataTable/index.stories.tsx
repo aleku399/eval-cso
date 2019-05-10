@@ -1,18 +1,11 @@
 import { storiesOf } from "@storybook/react";
 import React from "react";
-import {
-  agent,
-  agentB,
-  agentC,
-  loggedInEvaluator
-} from "../UserProfile/index.stories";
+import { loggedInEvaluator, users } from "../UserProfile/index.stories";
 import NPSdataTable from "./index";
 
-const users = [agentB, agent, agentC, loggedInEvaluator];
-
-const testData = [
+export const testNpsData = [
   {
-    date: "2016-05-17",
+    date: "2019-05-01",
     evaluator: "alex",
     agentName: "thanos",
     customerName: "wax",
@@ -23,17 +16,36 @@ const testData = [
     duration: "10 mins",
     issueResolved: false,
     furtherInformationGiven: true,
-    rating: 5,
+    rating: 9,
     ratingReason: "good reception",
     crmCaptureCorrect: true,
     crmCapturedReason: "potential customer",
-    frontLineRatingReason: "Good/ Positive CSO appearance",
-    backOfficeReason: "Good Office Ambience",
-    comment: "comment",
-    score: 40
+    frontLineRatingReasons: ["Good/ Positive CSO appearance"],
+    backOfficeReasons: ["Good Office Ambience"],
+    comment: "comment"
   },
   {
-    date: "2017-04-13",
+    date: "2019-03-02",
+    evaluator: "steve",
+    agentName: "alex",
+    customerName: "wax",
+    customerTel: 6358376,
+    touchPoint: "Call",
+    reason: "call",
+    waitTime: "5 mins",
+    duration: "10 mins",
+    issueResolved: false,
+    furtherInformationGiven: true,
+    rating: 7,
+    ratingReason: "good reception",
+    crmCaptureCorrect: true,
+    crmCapturedReason: "potential customer",
+    frontLineRatingReasons: ["Good/ Positive CSO appearance"],
+    backOfficeReasons: ["Good Office Ambience"],
+    comment: "comment"
+  },
+  {
+    date: "2019-04-13",
     evaluator: "simon",
     agentName: "thanos",
     customerName: "zilla",
@@ -48,13 +60,12 @@ const testData = [
     ratingReason: "good reception",
     crmCaptureCorrect: true,
     crmCapturedReason: "fair customer",
-    frontLineRatingReason: "Poor/ Negative CSO appearance",
-    backOfficeReason: "Poor Office Ambience",
-    comment: "comment",
-    score: 10
+    frontLineRatingReasons: ["Poor/ Negative CSO appearance"],
+    backOfficeReasons: ["Poor Office Ambience"],
+    comment: "comment"
   },
   {
-    date: "2016-05-17",
+    date: "2019-02-17",
     evaluator: "aleku399",
     agentName: "thanos",
     customerName: "allan",
@@ -69,13 +80,12 @@ const testData = [
     ratingReason: "poor reception",
     crmCaptureCorrect: true,
     crmCapturedReason: "potential customer",
-    frontLineRatingReason: "Good/ Positive CSO Attitude",
-    backOfficeReason: "Easy finding and recognizing",
-    score: 120,
+    frontLineRatingReasons: ["Good/ Positive CSO Attitude"],
+    backOfficeReasons: ["Easy finding and recognizing"],
     comment: "comment"
   }
 ];
 
 storiesOf("components/NPSdataTable", module).add("default", () => (
-  <NPSdataTable users={users} data={testData} loggedIn={loggedInEvaluator} />
+  <NPSdataTable users={users} data={testNpsData} loggedIn={loggedInEvaluator} />
 ));

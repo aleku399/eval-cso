@@ -1,6 +1,7 @@
 import * as React from "react";
 import "react-table/react-table.css";
 import DataTable, { ColumnRowsOpt, TableData } from "../DataTable";
+import { listCellFormatter, listFilterMethod } from "../SummaryEvalTable";
 import { Profile } from "../UserProfile";
 
 export interface NPS extends TableData {
@@ -16,8 +17,8 @@ export interface NPS extends TableData {
   ratingReason: string;
   crmCaptureCorrect: boolean;
   crmCapturedReason: string;
-  frontLineRatingReason: string;
-  backOfficeReason: string;
+  frontLineRatingReasons: string[];
+  backOfficeReasons: string[];
 }
 
 export interface Props {
@@ -93,23 +94,25 @@ const columns: ColumnRowsOpt[] = [
         accessor: "crmCapturedReason"
       },
       {
-        Header: "Front Line Rating Reason",
-        accessor: "frontLineRatingReason"
+        Header: "Front Line Rating Reasons",
+        width: 100,
+        accessor: "frontLineRatingReasons",
+        style: { whiteSpace: "unset" },
+        Cell: listCellFormatter("frontLineRatingReasons"),
+        filterMethod: listFilterMethod("frontLineRatingReasons")
       },
       {
         Header: "Back Office Reason",
-        accessor: "backOfficeReason"
+        style: { whiteSpace: "unset" },
+        accessor: "backOfficeReasons",
+        Cell: listCellFormatter("backOfficeReasons"),
+        filterMethod: listFilterMethod("backOfficeReasons")
       },
       {
         Header: "Comment",
         accessor: "comment",
         style: { whiteSpace: "unset" },
         width: 200
-      },
-      {
-        Header: "Score",
-        id: "score",
-        accessor: "score"
       }
     ]
   }
@@ -119,6 +122,7 @@ export default function NPSdataTable(props: Props) {
   return (
     <DataTable
       data={props.data}
+      isNpsTable={true}
       users={props.users}
       columns={columns}
       loggedIn={props.loggedIn}

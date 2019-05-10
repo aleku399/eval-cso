@@ -6,14 +6,10 @@ import {
   Evaluation,
   EvaluationData,
   EvaluationTableData,
-  getEvaluationTableData
+  getEvaluationTableData,
+  parameterCategoryColumns
 } from "../EvaluationDataTable";
-import {
-  deviation,
-  ParamCategoryName,
-  Parameter,
-  zeroRated
-} from "../EvaluationForm";
+import { ParamCategoryName, Parameter } from "../EvaluationForm";
 import { Profile } from "../UserProfile";
 
 export interface ParameterAttrs extends Parameter {
@@ -33,6 +29,7 @@ interface EvalSummaryData {
   zeroRated: ParameterAttrs[];
   deviation: ParameterAttrs[];
   comments: string[];
+  supervisor: string;
   branch: string;
   score: number;
   to: string;
@@ -47,6 +44,29 @@ interface DateWithTime {
   date: string;
   time: number;
 }
+
+export interface TableRowWithList {
+  row: { [field: string]: string[] };
+}
+
+export const listCellFormatter = (accessor: string) => ({
+  row
+}: TableRowWithList): JSX.Element => {
+  const list = row[accessor].map((item: string) => (
+    <li key={item.split(" ")[0]}>{item}</li>
+  ));
+  return <ul style={{ marginTop: "2px" }}>{list}</ul>;
+};
+
+export const listFilterMethod = (accessor: string) => (
+  filter: { value: string },
+  row: { [field: string]: string[] }
+): boolean => {
+  return row[accessor].some((item: string) =>
+    item.toLowerCase().startsWith(filter.value)
+  );
+};
+
 const columns: ColumnRowsOpt[] = [
   {
     Header: "Summary View",
@@ -60,53 +80,10 @@ const columns: ColumnRowsOpt[] = [
         width: 200,
         accessor: "comments",
         style: { whiteSpace: "unset" },
-        Cell: ({ row }) => {
-          const list = row.comments.map((comment: string) => (
-            <li key={comment.split(" ")[0]}>{comment}</li>
-          ));
-          return <ul style={{ marginTop: "2px" }}>{list}</ul>;
-        },
-        filterMethod: (filter, row) => {
-          return row.comments.some((comment: string) =>
-            comment.toLowerCase().startsWith(filter.value)
-          );
-        }
+        Cell: listCellFormatter("comments"),
+        filterMethod: listFilterMethod("comments")
       },
-      {
-        Header: "Reasons for Deviation",
-        width: 200,
-        accessor: deviation,
-        style: { whiteSpace: "unset" },
-        id: "deviation",
-        Cell: ({ row }) => {
-          const list = row.deviation.map((z: ParameterAttrs) => (
-            <li key={z.name}>{z.name}</li>
-          ));
-          return <ul style={{ marginTop: "2px" }}>{list}</ul>;
-        },
-        filterMethod: (filter, row) => {
-          return row.deviation.some(x =>
-            x.toLowerCase().includes(filter.value)
-          );
-        }
-      },
-      {
-        Header: "Reasons for Zero Rating",
-        width: 200,
-        accessor: zeroRated,
-        style: { whiteSpace: "unset" },
-        Cell: ({ row }) => {
-          const list = row.zeroRated.map((z: ParameterAttrs) => (
-            <li key={z.name}>{z.name}</li>
-          ));
-          return <ul style={{ marginTop: "2px" }}>{list}</ul>;
-        },
-        filterMethod: (filter, row) => {
-          return row.zeroRated.some(x =>
-            x.toLowerCase().includes(filter.value)
-          );
-        }
-      },
+      ...parameterCategoryColumns,
       {
         Header: "Score",
         id: "score",
@@ -146,7 +123,8 @@ function aggregate(data: EvaluationTableData[]): EvalSummaryData[] {
         to,
         score,
         comments,
-        branch: values[0].branch
+        branch: values[0].branch,
+        supervisor: values[0].supervisor
       };
     }
   );

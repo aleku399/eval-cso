@@ -4,7 +4,7 @@ import { CSVLink } from "react-csv";
 import ReactTable, { Column, Filter } from "react-table";
 import "react-table/react-table.css";
 import { Button, DropdownItemProps, Form, Message } from "semantic-ui-react";
-import SearchableDropdown from "../SearchableDropdown";
+import SearchableDropdown, { makeOptions } from "../SearchableDropdown";
 import { AGENT, EVALUATOR, Profile } from "../UserProfile";
 
 export interface ColumnRowsOpt {
@@ -17,14 +17,16 @@ export interface TableData {
   agentName: string;
   evaluator: string;
   comment: string;
-  score: number;
+  score?: number;
   branch?: string;
   supervisor?: string;
   from?: string;
   to?: string;
 }
 
-type InputData<T> = Array<T & TableData>;
+type InputDataObj<T> = T & TableData;
+
+type InputData<T> = Array<InputDataObj<T>>;
 
 export type AggregateFn<T, S = any> = (data: InputData<T>) => S[];
 
@@ -34,6 +36,7 @@ export interface Props<T, S = any> {
   loggedIn: Profile;
   loading?: boolean;
   isSummaryTable?: boolean;
+  isNpsTable?: boolean;
   aggregate?: AggregateFn<T, S>;
   error?: string;
   columns: ColumnRowsOpt[];
@@ -51,6 +54,8 @@ export interface State<T> {
   branchSearch: string;
   supervisors: string[];
   supervisorSearch: string;
+  agentSearch: string;
+  agentOptions: DropdownItemProps[];
   from: string;
   to: string;
   dataToDownload: Array<DownloadData<T>>;
@@ -58,15 +63,8 @@ export interface State<T> {
 }
 
 const allEvaluators = "All Evaluators";
-
-const evaluatorAllOption: DropdownItemProps = {
-  key: allEvaluators,
-  text: allEvaluators,
-  value: allEvaluators
-};
-
+const allAgents = "All Agents";
 const allBranches = "All Service Points";
-
 const allSupervisors = "All Supervisors";
 
 export default class DataTable<T, S> extends React.Component<
@@ -75,19 +73,22 @@ export default class DataTable<T, S> extends React.Component<
 > {
   private reactTable: React.RefObject<any>;
   private csvLink: React.RefObject<any>;
+  private branchField: string = this.props.isNpsTable ? "touchPoint" : "branch";
 
   constructor(props: Props<T, S>) {
     super(props);
     this.state = {
       evaluatorOptions: this.evaluatorSearchOptions(),
       evaluatorSearch: this.getDefaultEvaluatorSearch(),
+      agentOptions: this.agentSearchOptions(),
+      agentSearch: allAgents,
       branches: this.getBranches(),
       branchSearch: allBranches,
       supervisors: this.getSupervisors(),
       supervisorSearch: allSupervisors,
       data: this.initialData(this.props.data),
       page: 0,
-      pageSize: 10,
+      pageSize: this.isNpsSummaryTable() ? 1 : 10,
       filtered: [],
       from: "2019-01-01",
       to: this.todayDate(),
@@ -106,6 +107,8 @@ export default class DataTable<T, S> extends React.Component<
         data: this.initialData(this.props.data),
         branches: this.getBranches(),
         supervisors: this.getSupervisors(),
+        agentOptions: this.agentSearchOptions(),
+        agentSearch: allAgents,
         evaluatorOptions: this.evaluatorSearchOptions(),
         evaluatorSearch: this.getDefaultEvaluatorSearch()
       });
@@ -126,7 +129,7 @@ export default class DataTable<T, S> extends React.Component<
   }
 
   public getBranches(): string[] {
-    const branches = _.uniq(this.props.data.map(obj => obj.branch));
+    const branches = _.uniq(this.props.data.map(obj => obj[this.branchField]));
     return [allBranches, ...branches];
   }
 
@@ -137,6 +140,10 @@ export default class DataTable<T, S> extends React.Component<
 
   public agentData(data: InputData<T>): InputData<T> {
     return data.filter(obj => obj.agentName === this.props.loggedIn.userName);
+  }
+
+  public isNpsSummaryTable() {
+    return this.props.isNpsTable && this.props.isSummaryTable;
   }
 
   public addFullNames(data: InputData<T>): InputData<T> {
@@ -185,6 +192,14 @@ export default class DataTable<T, S> extends React.Component<
       : data;
   }
 
+  public searchByAgent(data: InputData<T>): InputData<T> {
+    return this.state.agentSearch !== allAgents
+      ? data.filter(row => {
+          return row.agentName.includes(this.state.agentSearch);
+        })
+      : data;
+  }
+
   public searchBySupervisor(data: InputData<T>): InputData<T> {
     return this.state.supervisorSearch !== allSupervisors
       ? data.filter(row => {
@@ -196,7 +211,7 @@ export default class DataTable<T, S> extends React.Component<
   public searchByBranch(data: InputData<T>): InputData<T> {
     return this.state.branchSearch !== allBranches
       ? data.filter(row => {
-          return row.branch.includes(this.state.branchSearch);
+          return row[this.branchField].includes(this.state.branchSearch);
         })
       : data;
   }
@@ -217,22 +232,62 @@ export default class DataTable<T, S> extends React.Component<
     });
   }
 
-  public evaluatorSearchOptions(): DropdownItemProps[] {
+  public userSearchOptions(
+    userType: string,
+    allSearchValue: string
+  ): DropdownItemProps[] {
+    const allSearchOption = makeOptions([allSearchValue]);
     if (!this.props.users.length) {
-      return [evaluatorAllOption];
+      return allSearchOption;
     }
-    const evaluators = this.props.data.map(obj => this.getUser(obj.evaluator));
-    const evalOptions: DropdownItemProps[] = evaluators.map(user => ({
+    const users: Profile[] = _.uniqBy(
+      this.props.data.map(obj => this.getUser(obj[userType])),
+      "value"
+    );
+
+    const userOptions: DropdownItemProps[] = users.map(user => ({
       key: user.userName,
       value: user.fullName,
       text: user.fullName
     }));
 
-    const allOptions: DropdownItemProps[] = [
-      ...evalOptions,
-      evaluatorAllOption
-    ];
-    return _.uniqBy(allOptions, "value");
+    const options = [...allSearchOption, ...userOptions];
+    return options;
+  }
+
+  public agentSearchOptions(): DropdownItemProps[] {
+    return this.userSearchOptions("agentName", allAgents);
+  }
+
+  public evaluatorSearchOptions(): DropdownItemProps[] {
+    const options = this.userSearchOptions("evaluator", allEvaluators);
+    const loggedInUser = this.props.loggedIn;
+    return loggedInUser.role === EVALUATOR
+      ? _.uniqBy(
+          [
+            ...options,
+            {
+              key: loggedInUser.userName,
+              value: loggedInUser.fullName,
+              text: loggedInUser.fullName
+            }
+          ],
+          "value"
+        )
+      : options;
+  }
+
+  public toCSVDataObj(obj: InputDataObj<T>): { [field: string]: string } {
+    return _.mapValues(obj, value => {
+      if (Array.isArray(value)) {
+        return value
+          .map(valueObj =>
+            valueObj.name ? valueObj.name : valueObj.toString()
+          )
+          .join(",\n");
+      }
+      return value.toString();
+    });
   }
 
   public download = () => {
@@ -240,15 +295,10 @@ export default class DataTable<T, S> extends React.Component<
       .sortedData;
 
     const dataToDownload: Array<DownloadData<T>> = currentRecords.map(
-      (obj: { _original: InputData<T> }) => {
+      (obj: { _original: InputDataObj<T> }) => {
         const requiredObj = obj._original;
 
-        return _.mapValues(requiredObj, value => {
-          if (Array.isArray(value)) {
-            return value.map(valueObj => valueObj.name).join(",\n");
-          }
-          return value;
-        });
+        return this.toCSVDataObj(requiredObj);
       }
     );
 
@@ -258,12 +308,28 @@ export default class DataTable<T, S> extends React.Component<
     });
   };
 
-  public renderedData() {
+  public downloadAggregateSource = () => {
+    const sortedData = this.getSortedData().map(obj => {
+      return this.toCSVDataObj(obj);
+    });
+
+    this.setState({ dataToDownload: sortedData }, () => {
+      this.csvLink.current.link.click();
+    });
+  };
+
+  public getSortedData() {
     const sortedData = this.searchByDate(
       this.searchByBranch(
         this.searchBySupervisor(this.searchByEvaluator(this.state.data))
       )
     );
+
+    return this.props.isNpsTable ? this.searchByAgent(sortedData) : sortedData;
+  }
+
+  public renderedData() {
+    const sortedData = this.getSortedData();
 
     return this.props.isSummaryTable
       ? this.props.aggregate(sortedData)
@@ -282,6 +348,18 @@ export default class DataTable<T, S> extends React.Component<
         />
         <Form>
           <Form.Group widths="equal">
+            {this.isNpsSummaryTable() ? (
+              <Form.Field inline={true}>
+                <label>Agents</label>
+                <SearchableDropdown
+                  value={this.state.agentSearch}
+                  name="evaluatorSearch"
+                  options={this.state.agentOptions}
+                  placeholder="Agent"
+                  onChange={this.handleDropdownInput}
+                />
+              </Form.Field>
+            ) : null}
             <Form.Field inline={true}>
               <label>Evaluators</label>
               <SearchableDropdown
@@ -344,7 +422,7 @@ export default class DataTable<T, S> extends React.Component<
           onPageChange={this.onPageChange}
           onPageSizeChange={this.onPageSizeChange}
           onFilteredChange={this.onFilterChange}
-          defaultPageSize={10}
+          defaultPageSize={this.isNpsSummaryTable() ? 1 : 10}
           className="-striped -highlight"
         />
         <CSVLink
@@ -354,7 +432,20 @@ export default class DataTable<T, S> extends React.Component<
           ref={this.csvLink}
           target="_blank"
         />
-        <Button onClick={this.download}>Download CSV</Button>
+        <Form style={{ paddingTop: "1rem" }}>
+          <Form.Group>
+            <Form.Field inline={true}>
+              <Button onClick={this.download}>Download Table Data</Button>
+            </Form.Field>
+            {this.props.isSummaryTable ? (
+              <Form.Field inline={true}>
+                <Button onClick={this.downloadAggregateSource}>
+                  Download Source Data
+                </Button>
+              </Form.Field>
+            ) : null}
+          </Form.Group>
+        </Form>
       </div>
     );
   }
