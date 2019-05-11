@@ -38,7 +38,7 @@ class LoginForm extends React.Component<Props, Credentials> {
       password: this.state.password
     });
     if (this.props.userName && !process.env.STORYBOOK) {
-      return Router.Router.pushRoute(`/user/${this.props.userName}`);
+      return Router.pushRoute(`/user/${this.props.userName}`);
     }
   };
 
