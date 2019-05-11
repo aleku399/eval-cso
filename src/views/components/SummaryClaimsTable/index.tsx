@@ -81,8 +81,8 @@ function aggregate(data: Claims[]): ClaimsSummaryData[] {
   const aggregatedByAgent = _.mapValues(groupedByAgent, (values: Claims[]) => {
     const score = _.round(_.meanBy(values, value => value.score), 2);
 
-    const comments = _.flatten(values.map(value => value.comment));
-    const claimTypes = _.flatten(values.map(value => value.claimType));
+    const comments = _.uniq(_.flatten(values.map(value => value.comment)));
+    const claimTypes = _.uniq(_.flatten(values.map(value => value.claimType)));
     const { from, to } = getDateRange(values.map(value => value.date));
 
     return {

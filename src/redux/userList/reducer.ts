@@ -7,7 +7,7 @@ import {
 } from "./action";
 
 const initialState: UserListState = {
-  loading: false,
+  loading: true,
   users: []
 };
 

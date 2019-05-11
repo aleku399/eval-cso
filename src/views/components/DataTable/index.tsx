@@ -100,8 +100,8 @@ export default class DataTable<T, S> extends React.Component<
 
   public componentDidUpdate(prevProps: Props<T>) {
     if (
-      prevProps.loading !== this.props.loading ||
-      prevProps.data !== this.props.data
+      prevProps.data !== this.props.data ||
+      prevProps.users !== this.props.users
     ) {
       this.setState({
         data: this.initialData(this.props.data),
@@ -147,6 +147,9 @@ export default class DataTable<T, S> extends React.Component<
   }
 
   public addFullNames(data: InputData<T>): InputData<T> {
+    if (!this.props.users.length) {
+      return data;
+    }
     const usersMap = _.groupBy(this.props.users, user => user.userName);
     return data.map(obj => {
       const agentFullName = usersMap[obj.agentName][0].fullName;
@@ -346,7 +349,7 @@ export default class DataTable<T, S> extends React.Component<
           header="Evaluation data view Error"
           content={this.props.error}
         />
-        <Form>
+        <Form loading={this.props.loading}>
           <Form.Group widths="equal">
             {this.isNpsSummaryTable() ? (
               <Form.Field inline={true}>

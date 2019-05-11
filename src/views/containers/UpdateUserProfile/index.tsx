@@ -121,7 +121,8 @@ class UpdateUserProfile extends React.Component<Props, State> {
     profile: ProfileUpdate
   ): Promise<AxiosResponse<any>> => {
     const httpRequest = authAxios(this.props.jwt);
-    if (profile.agent.supervisor || profile.agent.branch) {
+
+    if (profile.user.role === AGENT) {
       await httpRequest.put(`${agentApi}${profile.userName}`, profile.agent);
     }
 

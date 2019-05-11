@@ -54,7 +54,6 @@ function UserSideBar(props: Props) {
     <NavMenu
       setActiveMenuItem={setActiveMenuItem}
       items={items}
-      activeItem={items[0].id}
       header="Users"
       alignment={vertical}
     />

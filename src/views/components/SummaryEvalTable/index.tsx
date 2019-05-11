@@ -112,7 +112,7 @@ function aggregate(data: EvaluationTableData[]): EvalSummaryData[] {
 
       const deviationArr = _.flatten(values.map(value => value.deviation));
       const zeroRatedArr = _.flatten(values.map(value => value.zeroRated));
-      const comments = _.flatten(values.map(value => value.comment));
+      const comments = _.uniq(_.flatten(values.map(value => value.comment)));
       const { from, to } = getDateRange(values.map(value => value.date));
 
       return {

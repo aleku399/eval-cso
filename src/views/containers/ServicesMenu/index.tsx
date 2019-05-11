@@ -2,21 +2,13 @@ import Router from "next/router";
 import React from "react";
 import { connect } from "react-redux";
 import { AnyAction, bindActionCreators, Dispatch } from "redux";
+import { serviceMenuItems } from "../../../lib/serviceData";
 import { AppState } from "../../../redux/reducers";
 import {
   changeService,
   ChangeServiceFn
 } from "../../../redux/services/actions";
 import NavMenu, { SetActiveMenuItem, vertical } from "../../components/NavMenu";
-
-const items = [
-  { name: "Call", id: "call" },
-  { name: "SMS", id: "sms" },
-  { name: "Email", id: "email" },
-  { name: "Whatsapp", id: "whatsapp" },
-  { name: "Web", id: "web" },
-  { name: "Claim", id: "claim" }
-];
 
 interface Props {
   setActiveMenuItem: SetActiveMenuItem;
@@ -33,7 +25,7 @@ function ServicesMenu(props: Props) {
     <NavMenu
       activeItem={props.activeItem}
       setActiveMenuItem={setActiveAndRoute(props.setActiveMenuItem)}
-      items={items}
+      items={serviceMenuItems}
       header="Services"
       alignment={vertical}
     />

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Container, Grid, Loader } from "semantic-ui-react";
+import { Container, Grid } from "semantic-ui-react";
 import ErrorBoundary from "../../components/ErrorBoundary";
 import NavBar from "../../containers/NavBar";
 import ServicesMenu from "../../containers/ServicesMenu";
@@ -22,7 +22,7 @@ const Layout = ({ children }) => (
             </Grid.Row>
             <Grid.Row>
               <section style={{ paddingTop: "2rem" }}>
-                {isServer ? <Loader active={true} /> : children}
+                {isServer ? null : children}
               </section>
             </Grid.Row>
           </Container>

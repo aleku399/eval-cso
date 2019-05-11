@@ -258,7 +258,7 @@ export default class UpdateServiceType extends React.PureComponent<
           as="h3"
           textAlign="center"
           block={true}
-          content={`Update ${this.props.serviceType} Service`}
+          content={`Update ${this.props.serviceType} service parameters`}
         />
         <Form
           loading={this.state.loading}

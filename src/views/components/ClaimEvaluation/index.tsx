@@ -94,7 +94,10 @@ class ClaimEvaluation extends React.Component<Props, State> {
         .onSubmit(claim)
         .then(response => {
           if (response.data.id) {
-            this.setState({ loading: false, feedback: "Added new evaluation" });
+            this.setState({
+              loading: false,
+              feedback: "Added new claim evaluation"
+            });
             this.clearInput();
           }
         })

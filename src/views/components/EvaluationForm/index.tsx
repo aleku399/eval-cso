@@ -198,7 +198,7 @@ export default class EvaluationForm extends React.Component<Props, State> {
           if (response.data.id) {
             this.setState({
               loading: false,
-              feedback: "Added New Claim Evaluation"
+              feedback: `Added new  ${this.props.service} evaluation`
             });
             this.clearInput();
           }

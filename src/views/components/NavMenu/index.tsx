@@ -18,7 +18,7 @@ export interface Props {
   header?: string;
   widths?: SemanticWIDTHS;
   alignment?: Alignment;
-  activeItem: string;
+  activeItem?: string;
   setActiveMenuItem: SetActiveMenuItem;
 }
 

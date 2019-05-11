@@ -1,6 +1,7 @@
 import _ from "lodash";
 import * as React from "react";
 import "react-table/react-table.css";
+import { getFormattedDate } from "../../../lib/helper";
 import DataTable, { ColumnRowsOpt, TableData } from "../DataTable";
 import {
   deviation,
@@ -49,6 +50,13 @@ interface TableRowData {
   row: EvaluationTableData;
 }
 
+export const dateCellFormatter = (accessor: string = "date") => ({
+  row
+}: TableRowData): string => {
+  const utcDate = row[accessor];
+  return getFormattedDate(utcDate);
+};
+
 const parameterCellFormatter = (accessor: ParamCategoryName) => ({
   row
 }: TableRowData): JSX.Element => {
@@ -93,7 +101,8 @@ const columns: ColumnRowsOpt[] = [
       {
         Header: "Date",
         accessor: "date",
-        filterable: false
+        filterable: false,
+        Cell: dateCellFormatter()
       },
       {
         Header: "Agent Name",

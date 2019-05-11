@@ -2,6 +2,7 @@ import _ from "lodash";
 import * as React from "react";
 import "react-table/react-table.css";
 import DataTable, { ColumnRowsOpt, TableData } from "../DataTable";
+import { dateCellFormatter } from "../EvaluationDataTable";
 import { Profile } from "../UserProfile";
 
 export interface Claims extends TableData {
@@ -27,7 +28,8 @@ const columns: ColumnRowsOpt[] = [
       {
         Header: "Date",
         accessor: "date",
-        filterable: false
+        filterable: false,
+        Cell: dateCellFormatter()
       },
       {
         Header: "Agent Name",

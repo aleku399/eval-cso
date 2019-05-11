@@ -6,7 +6,13 @@ import useLocation from "react-use/lib/useLocation";
 import { SemanticWIDTHS } from "semantic-ui-react";
 import { AppState } from "../../../redux/reducers";
 import NavMenu, { horizontal, MenuItem } from "../../components/NavMenu";
-import { ADMIN, AGENT, Profile } from "../../components/UserProfile";
+import {
+  ADMIN,
+  AGENT,
+  EVALUATOR,
+  Profile,
+  Role
+} from "../../components/UserProfile";
 
 const defaultMenu = [
   { name: "Data", id: "data" },
@@ -36,26 +42,33 @@ const setActiveMenuItem = (activeService: string) => (item: string) => {
 function adminMenuItem(activeService: string): MenuItem {
   return activeService === claim
     ? { name: "ClaimTypes", id: "types" }
-    : { name: "Service", id: "service" };
+    : { name: "Parameters", id: "service" };
 }
 
-function useSetService(service: string): string {
+function useSetService(
+  service: string,
+  role: Role
+): { service: string; item: string } {
   const location = useLocation();
+  const defaultItem =
+    role === EVALUATOR || role === ADMIN ? evaluation : "data";
   if (!location.hostname) {
-    return service;
+    return { service, item: defaultItem };
   }
   const pathName = location && location.pathname.substring(1);
-  return pathName && pathName.includes(claim) ? claim : service;
+  const derivedService = pathName && pathName.includes(claim) ? claim : service;
+  const item = derivedService === claim ? pathName.split("-")[1] : pathName;
+  return { service: derivedService, item };
 }
 
 function NavbarMenu(props: Props) {
   const { user } = props;
-  const role = user && user.role;
+  const role: Role = (user && user.role) || AGENT;
 
-  const service = useSetService(props.service);
+  const { service, item } = useSetService(props.service, role);
 
   const loggedInMenu: MenuItem[] =
-    role !== AGENT
+    role === EVALUATOR || role === ADMIN
       ? [{ name: "Evaluation", id: evaluation }, ...defaultMenu]
       : defaultMenu;
 
@@ -67,7 +80,7 @@ function NavbarMenu(props: Props) {
     <div>
       {user ? (
         <NavMenu
-          activeItem={evaluation}
+          activeItem={item}
           setActiveMenuItem={setActiveMenuItem(service)}
           items={items}
           alignment={horizontal}

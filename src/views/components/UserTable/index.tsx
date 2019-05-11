@@ -21,7 +21,7 @@ const columns = [
         accessor: "userName",
         Cell: ({ row }) => (
           <Link href={`/user/?${row.userName}`}>
-            <a>{row.fullName}</a>
+            <a>{row.userName}</a>
           </Link>
         )
       },
@@ -29,6 +29,11 @@ const columns = [
         Header: "FullName",
         filterable: true,
         accessor: "fullName"
+      },
+      {
+        Header: "Email",
+        filterable: true,
+        accessor: "email"
       },
       {
         Header: "Role",
