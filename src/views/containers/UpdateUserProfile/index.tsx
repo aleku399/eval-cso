@@ -25,6 +25,11 @@ interface OwnProps {
   userName: string;
 }
 
+interface AgentProfile {
+  supervisor: Profile;
+  branch: string;
+}
+
 interface DispatchGetAgentData {
   dispatchGetAgentData: () => Promise<void>;
 }
@@ -84,6 +89,7 @@ class UpdateUserProfile extends React.Component<Props, State> {
 
   public async getProfileData(): Promise<void> {
     try {
+      this.setState({ loading: true });
       const userName = this.props.userName;
       const user = await this.getUserData(userName);
 
@@ -99,7 +105,6 @@ class UpdateUserProfile extends React.Component<Props, State> {
   }
 
   public async getUserData(userName: string): Promise<Profile> {
-    this.setState({ loading: true });
     const { data } = await authAxios(this.props.jwt).get<Profile>(
       `${userApi}${userName}`
     );
@@ -107,11 +112,11 @@ class UpdateUserProfile extends React.Component<Props, State> {
   }
 
   public async getAgentData(userName: string): Promise<Agent> {
-    this.setState({ loading: true });
-    const { data } = await authAxios(this.props.jwt).get<Agent>(
+    const { data } = await authAxios(this.props.jwt).get<AgentProfile>(
       `${agentApi}${userName}`
     );
-    return data;
+    const { branch = null, supervisor = null } = data;
+    return { branch, supervisor: supervisor && supervisor.userName };
   }
 
   public updateUser = async (
