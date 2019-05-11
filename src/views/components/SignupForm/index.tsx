@@ -1,7 +1,7 @@
 import { AxiosPromise } from "axios";
-import Router from "next/router";
 import * as React from "react";
 import { Button, Form, Header, Input, Message } from "semantic-ui-react";
+import { Router } from "../../../../server/routes";
 
 export interface Props {
   onSubmit: (data: SignupData) => AxiosPromise<void>;
@@ -63,7 +63,7 @@ export default class Signup extends React.Component<Props, State> {
             this.setState({ error: "Error signing up, please contact IT" });
           }
           if (!process.env.STORYBOOK) {
-            Router.push("/login");
+            Router.pushRoute("/login");
           }
         })
         .catch(error => {

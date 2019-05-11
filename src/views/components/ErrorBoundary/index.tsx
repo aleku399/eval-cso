@@ -1,6 +1,6 @@
-import Link from "next/link";
 import * as React from "react";
 import { Message } from "semantic-ui-react";
+import { Link } from "../../../../server/routes";
 import { Development } from "../../../lib/envs";
 
 interface State {
@@ -31,7 +31,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
       <Message error={true} floating={true}>
         {err && err.toString()}
         <br />
-        <Link href="/login">
+        <Link route="/login">
           <a>Login</a>
         </Link>
         <br />

@@ -1,6 +1,6 @@
-import Router from "next/router";
 import React from "react";
 import { Button, Form, Header, Input, Message } from "semantic-ui-react";
+import { Router } from "../../../../server/routes";
 
 export interface Credentials {
   email: string;
@@ -38,7 +38,7 @@ class LoginForm extends React.Component<Props, Credentials> {
       password: this.state.password
     });
     if (this.props.userName && !process.env.STORYBOOK) {
-      return Router.push(`/user/?${this.props.userName}`);
+      return Router.Router.pushRoute(`/user/${this.props.userName}`);
     }
   };
 

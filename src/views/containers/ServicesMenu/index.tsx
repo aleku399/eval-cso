@@ -1,7 +1,7 @@
-import Router from "next/router";
 import React from "react";
 import { connect } from "react-redux";
 import { AnyAction, bindActionCreators, Dispatch } from "redux";
+import { Router } from "../../../../server/routes";
 import { serviceMenuItems } from "../../../lib/serviceData";
 import { AppState } from "../../../redux/reducers";
 import {
@@ -17,7 +17,7 @@ interface Props {
 
 const setActiveAndRoute = (setService: SetActiveMenuItem) => (item: string) => {
   setService(item);
-  return item === "claim" ? Router.push("/claim") : Router.push("/");
+  return item === "claim" ? Router.pushRoute("/claim") : Router.pushRoute("/");
 };
 
 function ServicesMenu(props: Props) {

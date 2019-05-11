@@ -3,7 +3,11 @@ import { Header } from "semantic-ui-react";
 import UpdateUserProfile from "../../containers/UpdateUserProfile";
 import Layout from "../Layout";
 
-export default function UserProfileTemplate() {
+interface Props {
+  userName: string;
+}
+
+export default function UserProfileTemplate({ userName }: Props) {
   return (
     <Layout>
       <Header
@@ -12,7 +16,7 @@ export default function UserProfileTemplate() {
         block={true}
         content="Update User Profile"
       />
-      <UpdateUserProfile />
+      <UpdateUserProfile userName={userName} />
     </Layout>
   );
 }

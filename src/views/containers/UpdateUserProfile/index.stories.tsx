@@ -5,4 +5,4 @@ import UpdateUserProfile from "./";
 
 storiesOf("containers/UpdateUserProfile", module)
   .addDecorator(withReduxProvider)
-  .add("default", () => <UpdateUserProfile />);
+  .add("default", () => <UpdateUserProfile userName="admin" />);

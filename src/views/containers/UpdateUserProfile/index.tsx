@@ -21,11 +21,15 @@ interface DispatchedProps extends AgentData {
   error?: string;
 }
 
+interface OwnProps {
+  userName: string;
+}
+
 interface DispatchGetAgentData {
   dispatchGetAgentData: () => Promise<void>;
 }
 
-type Props = DispatchedProps & DispatchGetAgentData;
+type Props = DispatchedProps & DispatchGetAgentData & OwnProps;
 
 const mapStateToProps = ({
   agentData: { branches, supervisors, services, error, loading },
@@ -78,16 +82,9 @@ class UpdateUserProfile extends React.Component<Props, State> {
     this.getProfileData();
   }
 
-  public getUserName(): string {
-    const { pathname, search } = window.location;
-    return pathname.startsWith("/user")
-      ? search.substring(1)
-      : this.props.loggedInUser.userName;
-  }
-
   public async getProfileData(): Promise<void> {
     try {
-      const userName = this.getUserName();
+      const userName = this.props.userName;
       const user = await this.getUserData(userName);
 
       const agent =
@@ -123,16 +120,16 @@ class UpdateUserProfile extends React.Component<Props, State> {
     const httpRequest = authAxios(this.props.jwt);
 
     if (profile.user.role === AGENT) {
-      await httpRequest.put(`${agentApi}${profile.userName}`, profile.agent);
+      await httpRequest.put(`${agentApi}${this.props.userName}`, profile.agent);
     }
 
     if (profile.password) {
       await httpRequest.patch(
-        `${userApi}${profile.userName}/${profile.password}`
+        `${userApi}${this.props.userName}/${profile.password}`
       );
     }
 
-    return httpRequest.put(`${userApi}${profile.userName}`, profile.user);
+    return httpRequest.put(`${userApi}${this.props.userName}`, profile.user);
   };
 
   public render() {
@@ -153,7 +150,7 @@ class UpdateUserProfile extends React.Component<Props, State> {
   }
 }
 
-export default connect<DispatchedProps, DispatchGetAgentData>(
+export default connect<DispatchedProps, DispatchGetAgentData, OwnProps>(
   mapStateToProps,
   mapDispatchToProps
 )(UpdateUserProfile);

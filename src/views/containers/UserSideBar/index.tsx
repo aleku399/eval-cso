@@ -1,6 +1,6 @@
-import Router from "next/router";
 import React from "react";
 import { connect } from "react-redux";
+import { Router } from "../../../../server/routes";
 import { AppState } from "../../../redux/reducers";
 import NavMenu, { MenuItem, vertical } from "../../components/NavMenu";
 import { AGENT, Profile, Role } from "../../components/UserProfile";
@@ -25,7 +25,7 @@ const setMenuItems = (role?: Role, userName?: string): MenuItem[] => {
     return nonLoggedInMenu;
   }
 
-  const editProfile = { name: "Update Profile", id: `user/?${userName}` };
+  const editProfile = { name: "Update Profile", id: `user/${userName}` };
 
   if (role !== AGENT) {
     return [editProfile, ...loggedInMenu];
@@ -41,7 +41,7 @@ function setActiveMenuItem(item: string) {
     localStorage.removeItem("token");
     localStorage.removeItem("profile");
   }
-  Router.push(`/${item}`);
+  Router.pushRoute(`/${item}`);
 }
 
 function UserSideBar(props: Props) {

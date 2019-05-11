@@ -1,8 +1,8 @@
-import Link from "next/link";
 import * as React from "react";
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 import { Dimmer, Loader, Message } from "semantic-ui-react";
+import { Link } from "../../../../server/routes";
 import { Profile } from "../UserProfile";
 
 export interface Props {
@@ -20,7 +20,7 @@ const columns = [
         filterable: true,
         accessor: "userName",
         Cell: ({ row }) => (
-          <Link href={`/user/?${row.userName}`}>
+          <Link route={`/user/${row.userName}`}>
             <a>{row.userName}</a>
           </Link>
         )

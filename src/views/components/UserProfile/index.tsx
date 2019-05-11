@@ -1,6 +1,5 @@
-import Router from "next/router";
-import React from "react";
 import { Button, Container, Form, Input, Message } from "semantic-ui-react";
+import { Router } from "../../../../server/routes";
 import { mkOptionsFromUser } from "../../../lib/helper";
 import SearchableDropdown from "../SearchableDropdown";
 
@@ -148,7 +147,7 @@ class UserProfile extends React.Component<Props, State> {
         .then(() => {
           this.setState({ loading: false });
           if (!process.env.STORYBOOK) {
-            Router.push("/");
+            Router.pushRoute("/");
           }
         })
         .catch(error =>

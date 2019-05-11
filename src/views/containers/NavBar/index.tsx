@@ -1,9 +1,8 @@
-import Link from "next/link";
-import Router from "next/router";
 import React from "react";
 import { connect } from "react-redux";
 import useLocation from "react-use/lib/useLocation";
 import { SemanticWIDTHS } from "semantic-ui-react";
+import { Link, Router } from "../../../../server/routes";
 import { AppState } from "../../../redux/reducers";
 import NavMenu, { horizontal, MenuItem } from "../../components/NavMenu";
 import {
@@ -31,12 +30,12 @@ const getRoutePath = (activeService: string, item: string) => {
   if (item === evaluation) {
     return activeService === claim ? `/${claim}` : "/";
   }
-  return activeService === claim ? `/${claim}-${item}` : `/${item}`;
+  return activeService === claim ? `/${claim}/${item}` : `/${item}`;
 };
 
 const setActiveMenuItem = (activeService: string) => (item: string) => {
   const path = getRoutePath(activeService, item);
-  Router.push(path);
+  Router.pushRoute(path);
 };
 
 function adminMenuItem(activeService: string): MenuItem {
@@ -87,7 +86,7 @@ function NavbarMenu(props: Props) {
           widths={widths}
         />
       ) : (
-        <Link href="/signup">
+        <Link route="/signup">
           <a>Create an Account to Access Features</a>
         </Link>
       )}
