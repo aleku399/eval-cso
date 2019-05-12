@@ -13,7 +13,8 @@ const props = {
   loading: false,
   agents: [agent, agentB],
   claimTypes: [{ name: "CVC", value: "cvc" }],
-  evaluator: loggedInEvaluator
+  evaluator: loggedInEvaluator,
+  reasons: ["claim reason", "other"]
 };
 
 const adminProps = { ...props, evaluator: adminProfileA };

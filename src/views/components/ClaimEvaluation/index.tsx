@@ -19,6 +19,7 @@ interface Evaluation {
   workflowNumber: number;
   agentName: string;
   comment: string;
+  reason: string;
   date: string;
   allParametersMet: boolean;
 }
@@ -35,6 +36,7 @@ export interface Props {
   agents: Profile[];
   claimTypes: ClaimType[];
   evaluator: Profile;
+  reasons: string[];
   onSubmit: SubmitClaimEvaluation;
   loading?: boolean;
   error?: string;
@@ -61,6 +63,7 @@ class ClaimEvaluation extends React.Component<Props, State> {
         comment: "",
         workflowNumber: 0,
         agentName: "",
+        reason: "",
         allParametersMet: false
       },
       loading: props.loading,
@@ -219,6 +222,15 @@ class ClaimEvaluation extends React.Component<Props, State> {
             />
           </Form.Field>
         ) : null}
+        <Form.Field>
+          <label>Reason</label>
+          <SearchableDropdown
+            placeholder="Select a reason"
+            values={this.props.reasons}
+            onChange={this.handleDropDownInput}
+            name="reason"
+          />
+        </Form.Field>
         <Form.Field>
           <label>comment</label>
           <TextArea

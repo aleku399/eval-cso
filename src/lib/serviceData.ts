@@ -24,5 +24,5 @@ export const reasons: ServiceEvaluationReasons = {
   email: commonReasons,
   whatsapp: commonReasons,
   web: commonReasons,
-  claim: commonReasons
+  claim: ["rude", "bad language"]
 };
