@@ -9,7 +9,7 @@ import {
   Message,
   TextArea
 } from "semantic-ui-react";
-import { mkOptionsFromUser } from "../../../lib/helper";
+import { mkOptionsFromUser, nullEmptyStrings } from "../../../lib/helper";
 import SearchableDropdown from "../SearchableDropdown";
 import { ParameterCategory } from "../UpdateServiceType";
 import { ADMIN, Profile } from "../UserProfile";
@@ -193,7 +193,7 @@ export default class EvaluationForm extends React.Component<Props, State> {
         parameters
       };
       this.props
-        .onSubmit(payload)
+        .onSubmit(nullEmptyStrings<CreateEvaluation>(payload))
         .then(response => {
           if (response.data.id) {
             this.setState({

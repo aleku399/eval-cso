@@ -1,3 +1,4 @@
+import { Dictionary, mapValues } from "lodash";
 import { DropdownItemProps } from "semantic-ui-react";
 import { Profile } from "../views/components/UserProfile";
 
@@ -20,4 +21,13 @@ export function getFormattedDate(dateStr: string): string {
   const formattedDay = day > 9 ? day : `0${day}`;
 
   return formattedMonth + "/" + formattedDay + "/" + year;
+}
+
+export function nullEmptyStrings<T>(formData: Dictionary<any>): T {
+  return mapValues(formData, (value: any) => {
+    if (typeof value === "string") {
+      return value.length ? value : null;
+    }
+    return value;
+  }) as T;
 }

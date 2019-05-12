@@ -8,7 +8,7 @@ import {
   Message,
   TextArea
 } from "semantic-ui-react";
-import { mkOptionsFromUser } from "../../../lib/helper";
+import { mkOptionsFromUser, nullEmptyStrings } from "../../../lib/helper";
 import SearchableDropdown from "../SearchableDropdown";
 import { ClaimType } from "../UpdateClaimTypes";
 import { ADMIN, Profile } from "../UserProfile";
@@ -94,7 +94,7 @@ class ClaimEvaluation extends React.Component<Props, State> {
         date: date.toISOString()
       };
       this.props
-        .onSubmit(claim)
+        .onSubmit(nullEmptyStrings<ClaimPayload>(claim))
         .then(response => {
           if (response.data.id) {
             this.setState({
