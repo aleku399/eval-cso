@@ -3,7 +3,12 @@ import * as React from "react";
 import "react-table/react-table.css";
 import { Claims } from "../ClaimsTable";
 import DataTable, { ColumnRowsOpt } from "../DataTable";
-import { getDateRange } from "../SummaryEvalTable";
+import {
+  commentsCell,
+  getDateRange,
+  listCellFormatter,
+  listFilterMethod
+} from "../SummaryEvalTable";
 import { Profile } from "../UserProfile";
 
 export interface ClaimsSummaryData {
@@ -37,35 +42,10 @@ const columns: ColumnRowsOpt[] = [
         Header: "Claim Type",
         accessor: "claimTypes",
         style: { whiteSpace: "unset" },
-        Cell: ({ row }) => {
-          const list = row.claimTypes.map((claimType: string) => (
-            <li key={claimType}>{claimType}</li>
-          ));
-          return <ul style={{ marginTop: "2px" }}>{list}</ul>;
-        },
-        filterMethod: (filter, row) => {
-          return row.claimTypes.some((claimType: string) =>
-            claimType.toLowerCase().startsWith(filter.value)
-          );
-        }
+        Cell: listCellFormatter("claimTypes"),
+        filterMethod: listFilterMethod("claimTypes")
       },
-      {
-        Header: "Comments",
-        width: 200,
-        accessor: "comments",
-        style: { whiteSpace: "unset" },
-        Cell: ({ row }) => {
-          const list = row.comments.map((comment: string) => (
-            <li key={comment.split(" ")[0]}>{comment}</li>
-          ));
-          return <ul style={{ marginTop: "2px" }}>{list}</ul>;
-        },
-        filterMethod: (filter, row) => {
-          return row.comments.some((comment: string) =>
-            comment.toLowerCase().startsWith(filter.value)
-          );
-        }
-      },
+      commentsCell,
       {
         Header: "Score",
         id: "score",

@@ -107,11 +107,25 @@ class UserProfile extends React.Component<Props, State> {
     this.setState({ agent, editUser });
   };
 
+  public agentProfileValidation() {
+    const agentProfile = this.state.agent;
+    if (!agentProfile.branch) {
+      this.setState({ error: "Add Missing branch / service point" });
+      return false;
+    }
+    if (!agentProfile.supervisor) {
+      this.setState({ error: "Add missing agent supervisor" });
+      return false;
+    }
+  }
   public validate = (): boolean => {
     if (!this.state.editUser.email.toLowerCase().endsWith("@nssfug.org")) {
       const error = "Please provide an nssfug.org email";
       this.setState({ error });
       return false;
+    }
+    if (this.state.editUser.role === AGENT) {
+      return this.agentProfileValidation();
     }
     this.setState({ error: null });
     return true;
@@ -176,11 +190,9 @@ class UserProfile extends React.Component<Props, State> {
       return null;
     }
 
-    return activeUserRole === ADMIN && editUserRole === AGENT
+    return activeUserRole === ADMIN && editUserRole === ADMIN
       ? this.deleteUserButton()
-      : activeUserRole === ADMIN && editUserRole === ADMIN
-      ? this.deleteUserButton()
-      : activeUserRole === ADMIN && editUserRole === EVALUATOR
+      : activeUserRole === ADMIN && editUserRole !== ADMIN
       ? this.deleteUserButton()
       : null;
   };
@@ -234,6 +246,7 @@ class UserProfile extends React.Component<Props, State> {
       </Form.Field>
     ) : null;
   };
+
   public renderAgentFields = (editedUserRole: Role) => {
     return editedUserRole === AGENT ? (
       <Form.Field>

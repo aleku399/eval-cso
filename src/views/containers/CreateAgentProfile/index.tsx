@@ -13,6 +13,7 @@ import UserProfile, {
   Profile,
   ProfileUpdate
 } from "../../components/UserProfile";
+import { testAdmin } from "../../components/UserProfile/index.stories";
 import { deleteUser } from "../UpdateUserProfile";
 
 interface DispatchedProps extends AgentData {
@@ -71,12 +72,15 @@ function UpdateUserProfile(props: Props) {
     props.dispatchGetAgentData();
   });
 
+  const supervisors = process.env.STORYBOOK
+    ? [testAdmin, ...props.supervisors]
+    : props.supervisors;
   return (
     <UserProfile
       isInCreatAgentMode={true}
       loading={props.loading}
       editUser={emptyUser}
-      supervisors={props.supervisors}
+      supervisors={supervisors}
       branches={props.branches}
       deleteUserHandler={deleteUser(props.jwt)}
       loggedInUser={props.loggedInUser}

@@ -43,6 +43,13 @@ const emptyAgent = {
   email: ""
 };
 
+export const testAdmin: Profile = {
+  userName: "admin",
+  fullName: "Admin",
+  email: "admin@nssfug.org",
+  role: "admin"
+};
+
 export const adminProfileA = {
   userName: "steve",
   role: ADMIN,

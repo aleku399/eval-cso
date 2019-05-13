@@ -63,7 +63,7 @@ const parameterCellFormatter = (accessor: ParamCategoryName) => ({
   const list = row[accessor].map((param: ParameterAttrs) => (
     <li key={param.name}>{param.name}</li>
   ));
-  return <ul style={{ marginTop: "2px" }}>{list}</ul>;
+  return <ul style={{ marginTop: "0px" }}>{list}</ul>;
 };
 
 const parameterCellFilter = (accessor: ParamCategoryName) => (

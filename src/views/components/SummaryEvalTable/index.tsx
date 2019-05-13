@@ -52,19 +52,28 @@ export interface TableRowWithList {
 export const listCellFormatter = (accessor: string) => ({
   row
 }: TableRowWithList): JSX.Element => {
-  const list = row[accessor].map((item: string) => (
-    <li key={item.split(" ")[0]}>{item}</li>
-  ));
-  return <ul style={{ marginTop: "2px" }}>{list}</ul>;
+  const list = row[accessor].map(
+    (item?: string) => item && <li key={item.split(" ")[0]}>{item}</li>
+  );
+  return <ul style={{ marginTop: "0px" }}>{list}</ul>;
 };
 
 export const listFilterMethod = (accessor: string) => (
   filter: { value: string },
   row: { [field: string]: string[] }
 ): boolean => {
-  return row[accessor].some((item: string) =>
-    item.toLowerCase().startsWith(filter.value)
+  return row[accessor].some(
+    (item?: string) => item && item.toLowerCase().startsWith(filter.value)
   );
+};
+
+export const commentsCell = {
+  Header: "Comments",
+  width: 200,
+  accessor: "comments",
+  style: { whiteSpace: "unset" },
+  Cell: listCellFormatter("comments"),
+  filterMethod: listFilterMethod("comments")
 };
 
 const columns: ColumnRowsOpt[] = [
@@ -75,14 +84,7 @@ const columns: ColumnRowsOpt[] = [
         Header: "Agent Name",
         accessor: "agentName"
       },
-      {
-        Header: "Comments",
-        width: 200,
-        accessor: "comments",
-        style: { whiteSpace: "unset" },
-        Cell: listCellFormatter("comments"),
-        filterMethod: listFilterMethod("comments")
-      },
+      commentsCell,
       ...parameterCategoryColumns,
       {
         Header: "Score",

@@ -1,8 +1,8 @@
 import { storiesOf } from "@storybook/react";
 import React from "react";
-import ClaimsData from ".";
+import ClaimsSummary from ".";
 import withReduxProvider from "../../../storybook/provider";
 
-storiesOf("containers/ClaimsData", module)
+storiesOf("containers/ClaimsSummary", module)
   .addDecorator(withReduxProvider)
-  .add("default", () => <ClaimsData />);
+  .add("default", () => <ClaimsSummary />);
