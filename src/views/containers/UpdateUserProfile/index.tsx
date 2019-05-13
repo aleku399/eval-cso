@@ -1,17 +1,18 @@
-import { AxiosResponse } from "axios";
 import React from "react";
 import { connect } from "react-redux";
 import { AnyAction, Dispatch } from "redux";
 import { agentApi, userApi } from "../../../lib/apiEndpoints";
 import { authAxios } from "../../../lib/axios";
-import { throwLoginError } from "../../../lib/errors";
+import { HttpError, throwLoginError } from "../../../lib/errors";
 import { AgentData, getAgentData } from "../../../redux/AgentData/action";
 import { AppState } from "../../../redux/reducers";
 import UserProfile, {
   Agent,
   AGENT,
+  DeleteUser,
   Profile,
-  ProfileUpdate
+  ProfileUpdate,
+  SubmitProfile
 } from "../../components/UserProfile";
 
 interface DispatchedProps extends AgentData {
@@ -55,10 +56,8 @@ const mapDispatchToProps = (
   dispatchGetAgentData: getAgentData(dispatch)
 });
 
-export const deleteUser = (_jwt: string) => (
-  _userName: string
-): Promise<void> => {
-  return Promise.reject("currently not supported");
+export const deleteUser = (jwt: string): DeleteUser => (userName: string) => {
+  return authAxios(jwt).delete(`${userApi}${userName}`);
 };
 
 interface State {
@@ -112,16 +111,21 @@ class UpdateUserProfile extends React.Component<Props, State> {
   }
 
   public async getAgentData(userName: string): Promise<Agent> {
-    const { data } = await authAxios(this.props.jwt).get<AgentProfile>(
-      `${agentApi}${userName}`
-    );
-    const { branch = null, supervisor = null } = data;
-    return { branch, supervisor: supervisor && supervisor.userName };
+    return authAxios(this.props.jwt)
+      .get<AgentProfile>(`${agentApi}${userName}`)
+      .then(({ data }) => {
+        const { branch, supervisor = null } = data;
+        return { branch, supervisor: supervisor && supervisor.userName };
+      })
+      .catch((error: HttpError) => {
+        if (error.status === 400) {
+          return { branch: null, supervisor: null };
+        }
+        throw error;
+      });
   }
 
-  public updateUser = async (
-    profile: ProfileUpdate
-  ): Promise<AxiosResponse<any>> => {
+  public updateUser: SubmitProfile = async (profile: ProfileUpdate) => {
     const httpRequest = authAxios(this.props.jwt);
 
     if (profile.user.role === AGENT) {
@@ -137,6 +141,10 @@ class UpdateUserProfile extends React.Component<Props, State> {
     return httpRequest.put(`${userApi}${this.props.userName}`, profile.user);
   };
 
+  public deleteUser: DeleteUser = async (userName: string) => {
+    return authAxios(this.props.jwt).delete(`${userApi}${userName}`);
+  };
+
   public render() {
     const { user, agent, loading, error } = this.state;
     return (
@@ -147,7 +155,7 @@ class UpdateUserProfile extends React.Component<Props, State> {
         error={this.props.error || error}
         supervisors={this.props.supervisors}
         branches={this.props.branches}
-        deleteUserHandler={deleteUser(this.props.jwt)}
+        deleteUserHandler={this.deleteUser}
         loggedInUser={this.props.loggedInUser}
         onSubmit={this.updateUser}
       />

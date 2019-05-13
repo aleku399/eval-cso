@@ -1,3 +1,4 @@
+import { action } from "@storybook/addon-actions";
 import { storiesOf } from "@storybook/react";
 import React from "react";
 import { loggedInEvaluator, users } from "../UserProfile/index.stories";
@@ -22,7 +23,8 @@ export const testNpsData = [
     crmCapturedReason: "potential customer",
     frontLineRatingReasons: ["Good/ Positive CSO appearance"],
     backOfficeReasons: ["Good Office Ambience"],
-    comment: "comment"
+    comment: "comment",
+    id: 400
   },
   {
     date: "2019-03-02",
@@ -42,7 +44,8 @@ export const testNpsData = [
     crmCapturedReason: "potential customer",
     frontLineRatingReasons: ["Good/ Positive CSO appearance"],
     backOfficeReasons: ["Good Office Ambience"],
-    comment: "comment"
+    comment: "comment",
+    id: 405
   },
   {
     date: "2019-04-13",
@@ -62,7 +65,8 @@ export const testNpsData = [
     crmCapturedReason: "fair customer",
     frontLineRatingReasons: ["Poor/ Negative CSO appearance"],
     backOfficeReasons: ["Poor Office Ambience"],
-    comment: "comment"
+    comment: "comment",
+    id: 41
   },
   {
     date: "2019-02-17",
@@ -82,10 +86,16 @@ export const testNpsData = [
     crmCapturedReason: "potential customer",
     frontLineRatingReasons: ["Good/ Positive CSO Attitude"],
     backOfficeReasons: ["Easy finding and recognizing"],
-    comment: "comment"
+    comment: "comment",
+    id: 100
   }
 ];
 
 storiesOf("components/NPSdataTable", module).add("default", () => (
-  <NPSdataTable users={users} data={testNpsData} loggedIn={loggedInEvaluator} />
+  <NPSdataTable
+    deleteHandler={action("delete")}
+    users={users}
+    data={testNpsData}
+    loggedIn={loggedInEvaluator}
+  />
 ));

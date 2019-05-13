@@ -41,7 +41,7 @@ const config = {
 
     nextConfig.plugins.push(
       new webpack.EnvironmentPlugin({
-        API: "http://212.71.238.164:8888/api/",
+        API: "http://localhost:8000/api/",
         DEBUG: false,
         NODE_ENV: "development",
         STORYBOOK: false,

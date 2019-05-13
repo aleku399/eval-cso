@@ -1,10 +1,12 @@
+import { action } from "@storybook/addon-actions";
 import { storiesOf } from "@storybook/react";
 import React from "react";
 import {
   adminProfileA,
   agent,
   agentC,
-  loggedInEvaluator
+  loggedInEvaluator,
+  testAdmin
 } from "../UserProfile/index.stories";
 import DataTable, { ColumnRowsOpt } from "./index";
 
@@ -69,7 +71,7 @@ const testData = [
 ];
 
 storiesOf("components/DataTable", module)
-  .add("with evaluator loggedIn", () => (
+  .add("with evaluator logged In", () => (
     <DataTable
       columns={columns}
       data={testData}
@@ -77,11 +79,20 @@ storiesOf("components/DataTable", module)
       loggedIn={loggedInEvaluator}
     />
   ))
-  .add("with agent loggedIn", () => (
+  .add("with agent logged in", () => (
     <DataTable
       columns={columns}
       data={testData}
       users={users}
       loggedIn={agent}
+    />
+  ))
+  .add("with admin logged in", () => (
+    <DataTable
+      columns={columns}
+      data={testData}
+      users={users}
+      loggedIn={testAdmin}
+      deleteHandler={action("delete")}
     />
   ));

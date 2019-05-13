@@ -1,3 +1,4 @@
+import { action } from "@storybook/addon-actions";
 import { storiesOf } from "@storybook/react";
 import React from "react";
 import { loggedInEvaluator, users } from "../UserProfile/index.stories";
@@ -16,7 +17,8 @@ export const claimsTestData = [
     score: 40,
     workflowNumber: 10,
     branch: "Kampala",
-    supervisor: "bob"
+    supervisor: "bob",
+    id: 10
   },
   {
     date: "2019-04-13",
@@ -31,7 +33,8 @@ export const claimsTestData = [
     details: "details",
     score: 10,
     supervisor: "bob",
-    claimType: "cvt"
+    claimType: "cvt",
+    id: 20
   },
   {
     date: "2019-04-17",
@@ -44,7 +47,8 @@ export const claimsTestData = [
     comment: "comment",
     workflowNumber: 30,
     supervisor: "steve",
-    claimType: "cvt"
+    claimType: "cvt",
+    id: 30
   }
 ];
 
@@ -52,6 +56,7 @@ storiesOf("components/ClaimsTable", module).add("default", () => (
   <ClaimsTable
     data={claimsTestData}
     users={users}
+    deleteHandler={action("delete")}
     loggedIn={loggedInEvaluator}
   />
 ));

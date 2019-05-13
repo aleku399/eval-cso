@@ -1,3 +1,4 @@
+import { AxiosPromise } from "axios";
 import React from "react";
 import { Button, Container, Form, Input, Message } from "semantic-ui-react";
 import { Router } from "../../../../server/routes";
@@ -30,17 +31,21 @@ export interface ProfileUpdate {
   agent?: Agent;
 }
 
+export type SubmitProfile = (data: ProfileUpdate) => AxiosPromise<any>;
+
+export type DeleteUser = (userName: string) => AxiosPromise<void>;
+
 export interface Props {
   editUser: Profile;
   agent?: Agent;
   error?: string;
   loading?: boolean;
   loggedInUser: Profile;
-  onSubmit: (data: ProfileUpdate) => Promise<any>;
+  onSubmit: SubmitProfile;
   supervisors: Profile[];
   branches: string[];
   isInCreatAgentMode?: boolean;
-  deleteUserHandler: (userName: string) => Promise<void>;
+  deleteUserHandler: DeleteUser;
 }
 
 export interface State {
@@ -117,7 +122,9 @@ class UserProfile extends React.Component<Props, State> {
       this.setState({ error: "Add missing agent supervisor" });
       return false;
     }
+    return true;
   }
+
   public validate = (): boolean => {
     if (!this.state.editUser.email.toLowerCase().endsWith("@nssfug.org")) {
       const error = "Please provide an nssfug.org email";
@@ -141,10 +148,13 @@ class UserProfile extends React.Component<Props, State> {
           password: this.state.password,
           userName: this.props.editUser.userName
         })
-        .then(() => {
-          // TODO: logout user after altering password
+        .then(({ status }) => {
+          if (status !== 200) {
+            throw new Error("User update failed");
+          }
           this.setState({
             loading: false,
+            error: null,
             feedback: "Submitted data Successfully"
           });
         })
@@ -162,7 +172,7 @@ class UserProfile extends React.Component<Props, State> {
         .then(() => {
           this.setState({ loading: false });
           if (!process.env.STORYBOOK) {
-            Router.pushRoute("/");
+            Router.pushRoute("/users");
           }
         })
         .catch(error =>
@@ -240,7 +250,7 @@ class UserProfile extends React.Component<Props, State> {
           type="password"
           name="password"
           minLength={5}
-          value={this.state.password}
+          value={this.state.password || ""}
           onChange={this.handleInput}
         />
       </Form.Field>

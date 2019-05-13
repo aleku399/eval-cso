@@ -1,6 +1,10 @@
 import * as React from "react";
 import "react-table/react-table.css";
-import DataTable, { ColumnRowsOpt, TableData } from "../DataTable";
+import DataTable, {
+  ColumnRowsOpt,
+  DeleteHandler,
+  TableData
+} from "../DataTable";
 import { dateCellFormatter } from "../EvaluationDataTable";
 import { listCellFormatter, listFilterMethod } from "../SummaryEvalTable";
 import { Profile } from "../UserProfile";
@@ -20,6 +24,7 @@ export interface NPS extends TableData {
   crmCapturedReason: string;
   frontLineRatingReasons: string[];
   backOfficeReasons: string[];
+  id: number;
 }
 
 export interface Props {
@@ -28,6 +33,7 @@ export interface Props {
   loggedIn: Profile;
   loading?: boolean;
   error?: string;
+  deleteHandler: DeleteHandler;
 }
 
 const columns: ColumnRowsOpt[] = [
@@ -130,6 +136,7 @@ export default function NPSdataTable(props: Props) {
       loggedIn={props.loggedIn}
       loading={props.loading}
       error={props.error}
+      deleteHandler={props.deleteHandler}
     />
   );
 }

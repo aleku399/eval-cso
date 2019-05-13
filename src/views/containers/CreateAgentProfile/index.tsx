@@ -1,4 +1,3 @@
-import { AxiosResponse } from "axios";
 import React from "react";
 import { connect } from "react-redux";
 import useEffectOnce from "react-use/lib/useEffectOnce";
@@ -11,7 +10,8 @@ import { AppState } from "../../../redux/reducers";
 import UserProfile, {
   AGENT,
   Profile,
-  ProfileUpdate
+  ProfileUpdate,
+  SubmitProfile
 } from "../../components/UserProfile";
 import { testAdmin } from "../../components/UserProfile/index.stories";
 import { deleteUser } from "../UpdateUserProfile";
@@ -29,9 +29,9 @@ interface DispatchGetAgentData {
 
 type Props = DispatchedProps & DispatchGetAgentData;
 
-const createAgent = (jwt: string) => async (
+const createAgent = (jwt: string): SubmitProfile => async (
   profile: ProfileUpdate
-): Promise<AxiosResponse<number>> => {
+) => {
   const httpRequest = authAxios(jwt);
   const payload = { agent: profile.agent, user: profile.user };
   return httpRequest.post(agentApi, payload);

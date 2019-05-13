@@ -1,3 +1,4 @@
+import { action } from "@storybook/addon-actions";
 import { storiesOf } from "@storybook/react";
 import React from "react";
 import EvaluationDataTable from ".";
@@ -34,7 +35,8 @@ export const evalTestData = [
         category: deviation
       }
     ],
-    score: 40
+    score: 40,
+    id: 50
   },
   {
     evalAttrs: {
@@ -54,7 +56,8 @@ export const evalTestData = [
         category: deviation
       }
     ],
-    score: 80
+    score: 80,
+    id: 24
   },
   {
     parameters: [
@@ -81,7 +84,8 @@ export const evalTestData = [
       supervisor: "bob",
       branch: "Nakawa"
     },
-    score: 0
+    score: 0,
+    id: 243
   }
 ];
 
@@ -90,5 +94,6 @@ storiesOf("components/EvaluationDataTable", module).add("default", () => (
     data={evalTestData}
     users={users}
     loggedIn={loggedInEvaluator}
+    deleteHandler={action("delete")}
   />
 ));

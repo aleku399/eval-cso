@@ -1,3 +1,4 @@
+import { AxiosPromise } from "axios";
 import _ from "lodash";
 import * as React from "react";
 import { CSVLink } from "react-csv";
@@ -5,7 +6,7 @@ import ReactTable, { Column, Filter } from "react-table";
 import "react-table/react-table.css";
 import { Button, DropdownItemProps, Form, Message } from "semantic-ui-react";
 import SearchableDropdown, { makeOptions } from "../SearchableDropdown";
-import { AGENT, EVALUATOR, Profile } from "../UserProfile";
+import { ADMIN, AGENT, EVALUATOR, Profile } from "../UserProfile";
 
 export interface ColumnRowsOpt {
   Header: string;
@@ -17,6 +18,7 @@ export interface TableData {
   agentName: string;
   evaluator: string;
   comment: string;
+  id?: number;
   score?: number;
   branch?: string;
   supervisor?: string;
@@ -24,11 +26,17 @@ export interface TableData {
   to?: string;
 }
 
+interface TableRowData {
+  row: TableData;
+}
+
 type InputDataObj<T> = T & TableData;
 
 type InputData<T> = Array<InputDataObj<T>>;
 
 export type AggregateFn<T, S = any> = (data: InputData<T>) => S[];
+
+export type DeleteHandler = (id: number) => AxiosPromise<void>;
 
 export interface Props<T, S = any> {
   users: Profile[];
@@ -38,6 +46,7 @@ export interface Props<T, S = any> {
   isSummaryTable?: boolean;
   isNpsTable?: boolean;
   aggregate?: AggregateFn<T, S>;
+  deleteHandler?: DeleteHandler;
   error?: string;
   columns: ColumnRowsOpt[];
 }
@@ -60,6 +69,8 @@ export interface State<T> {
   to: string;
   dataToDownload: Array<DownloadData<T>>;
   evaluatorOptions: DropdownItemProps[];
+  error: string;
+  loading: boolean;
 }
 
 const allEvaluators = "All Evaluators";
@@ -92,7 +103,9 @@ export default class DataTable<T, S> extends React.Component<
       filtered: [],
       from: "2019-01-01",
       to: this.todayDate(),
-      dataToDownload: []
+      dataToDownload: [],
+      error: this.props.error,
+      loading: this.props.loading
     };
     this.reactTable = React.createRef();
     this.csvLink = React.createRef();
@@ -109,6 +122,8 @@ export default class DataTable<T, S> extends React.Component<
         supervisors: this.getSupervisors(),
         agentOptions: this.agentSearchOptions(),
         agentSearch: allAgents,
+        error: this.props.error,
+        loading: this.props.loading,
         evaluatorOptions: this.evaluatorSearchOptions(),
         evaluatorSearch: this.getDefaultEvaluatorSearch()
       });
@@ -321,6 +336,44 @@ export default class DataTable<T, S> extends React.Component<
     });
   };
 
+  public deleteRow = async (event): Promise<void> => {
+    const id = Number(event.target.value);
+    this.setState({ loading: true });
+    return (
+      this.props.deleteHandler &&
+      this.props
+        .deleteHandler(id)
+        .then(({ status }) => {
+          if (status !== 200) {
+            throw new Error("Failed to delete row");
+          }
+          const data = this.state.data.filter(obj => obj.id !== id);
+          this.setState({ loading: false, error: null, data });
+        })
+        .catch(error => {
+          this.setState({ error: error.toString(), loading: false });
+        })
+    );
+  };
+
+  public deleteCellFormatter = ({ row }: TableRowData): JSX.Element => {
+    return (
+      <Button value={row.id} onClick={this.deleteRow}>
+        Delete
+      </Button>
+    );
+  };
+
+  public withDeleteCell(columns: ColumnRowsOpt[]) {
+    const deleteCell = {
+      Header: "Delete",
+      accessor: "id",
+      filterable: false,
+      Cell: this.deleteCellFormatter
+    };
+    return [...columns, deleteCell];
+  }
+
   public getSortedData() {
     const sortedData = this.searchByDate(
       this.searchByBranch(
@@ -341,15 +394,19 @@ export default class DataTable<T, S> extends React.Component<
 
   public render() {
     const data = this.renderedData();
+    const columns =
+      this.props.loggedIn.role === ADMIN && this.props.deleteHandler
+        ? this.withDeleteCell(this.props.columns)
+        : this.props.columns;
     return (
       <div>
         <Message
           error={true}
-          hidden={!this.props.error}
+          hidden={!this.state.error}
           header="Evaluation data view Error"
-          content={this.props.error}
+          content={this.state.error}
         />
-        <Form loading={this.props.loading}>
+        <Form loading={this.state.loading}>
           <Form.Group widths="equal">
             {this.isNpsSummaryTable() ? (
               <Form.Field inline={true}>
@@ -416,7 +473,7 @@ export default class DataTable<T, S> extends React.Component<
         <ReactTable
           ref={this.reactTable}
           data={data}
-          columns={this.props.columns}
+          columns={columns}
           filterable={true}
           defaultFilterMethod={this.filterMethod}
           page={this.state.page}

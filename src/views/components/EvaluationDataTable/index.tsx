@@ -2,7 +2,11 @@ import _ from "lodash";
 import * as React from "react";
 import "react-table/react-table.css";
 import { getFormattedDate } from "../../../lib/helper";
-import DataTable, { ColumnRowsOpt, TableData } from "../DataTable";
+import DataTable, {
+  ColumnRowsOpt,
+  DeleteHandler,
+  TableData
+} from "../DataTable";
 import {
   deviation,
   EvalState,
@@ -28,6 +32,7 @@ export interface Evaluation {
   evalAttrs: EvalAttrs;
   parameters: ParameterAttrs[];
   score: number;
+  id: number;
 }
 
 export type EvaluationData = Evaluation[];
@@ -44,6 +49,7 @@ export interface Props {
   loggedIn: Profile;
   loading?: boolean;
   error?: string;
+  deleteHandler: DeleteHandler;
 }
 
 interface TableRowData {
@@ -157,7 +163,8 @@ export const getEvaluationTableData = (
       score: obj.score,
       branch: obj.evalAttrs.branch,
       supervisor: obj.evalAttrs.supervisor,
-      agentName: obj.evalAttrs.agentName
+      agentName: obj.evalAttrs.agentName,
+      id: obj.id
     };
   });
 };
@@ -171,6 +178,7 @@ export default function EvaluationDataTable(props: Props) {
       loggedIn={props.loggedIn}
       loading={props.loading}
       error={props.error}
+      deleteHandler={props.deleteHandler}
     />
   );
 }

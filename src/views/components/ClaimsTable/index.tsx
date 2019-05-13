@@ -1,7 +1,11 @@
 import _ from "lodash";
 import * as React from "react";
 import "react-table/react-table.css";
-import DataTable, { ColumnRowsOpt, TableData } from "../DataTable";
+import DataTable, {
+  ColumnRowsOpt,
+  DeleteHandler,
+  TableData
+} from "../DataTable";
 import { dateCellFormatter } from "../EvaluationDataTable";
 import { Profile } from "../UserProfile";
 
@@ -11,6 +15,7 @@ export interface Claims extends TableData {
   details: string;
   supervisor: string;
   workflowNumber: number;
+  id: number;
 }
 
 export interface Props {
@@ -19,6 +24,7 @@ export interface Props {
   loggedIn: Profile;
   loading?: boolean;
   error?: string;
+  deleteHandler: DeleteHandler;
 }
 
 const columns: ColumnRowsOpt[] = [
@@ -71,6 +77,7 @@ export default function ClaimsTable(props: Props) {
       users={props.users}
       columns={columns}
       loggedIn={props.loggedIn}
+      deleteHandler={props.deleteHandler}
       loading={props.loading}
       error={props.error}
     />

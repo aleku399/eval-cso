@@ -11,9 +11,12 @@ export class LoginError extends Error {
 
 // tslint:disable-next-line: max-classes-per-file
 export class HttpError extends Error {
+  public status: number;
+
   constructor(message: string, status?: number) {
     super();
     this.name = "HTTP Error";
+    this.status = status;
     this.message = status ? `${message} with status: ${status}` : message;
   }
 }
