@@ -396,7 +396,8 @@ export default class DataTable<T, S> extends React.Component<
   public render() {
     const data = this.renderedData();
     const columns =
-      this.props.loggedIn.role === ADMIN && this.props.deleteHandler || this.props.isNpsaTable
+      (this.props.loggedIn.role === ADMIN && this.props.deleteHandler) ||
+      this.props.isNpsaTable
         ? this.withDeleteCell(this.props.columns)
         : this.props.columns;
     return (

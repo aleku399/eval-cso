@@ -1,9 +1,12 @@
 import * as React from "react";
 import "react-table/react-table.css";
-import DataTable, {ColumnRowsOpt, DeleteHandler,  TableData } from "../DataTable";
+import DataTable, {
+  ColumnRowsOpt,
+  DeleteHandler,
+  TableData
+} from "../DataTable";
 import { dateCellFormatter } from "../EvaluationDataTable";
 import { Profile } from "../UserProfile";
-
 
 export interface NPSAT extends TableData {
   customerTel: number;
@@ -35,7 +38,7 @@ const columns: ColumnRowsOpt[] = [
       {
         Header: "Time",
         accessor: "Time"
-      },
+      }
     ]
   }
 ];
