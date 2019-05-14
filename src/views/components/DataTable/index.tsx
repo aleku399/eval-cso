@@ -5,6 +5,7 @@ import { CSVLink } from "react-csv";
 import ReactTable, { Column, Filter } from "react-table";
 import "react-table/react-table.css";
 import { Button, DropdownItemProps, Form, Message } from "semantic-ui-react";
+import { getFormattedDate } from "../../../lib/helper";
 import SearchableDropdown, { makeOptions } from "../SearchableDropdown";
 import { ADMIN, AGENT, EVALUATOR, Profile } from "../UserProfile";
 
@@ -296,15 +297,18 @@ export default class DataTable<T, S> extends React.Component<
   }
 
   public toCSVDataObj(obj: InputDataObj<T>): { [field: string]: string } {
-    return _.mapValues(obj, value => {
+    return _.mapValues(obj, (value: any, key: string) => {
       if (Array.isArray(value)) {
         return value
           .map(valueObj =>
-            valueObj.name ? valueObj.name : valueObj.toString()
+            valueObj.name ? valueObj.name : valueObj && valueObj.toString()
           )
           .join(",\n");
       }
-      return value.toString();
+      if (value && ["date", "to", "from"].includes(key)) {
+        return getFormattedDate(value);
+      }
+      return value && value.toString();
     });
   }
 
@@ -315,7 +319,6 @@ export default class DataTable<T, S> extends React.Component<
     const dataToDownload: Array<DownloadData<T>> = currentRecords.map(
       (obj: { _original: InputDataObj<T> }) => {
         const requiredObj = obj._original;
-
         return this.toCSVDataObj(requiredObj);
       }
     );
@@ -380,7 +383,6 @@ export default class DataTable<T, S> extends React.Component<
         this.searchBySupervisor(this.searchByEvaluator(this.state.data))
       )
     );
-
     return this.props.isNpsTable ? this.searchByAgent(sortedData) : sortedData;
   }
 
@@ -413,7 +415,7 @@ export default class DataTable<T, S> extends React.Component<
                 <label>Agents</label>
                 <SearchableDropdown
                   value={this.state.agentSearch}
-                  name="evaluatorSearch"
+                  name="agentSearch"
                   options={this.state.agentOptions}
                   placeholder="Agent"
                   onChange={this.handleDropdownInput}

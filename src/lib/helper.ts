@@ -20,7 +20,7 @@ export function getFormattedDate(dateStr: string): string {
   const day = date.getDate();
   const formattedDay = day > 9 ? day : `0${day}`;
 
-  return formattedMonth + "/" + formattedDay + "/" + year;
+  return `${formattedDay}/${formattedMonth}/${year}`;
 }
 
 export function nullEmptyStrings<T>(formData: Dictionary<any>): T {

@@ -6,6 +6,7 @@ import NetPromoterScoreForm, { Props } from "./index";
 
 const props: Props = {
   loading: false,
+  error: null,
   evaluator: loggedInEvaluator,
   agents: users,
   frontLineRatingReasons: [

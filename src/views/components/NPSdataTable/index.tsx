@@ -115,12 +115,6 @@ const columns: ColumnRowsOpt[] = [
         accessor: "backOfficeReasons",
         Cell: listCellFormatter("backOfficeReasons"),
         filterMethod: listFilterMethod("backOfficeReasons")
-      },
-      {
-        Header: "Comment",
-        accessor: "comment",
-        style: { whiteSpace: "unset" },
-        width: 200
       }
     ]
   }

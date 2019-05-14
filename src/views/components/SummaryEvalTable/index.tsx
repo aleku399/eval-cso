@@ -101,7 +101,10 @@ export function getDateRange(dates: string[]): DateRange {
     return { time: dateValue.getTime(), date: dateStr };
   });
   const sortedDates = _.sortBy(datesWithTime, obj => obj.time);
-  return { from: sortedDates[0].date, to: _.last(sortedDates).date };
+  return {
+    from: sortedDates[0] && sortedDates[0].date,
+    to: _.last(sortedDates) && _.last(sortedDates).date
+  };
 }
 
 function aggregate(data: EvaluationTableData[]): EvalSummaryData[] {

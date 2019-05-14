@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import useLocation from "react-use/lib/useLocation";
 import { SemanticWIDTHS } from "semantic-ui-react";
 import { Link, Router } from "../../../../server/routes";
+import { Services } from "../../../lib/serviceData";
 import { AppState } from "../../../redux/reducers";
 import NavMenu, { horizontal, MenuItem } from "../../components/NavMenu";
 import {
@@ -20,34 +21,43 @@ const defaultMenu = [
 
 interface Props {
   user: Profile;
-  service: string;
+  service: Services;
 }
 
-const evaluation: string = "evaluation";
-const claim: string = "claim";
+type MenuItemValue = "data" | "summary" | "evaluation";
 
-const getRoutePath = (activeService: string, item: string) => {
-  if (item === evaluation) {
-    return activeService === claim ? `/${claim}` : "/";
-  }
-  return activeService === claim ? `/${claim}/${item}` : `/${item}`;
+const evaluation: MenuItemValue = "evaluation";
+const claim: Services = "claim";
+const nps: Services = "nps";
+
+export const isMinorService = (activeService: Services): boolean => {
+  return activeService === claim || activeService === nps;
 };
 
-const setActiveMenuItem = (activeService: string) => (item: string) => {
+const getRoutePath = (activeService: Services, item: string) => {
+  if (item === evaluation) {
+    return isMinorService(activeService) ? `/${activeService}` : "/";
+  }
+  return isMinorService(activeService)
+    ? `/${activeService}/${item}`
+    : `/${item}`;
+};
+
+const setActiveMenuItem = (activeService: Services) => (item: string) => {
   const path = getRoutePath(activeService, item);
   Router.pushRoute(path);
 };
 
-function adminMenuItem(activeService: string): MenuItem {
+function adminMenuItem(activeService: Services): MenuItem {
   return activeService === claim
     ? { name: "ClaimTypes", id: "types" }
     : { name: "Parameters", id: "service" };
 }
 
 function useSetService(
-  service: string,
+  service: Services,
   role: Role
-): { service: string; item: string } {
+): { service: Services; item: MenuItemValue } {
   const location = useLocation();
   const defaultItem =
     role === EVALUATOR || role === ADMIN ? evaluation : "data";
@@ -57,7 +67,7 @@ function useSetService(
   const pathName = location && location.pathname.substring(1);
   const derivedService = pathName && pathName.includes(claim) ? claim : service;
   const item = derivedService === claim ? pathName.split("-")[1] : pathName;
-  return { service: derivedService, item };
+  return { service: derivedService as Services, item: item as MenuItemValue };
 }
 
 function NavbarMenu(props: Props) {
@@ -72,7 +82,9 @@ function NavbarMenu(props: Props) {
       : defaultMenu;
 
   const items: MenuItem[] =
-    role === ADMIN ? [...loggedInMenu, adminMenuItem(service)] : loggedInMenu;
+    role === ADMIN && service !== nps
+      ? [...loggedInMenu, adminMenuItem(service)]
+      : loggedInMenu;
 
   const widths = items.length as SemanticWIDTHS;
   return (

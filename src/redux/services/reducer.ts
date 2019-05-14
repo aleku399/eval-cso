@@ -1,7 +1,8 @@
+import { Services } from "../../lib/serviceData";
 import { CHANGE_SERVICE, ServiceActions } from "./actions";
 
 export interface ServiceState {
-  active: string;
+  active: Services;
 }
 
 const initialState: ServiceState = {

@@ -2,22 +2,27 @@ import React from "react";
 import { connect } from "react-redux";
 import { AnyAction, bindActionCreators, Dispatch } from "redux";
 import { Router } from "../../../../server/routes";
-import { serviceMenuItems } from "../../../lib/serviceData";
+import { serviceMenuItems, Services } from "../../../lib/serviceData";
 import { AppState } from "../../../redux/reducers";
 import {
   changeService,
   ChangeServiceFn
 } from "../../../redux/services/actions";
 import NavMenu, { SetActiveMenuItem, vertical } from "../../components/NavMenu";
+import { isMinorService } from "../NavBar";
 
 interface Props {
   setActiveMenuItem: SetActiveMenuItem;
   activeItem: string;
 }
 
-const setActiveAndRoute = (setService: SetActiveMenuItem) => (item: string) => {
+const setActiveAndRoute = (setService: SetActiveMenuItem) => (
+  item: Services
+) => {
   setService(item);
-  return item === "claim" ? Router.pushRoute("/claim") : Router.pushRoute("/");
+  return isMinorService(item)
+    ? Router.pushRoute(`/${item}`)
+    : Router.pushRoute("/");
 };
 
 function ServicesMenu(props: Props) {

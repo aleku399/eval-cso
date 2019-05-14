@@ -83,7 +83,7 @@ function aggregate(data: NPS[]): NPSSummaryData[] {
 
   const { from, to } = getDateRange(data.map(value => value.date));
 
-  return [{ score: npsValue, from, to }];
+  return [{ score: _.round(npsValue, 2), from, to }];
 }
 
 export default function SummaryNPSTable(props: Props) {

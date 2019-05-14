@@ -4,8 +4,8 @@ import { Button, Form, Message } from "semantic-ui-react";
 import { nullEmptyStrings } from "../../../lib/helper";
 import RadioGroup from "../RadioGroup";
 import { Profile } from "../UserProfile";
-import OfflineSection from "./OfflineSection";
-import OnlineSection, { OnlineEvaluation } from "./OnlineSection";
+import OfflineSection from "./offlineSection";
+import OnlineSection, { OnlineEvaluation } from "./onlineSection";
 
 interface OfflineSection {
   frontLineRatingReasons: string[];
@@ -19,11 +19,12 @@ interface Evaluation {
 
 type EvaluationPayload = OnlineEvaluation & OfflineSection;
 
-type SubmitEvaluation = (data: EvaluationPayload) => AxiosPromise<void>;
+export type SubmitEvaluation = (data: EvaluationPayload) => AxiosPromise<void>;
 
 export interface Props {
   onSubmit: SubmitEvaluation;
   loading: boolean;
+  error: string;
   agents: Profile[];
   evaluator: Profile;
   frontLineRatingReasons: string[];
@@ -37,7 +38,6 @@ export type Section = "online" | "offline";
 interface State {
   evaluation: Evaluation;
   loading: boolean;
-  activeSection: number;
   errors: string;
   showForm: boolean;
   feedback: string;
@@ -51,7 +51,7 @@ export default class NetPromoterScoreForm extends React.Component<
   State
 > {
   public initialOnline: OnlineEvaluation = {
-    agent: "",
+    agentName: "",
     touchPoint: "",
     date: "",
     reason: "",
@@ -74,9 +74,8 @@ export default class NetPromoterScoreForm extends React.Component<
         backOfficeReasons: []
       }
     },
-    errors: null,
+    errors: this.props.error,
     loading: this.props.loading,
-    activeSection: null,
     showForm: false,
     feedback: null
   };
@@ -86,9 +85,20 @@ export default class NetPromoterScoreForm extends React.Component<
     this.state = this.initialState;
   }
 
+  public componentDidUpdate(prevProp: Props) {
+    if (
+      prevProp.loading !== this.props.loading ||
+      prevProp.error !== this.props.error
+    ) {
+      this.setState({
+        errors: this.props.error,
+        loading: this.props.loading
+      });
+    }
+  }
+
   public handleShowForm = (_event, { value }) => {
-    const feedback =
-      value === "no" ? null : "Proceed as below";
+    const feedback = value === "no" ? null : "Proceed as below";
     const radioState = value === "yes" ? true : false;
     this.setState({ feedback, showForm: radioState });
   };
@@ -133,13 +143,6 @@ export default class NetPromoterScoreForm extends React.Component<
     this.setState({ evaluation });
   };
 
-  public handleSectionClick = (_event, titleName) => {
-    const { index } = titleName;
-    const { activeSection } = this.state;
-    const newActiveSection = activeSection === index ? -1 : index;
-    this.setState({ activeSection: newActiveSection });
-  };
-
   public validateOfflineSection = (): boolean => {
     const offline = this.state.evaluation.offline;
     if (!offline.frontLineRatingReasons.length) {
@@ -159,8 +162,8 @@ export default class NetPromoterScoreForm extends React.Component<
 
   public validateOnlineSection = (): boolean => {
     const online = this.state.evaluation.online;
-    if (!online.agent) {
-      this.setState({ errors: "Please select an agent" });
+    if (!online.agentName) {
+      this.setState({ errors: "Please select an agentName" });
       return false;
     }
     if (!online.touchPoint) {
@@ -231,7 +234,7 @@ export default class NetPromoterScoreForm extends React.Component<
     return `Good day, this is ${
       this.props.evaluator.fullName
     } from NSSF, do you have 3 minutes to quickly talk about your recent experience
-    when you  contacted us/interacted with us?`;
+    when you  contacted us/interacted with us?`;
   };
 
   public render() {
@@ -260,18 +263,14 @@ export default class NetPromoterScoreForm extends React.Component<
           <Form.Field>
             <OnlineSection
               evaluation={this.state.evaluation.online}
-              activeSection={this.state.activeSection}
               agents={this.props.agents}
               reasons={this.props.reasons}
               touchPoints={this.props.touchPoints}
               handleInput={this.handleInput(onlineSection)}
               handleChangeRadioInput={this.handleChangeRadioInput}
-              handleSectionClick={this.handleSectionClick}
               handleDropDownInput={this.handleDropDownInput(onlineSection)}
             />
             <OfflineSection
-              activeSection={this.state.activeSection}
-              handleSectionClick={this.handleSectionClick}
               frontLineRatingReasons={this.props.frontLineRatingReasons}
               backOfficeReasons={this.props.backOfficeReasons}
               handleDropDownInput={this.handleDropDownInput(offlineSection)}
