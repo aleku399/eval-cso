@@ -45,6 +45,7 @@ export interface Props<T, S = any> {
   loading?: boolean;
   isSummaryTable?: boolean;
   isNpsTable?: boolean;
+  isNpsaTable?: boolean;
   aggregate?: AggregateFn<T, S>;
   deleteHandler?: DeleteHandler;
   error?: string;
@@ -395,7 +396,7 @@ export default class DataTable<T, S> extends React.Component<
   public render() {
     const data = this.renderedData();
     const columns =
-      this.props.loggedIn.role === ADMIN && this.props.deleteHandler
+      this.props.loggedIn.role === ADMIN && this.props.deleteHandler || this.props.isNpsaTable
         ? this.withDeleteCell(this.props.columns)
         : this.props.columns;
     return (
