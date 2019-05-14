@@ -10,6 +10,7 @@
         "src": "./src",
         "style": "./style"
       }
-    }]
+    }],
+    "emotion"
   ]
 }

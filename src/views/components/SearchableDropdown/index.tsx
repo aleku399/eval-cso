@@ -13,6 +13,7 @@ interface Props {
   placeholder?: string;
   name: string;
   fluid?: boolean;
+  multiple?: boolean;
   search?: boolean;
   value?: string;
 }
@@ -26,21 +27,23 @@ export function makeOptions(values: string[]): DropdownItemProps[] {
 }
 
 export default function SearchableDropdown(props: Props) {
-  const { fluid = true, search = true } = props;
+  const { fluid = true, search = true, multiple = false } = props;
   const options = props.values ? makeOptions(props.values) : props.options;
   if (!options) {
     throw new Error(`Selection Options missing for ${props.name}`);
   }
+  const valueProp = multiple ? {} : { value: props.value };
   return (
     <Dropdown
       placeholder={props.placeholder}
       name={props.name}
       options={options}
+      multiple={multiple}
       fluid={fluid}
       search={search}
       selection={true}
       onChange={props.onChange}
-      value={props.value}
+      {...valueProp}
     />
   );
 }
