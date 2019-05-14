@@ -13,7 +13,7 @@ export const testNpsaData = [
     customerTel: 6358376,
     touchPoint: "person-to-person",
     reason: "call",
-    Time: "5 mins",
+    Time: "5: 00 AM",
     duration: "10:00 AM",
     issueResolved: false,
     furtherInformationGiven: true,
