@@ -9,27 +9,34 @@ import {
   ChangeServiceFn
 } from "../../../redux/services/actions";
 import NavMenu, { SetActiveMenuItem, vertical } from "../../components/NavMenu";
+import { ADMIN, EVALUATOR, Profile } from "../../components/UserProfile";
 import { isMinorService } from "../NavBar";
 
 interface Props {
   setActiveMenuItem: SetActiveMenuItem;
+  user: Profile;
   activeItem: string;
 }
 
-const setActiveAndRoute = (setService: SetActiveMenuItem) => (
+const setActiveAndRoute = (user: Profile, setService: SetActiveMenuItem) => (
   item: Services
 ) => {
   setService(item);
-  return isMinorService(item)
-    ? Router.pushRoute(`/${item}`)
-    : Router.pushRoute("/");
+
+  const basePath = isMinorService(item) ? `/${item}/` : "/";
+
+  const routePath =
+    user.role === ADMIN || user.role === EVALUATOR
+      ? basePath
+      : `${basePath}data`;
+  Router.pushRoute(routePath);
 };
 
 function ServicesMenu(props: Props) {
   return (
     <NavMenu
       activeItem={props.activeItem}
-      setActiveMenuItem={setActiveAndRoute(props.setActiveMenuItem)}
+      setActiveMenuItem={setActiveAndRoute(props.user, props.setActiveMenuItem)}
       items={serviceMenuItems}
       header="Services"
       alignment={vertical}
@@ -37,8 +44,9 @@ function ServicesMenu(props: Props) {
   );
 }
 
-const mapStateToProps = ({ service }: AppState) => ({
-  activeItem: service.active
+const mapStateToProps = ({ service, login }: AppState) => ({
+  activeItem: service.active,
+  user: login.profile
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => ({

@@ -2,8 +2,9 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Header } from "semantic-ui-react";
 import { AppState } from "../../../redux/reducers";
-import { Profile } from "../../components/UserProfile";
+import { ADMIN, EVALUATOR, Profile } from "../../components/UserProfile";
 import CreateEvaluation from "../../containers/CreateEvaluation";
+import EvaluationDataView from "../../containers/EvaluationDataView";
 import Layout from "../Layout";
 
 interface Props {
@@ -16,11 +17,19 @@ const mapStateToProps = ({ login: { jwt, profile } }: AppState): Props => ({
   jwt
 });
 
+function LoggedInUserView(user: Profile) {
+  return user.role === ADMIN || user.role === EVALUATOR ? (
+    <CreateEvaluation />
+  ) : (
+    <EvaluationDataView />
+  );
+}
+
 function Home({ jwt, loggedInUser }: Props) {
   return (
     <Layout>
       {jwt && loggedInUser ? (
-        <CreateEvaluation />
+        LoggedInUserView(loggedInUser)
       ) : (
         <Header
           as="h3"

@@ -174,10 +174,6 @@ export default class NetPromoterScoreForm extends React.Component<
       this.setState({ errors: "Please select a reason for your call/visit" });
       return false;
     }
-    if (!online.rating) {
-      this.setState({ errors: "Please rate NSSF as a recommendation" });
-      return false;
-    }
     if (!online.crmCaptureCorrect) {
       this.setState({ errors: "Please select if CRM capture" });
       return false;

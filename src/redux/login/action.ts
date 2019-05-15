@@ -7,6 +7,7 @@ import { Profile } from "../../views/components/UserProfile";
 export const REQUESTS_LOGIN = "REQUESTS_LOGIN";
 export const RECEIVES_LOGIN_FAILURE = "RECEIVES_LOGIN";
 export const RECEIVES_LOGIN_SUCCESS = "RECEIVES_LOGIN_SUCCESS";
+export const REQUESTS_LOGOUT = "REQUESTS_LOGOUT";
 
 const userLoginApi = `${userApi}login`;
 
@@ -26,10 +27,18 @@ export type ReceiveLoginFailure = Action & {
   error: string;
 };
 
-export type LoginActions = ReceiveLoginFailure & ReceiveLoginSuccess;
+export type RequestLogout = Action;
+
+export type LoginActions = ReceiveLoginFailure &
+  ReceiveLoginSuccess &
+  RequestLogout;
 
 export const requestLogin = () => ({
   type: REQUESTS_LOGIN
+});
+
+export const requestLogout = () => ({
+  type: REQUESTS_LOGOUT
 });
 
 export const receiveLoginFailure = (error: string) => ({
@@ -56,4 +65,10 @@ export const loginUser = (dispatch: Dispatch) => (credentials: Credentials) => {
     .catch(error => {
       dispatch(receiveLoginFailure(error.toString()));
     });
+};
+
+export const logoutUser = (dispatch: Dispatch) => () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("profile");
+  dispatch(requestLogout());
 };

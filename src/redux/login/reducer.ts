@@ -3,7 +3,8 @@ import {
   LoginState,
   RECEIVES_LOGIN_FAILURE,
   RECEIVES_LOGIN_SUCCESS,
-  REQUESTS_LOGIN
+  REQUESTS_LOGIN,
+  REQUESTS_LOGOUT
 } from "./action";
 
 const initialState: LoginState = {
@@ -27,6 +28,14 @@ export function loginReducer(
       };
     case RECEIVES_LOGIN_FAILURE:
       return { ...state, loading: false, error: action.error };
+    case REQUESTS_LOGOUT:
+      return {
+        ...state,
+        loading: false,
+        error: null,
+        jwt: null,
+        profile: null
+      };
     default:
       return state;
   }

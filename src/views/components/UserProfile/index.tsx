@@ -55,6 +55,7 @@ export interface State {
   error?: string;
   feedback?: string;
   loading?: boolean;
+  supervisors: Profile[];
 }
 
 const roles = [ADMIN, AGENT, SUPERVISOR, EVALUATOR];
@@ -87,11 +88,17 @@ class UserProfile extends React.Component<Props, State> {
   }
 
   public initState() {
+    const supervisors =
+      !this.props.supervisors.length && this.props.loggedInUser.role !== AGENT
+        ? [this.props.loggedInUser]
+        : this.props.supervisors;
+
     return {
       agent: this.props.agent || this.defaultAgent,
       editUser: this.props.editUser,
       loading: this.props.loading,
-      error: this.props.error
+      error: this.props.error,
+      supervisors
     };
   }
 
@@ -265,7 +272,7 @@ class UserProfile extends React.Component<Props, State> {
           <SearchableDropdown
             placeholder="Supervisor"
             name="supervisor"
-            options={mkOptionsFromUser(this.props.supervisors)}
+            options={mkOptionsFromUser(this.state.supervisors)}
             search={false}
             onChange={this.handleDropdownInput}
             value={this.state.agent.supervisor}

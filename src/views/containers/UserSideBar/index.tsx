@@ -1,6 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
+import { AnyAction, Dispatch } from "redux";
 import { Router } from "../../../../server/routes";
+import { logoutUser } from "../../../redux/login/action";
 import { AppState } from "../../../redux/reducers";
 import NavMenu, { MenuItem, vertical } from "../../components/NavMenu";
 import { AGENT, Profile, Role } from "../../components/UserProfile";
@@ -11,13 +13,13 @@ const nonLoggedInMenu = [
 ];
 
 const loggedInMenu = [
-  { name: "Sign out", id: "login" },
   { name: "User List", id: "users" },
   { name: "Create Agent", id: "agent" }
 ];
 
 interface Props {
   user: Profile;
+  onLoginRoute: () => void;
 }
 
 const setMenuItems = (role?: Role, userName?: string): MenuItem[] => {
@@ -25,24 +27,26 @@ const setMenuItems = (role?: Role, userName?: string): MenuItem[] => {
     return nonLoggedInMenu;
   }
 
-  const editProfile = { name: "Update Profile", id: `user/${userName}` };
+  const editProfile = [
+    { name: "Update Profile", id: `user/${userName}` },
+    { name: "Sign out", id: "login" }
+  ];
 
   if (role !== AGENT) {
-    return [editProfile, ...loggedInMenu];
+    return [...editProfile, ...loggedInMenu];
   }
 
   if (role === AGENT) {
-    return [editProfile];
+    return [...editProfile];
   }
 };
 
-function setActiveMenuItem(item: string) {
+const setActiveMenuItem = (onLoginRoute: () => void) => (item: string) => {
   if (item === "login") {
-    localStorage.removeItem("token");
-    localStorage.removeItem("profile");
+    onLoginRoute();
   }
   Router.pushRoute(`/${item}`);
-}
+};
 
 function UserSideBar(props: Props) {
   const userName = props.user && props.user.userName;
@@ -52,7 +56,7 @@ function UserSideBar(props: Props) {
 
   return (
     <NavMenu
-      setActiveMenuItem={setActiveMenuItem}
+      setActiveMenuItem={setActiveMenuItem(props.onLoginRoute)}
       items={items}
       header="Users"
       alignment={vertical}
@@ -60,9 +64,15 @@ function UserSideBar(props: Props) {
   );
 }
 
-const mapStateToProps = ({ service, login }: AppState) => ({
-  activeItem: service.active,
+const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => ({
+  onLoginRoute: logoutUser(dispatch)
+});
+
+const mapStateToProps = ({ login }: AppState) => ({
   user: login.profile
 });
 
-export default connect(mapStateToProps)(UserSideBar);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(UserSideBar);
