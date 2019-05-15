@@ -1,6 +1,5 @@
 import { AxiosRequestConfig } from "axios";
-import { useState } from "react";
-import useEffectOnce from "react-use/lib/useEffectOnce";
+import { useEffect, useState } from "react";
 import axios, { authAxios } from "./axios";
 
 export interface Response<T> {
@@ -21,7 +20,7 @@ export const useAxios = <T>(jwt?: string) => (
   const defaultState = { loading: true, data: null, error: null };
   const [response, setResponse] = useState(defaultState);
 
-  useEffectOnce(() => {
+  useEffect(() => {
     (jwt ? authAxios(jwt) : axios)
       .request(request)
       .then(res => {
@@ -30,7 +29,7 @@ export const useAxios = <T>(jwt?: string) => (
       .catch(err => {
         setResponse({ ...defaultState, loading: false, error: err.toString() });
       });
-  });
+  }, [request.url, request.method, request.data]);
   return response;
 };
 
