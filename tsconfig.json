@@ -1,4 +1,5 @@
 {
+  "types": ["node", "@emotion/core"],
   "compileOnSave": false,
   "compilerOptions": {
     "target": "esnext",
