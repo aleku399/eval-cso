@@ -19,6 +19,7 @@ export interface Props {
   widths?: SemanticWIDTHS;
   alignment?: Alignment;
   activeItem?: string;
+  logo?: string;
   setActiveMenuItem: SetActiveMenuItem;
 }
 
@@ -50,14 +51,20 @@ class NavMenu extends Component<Props, State> {
 
   public render() {
     const { activeItem, items } = this.state;
-    const { alignment, header, widths } = this.props;
+    const { alignment, header, widths, logo } = this.props;
     return (
       <Menu vertical={vertical === alignment} fluid={true} widths={widths}>
         {header ? (
           <Menu.Item>
-            <Menu.Header>{header}</Menu.Header>
+            <Menu.Header style={{color: "#1b61a5"}}>{header}</Menu.Header>
           </Menu.Item>
         ) : null}
+        {logo ? (
+          <Menu.Item>
+            <img src={logo} width="60" />
+          </Menu.Item>
+        ) : null}
+
         {items.map(item => (
           <Menu.Item
             name={item.name}

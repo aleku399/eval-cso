@@ -15,3 +15,5 @@ package-lock.json
 
 #config
 .vscode
+
+deploy.sh
