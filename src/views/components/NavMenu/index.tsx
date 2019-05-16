@@ -56,7 +56,7 @@ class NavMenu extends Component<Props, State> {
       <Menu vertical={vertical === alignment} fluid={true} widths={widths}>
         {header ? (
           <Menu.Item>
-            <Menu.Header style={{color: "#1b61a5"}}>{header}</Menu.Header>
+            <Menu.Header style={{ color: "#1b61a5" }}>{header}</Menu.Header>
           </Menu.Item>
         ) : null}
         {logo ? (

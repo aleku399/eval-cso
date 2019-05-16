@@ -1,4 +1,5 @@
-import { createServer } from "http";
+import * as compression  from "compression";
+import * as express from 'express';
 import * as next from "next";
 import routes from "./routes";
 
@@ -8,7 +9,14 @@ const app = next({ dev });
 const handler = routes.getRequestHandler(app)
 
 app.prepare().then(() => {
-  return createServer(handler).listen(port, ()=> {
+  const server = express()
+  server.use(compression())
+
+  server.get('*', (req, res) => {
+    return handler(req, res)
+  })
+
+  server.listen(port, ()=> {
     // tslint:disable-next-line: no-console
     console.log(`> Ready on http://localhost:${port}`)
   })
