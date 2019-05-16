@@ -26,6 +26,20 @@ export const serviceMenuItems: ServicesMenu[] = [
 
 type ServiceEvaluationReasons = { [K in Services]: string[] };
 
+const claimReasons = [
+  "Incomplete/wrong data entry",
+  "Unclear fingerprints",
+  "Wrong EFT details",
+  "Poor scanning",
+  "Documents not witnessed",
+  "Missing or incorrect documents/attachments",
+  "Signature missing",
+  "Mismatch between the dates when the customer and CSO signed",
+  "Duplicate claim",
+  "Faint documents submitted",
+  "Claim initiated before member qualified"
+];
+
 export const reasons: ServiceEvaluationReasons = {
   call: commonReasons,
   sms: [...commonReasons, "sms inquiry"],
@@ -33,5 +47,5 @@ export const reasons: ServiceEvaluationReasons = {
   whatsapp: commonReasons,
   web: commonReasons,
   nps: commonReasons,
-  claim: ["rude", "bad language"]
+  claim: claimReasons
 };
