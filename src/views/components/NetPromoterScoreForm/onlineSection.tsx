@@ -102,7 +102,9 @@ export default function OnlineSection(props: Props) {
       </Form.Field>
 
       <Form.Field required={true}>
-        <label>5. How long did you wait before an officer served you?</label>
+        <label>
+          5. How long did you wait before an officer served you?(minutes)
+        </label>
         <Input
           type="number"
           name="waitTime"
@@ -114,7 +116,7 @@ export default function OnlineSection(props: Props) {
 
       <Form.Field required={true}>
         <label>
-          6. How long did an officer take while addressing your issue?
+          6. How long did an officer take while addressing your issue?(minutes)
         </label>
         <Input
           type="number"
