@@ -43,10 +43,10 @@ const config = {
     nextConfig.plugins.push(
       new webpack.EnvironmentPlugin({
         API: "http://212.71.238.164:8888/api/",
-        version: packageJSON.version,
         DEBUG: false,
         NODE_ENV: "development",
         STORYBOOK: false,
+        version: packageJSON.version,
       })
     )
 
