@@ -84,7 +84,9 @@ class LoginForm extends React.Component<Props, Credentials> {
               required={true}
             />
           </Form.Field>
-          <Button type="submit">Login</Button>
+          <Button data-testid="submitButton" type="submit">
+            Login
+          </Button>
         </Form>
       </div>
     );

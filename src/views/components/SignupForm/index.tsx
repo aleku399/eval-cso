@@ -132,7 +132,11 @@ export default class Signup extends React.Component<Props, State> {
               required={true}
             />
           </Form.Field>
-          <Button className="ui submit button" type="submit">
+          <Button
+            data-testid="submitButton"
+            className="ui submit button"
+            type="submit"
+          >
             Sign Up
           </Button>
           <Message

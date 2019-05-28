@@ -14,7 +14,8 @@ function getOrCreateStore(initialState?: AppState) {
   const version = window.localStorage.getItem("version");
   const jwt = window.localStorage.getItem("token");
   const profile = JSON.parse(window.localStorage.getItem("profile"));
-  const appState = version === process.env.version ? { login: {jwt, profile } } : {};
+  const appState =
+    version === process.env.version ? { login: { jwt, profile } } : {};
 
   // Create store if unavailable on the client and set it on the window object
   if (!window[__NEXT_REDUX_STORE__]) {
