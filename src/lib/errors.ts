@@ -3,7 +3,7 @@ export const LoginErrorName = "Login Error";
 export class LoginError extends Error {
   constructor(message?: string) {
     super();
-    this.name = "Login Error";
+    this.name = LoginErrorName;
     const defaultMsg = "Please Login to access this page";
     this.message = message ? `${defaultMsg}: ${message}` : defaultMsg;
   }
