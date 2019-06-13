@@ -23,6 +23,8 @@ export interface TableData {
   score?: number;
   branch?: string;
   supervisor?: string;
+  agentFullName?: string;
+  evaluatorFullName?: string;
   from?: string;
   to?: string;
 }
@@ -170,7 +172,7 @@ export default class DataTable<T, S> extends React.Component<
     return data.map(obj => {
       const agentFullName = usersMap[obj.agentName][0].fullName;
       const evaluatorFullName = usersMap[obj.evaluator][0].fullName;
-      return { ...obj, agentName: agentFullName, evaluator: evaluatorFullName };
+      return { ...obj, agentFullName, evaluatorFullName };
     });
   }
 
@@ -331,7 +333,7 @@ export default class DataTable<T, S> extends React.Component<
 
   public downloadAggregateSource = () => {
     const sortedData = this.getSortedData().map(obj => {
-      return this.toCSVDataObj(obj);
+      return this.toCSVDataObj(obj) as DownloadData<T>;
     });
 
     this.setState({ dataToDownload: sortedData }, () => {
