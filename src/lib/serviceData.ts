@@ -7,7 +7,11 @@ export type Services =
   | "whatsapp"
   | "web"
   | "claim"
-  | "nps";
+  | "nps"
+  | "outbound_call"
+  | "mystery_call"
+  | "twitter"
+  | "facebook";
 
 export interface ServicesMenu {
   id: Services;
@@ -18,7 +22,11 @@ export const serviceMenuItems: ServicesMenu[] = [
   { name: "Call", id: "call" },
   { name: "SMS", id: "sms" },
   { name: "Email", id: "email" },
+  { name: "Mystery call", id: "mystery_call" },
+  { name: "OutBound Call", id: "outbound_call" },
   { name: "Whatsapp", id: "whatsapp" },
+  { name: "Facebook", id: "facebook" },
+  { id: "twitter", name: "Twitter" },
   { name: "Web", id: "web" },
   { name: "Claim", id: "claim" },
   { name: "NPS", id: "nps" }
@@ -47,5 +55,9 @@ export const reasons: ServiceEvaluationReasons = {
   whatsapp: commonReasons,
   web: commonReasons,
   nps: commonReasons,
-  claim: claimReasons
+  claim: claimReasons,
+  twitter: commonReasons,
+  facebook: commonReasons,
+  mystery_call: commonReasons,
+  outbound_call: commonReasons
 };
