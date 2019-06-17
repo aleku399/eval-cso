@@ -11,7 +11,8 @@ export type Services =
   | "outbound_call"
   | "mystery_call"
   | "twitter"
-  | "facebook";
+  | "facebook"
+  | "look_and_feel";
 
 export interface ServicesMenu {
   id: Services;
@@ -28,6 +29,7 @@ export const serviceMenuItems: ServicesMenu[] = [
   { name: "Facebook", id: "facebook" },
   { id: "twitter", name: "Twitter" },
   { name: "Web", id: "web" },
+  { name: "Look and feel", id: "look_and_feel" },
   { name: "Claim", id: "claim" },
   { name: "NPS", id: "nps" }
 ];
@@ -59,5 +61,6 @@ export const reasons: ServiceEvaluationReasons = {
   twitter: commonReasons,
   facebook: commonReasons,
   mystery_call: commonReasons,
-  outbound_call: commonReasons
+  outbound_call: commonReasons,
+  look_and_feel: commonReasons
 };
