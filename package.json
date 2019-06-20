@@ -1,6 +1,6 @@
 {
   "name": "eval-cso-frontend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Customer Service officer evaluation tool",
   "main": "index.js",
   "author": "aleku399",
