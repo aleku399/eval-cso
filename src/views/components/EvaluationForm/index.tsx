@@ -28,6 +28,7 @@ export interface EvalState {
 }
 
 interface Evaluation extends EvalState {
+  reason: string;
   parameters: string[];
 }
 
@@ -48,6 +49,7 @@ export const zeroRated: ParamCategoryName = "zeroRated";
 
 interface State {
   evaluation: Evaluation;
+  showOtherReasonField: boolean;
   loading: boolean;
   error: string;
   feedback?: string;
@@ -76,10 +78,12 @@ export default class EvaluationForm extends React.Component<Props, State> {
   public initialState(): State {
     return {
       feedback: null,
+      showOtherReasonField: false,
       evaluation: {
         parameters: [],
         comment: "",
         date: "",
+        reason: "",
         customerTel: 0,
         agentName: "",
         details: ""
@@ -128,6 +132,9 @@ export default class EvaluationForm extends React.Component<Props, State> {
   };
 
   public handleDropDownInput = (_event, { name, value }): void => {
+    if (value === "Others") {
+      return this.setState({ showOtherReasonField: true });
+    }
     const evaluation = { ...this.state.evaluation, [name]: value };
     return this.setState({ evaluation });
   };
@@ -145,6 +152,12 @@ export default class EvaluationForm extends React.Component<Props, State> {
     const name = event.target.name;
     const value = event.target.value;
     const evaluation = { ...this.state.evaluation, [name]: value };
+    this.setState({ evaluation });
+  };
+
+  public handleOtherReasonInput = (event: any): void => {
+    const value = event.target.value;
+    const evaluation = { ...this.state.evaluation, reason: value };
     this.setState({ evaluation });
   };
 
@@ -253,19 +266,22 @@ export default class EvaluationForm extends React.Component<Props, State> {
         </Form.Group>
 
         <Form.Group widths={this.props.evaluator.role === ADMIN ? "equal" : 8}>
-          <Form.Field
-            inline={true}
-            width={this.props.evaluator.role === ADMIN ? 16 : 8}
-          >
-            <label>Reasons</label>
-            <SearchableDropdown
-              placeholder="reason"
-              name="reason"
-              fluid={true}
-              values={this.props.reasons}
-              onChange={this.handleDropDownInput}
-            />
-          </Form.Field>
+          {this.props.reasons.length ? (
+            <Form.Field
+              inline={true}
+              width={this.props.evaluator.role === ADMIN ? 16 : 8}
+            >
+              <label>Reasons</label>
+              <SearchableDropdown
+                placeholder="Reason"
+                name="reason"
+                fluid={true}
+                values={this.props.reasons}
+                onChange={this.handleDropDownInput}
+              />
+            </Form.Field>
+          ) : null}
+
           {this.props.evaluator.role === ADMIN ? (
             <Form.Input
               type="date"
@@ -277,6 +293,18 @@ export default class EvaluationForm extends React.Component<Props, State> {
             />
           ) : null}
         </Form.Group>
+        {this.state.showOtherReasonField ? (
+          <Form.Field width="8">
+            <Form.Input
+              type="text"
+              name="otherReason"
+              value={this.state.evaluation.reason}
+              label="Other Reason"
+              placeholder="Specify other reason"
+              onChange={this.handleOtherReasonInput}
+            />
+          </Form.Field>
+        ) : null}
         <Form.Group widths="equal">
           {this.renderReasons(this.props.parameterCategories)}
         </Form.Group>

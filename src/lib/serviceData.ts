@@ -1,4 +1,24 @@
-const commonReasons = ["inquiry", "claim status", "inquiry status"];
+const commonReasons = [
+  "Statement Request",
+  "Statement Update",
+  "Statement Enquiries",
+  "Claim Submission",
+  "Benefits follow-up",
+  "Benefits Verification/predetermined",
+  "Contributions Payment",
+  "Clearance certificate",
+  "Duplicate Cards",
+  "Whistle Blower",
+  "Employee Registration",
+  "Employer Registration",
+  "Member Detail Update",
+  "Customer Engagement Message",
+  "SMS",
+  "Sensitization",
+  "General Inquiry",
+  "Voluntary",
+  "Others"
+];
 
 export type Services =
   | "call"
@@ -52,15 +72,15 @@ const claimReasons = [
 
 export const reasons: ServiceEvaluationReasons = {
   call: commonReasons,
-  sms: [...commonReasons, "sms inquiry"],
+  sms: commonReasons,
   email: commonReasons,
   whatsapp: commonReasons,
   web: commonReasons,
-  nps: commonReasons,
+  nps: [],
   claim: claimReasons,
   twitter: commonReasons,
   facebook: commonReasons,
   mystery_call: commonReasons,
   outbound_call: commonReasons,
-  look_and_feel: commonReasons
+  look_and_feel: []
 };

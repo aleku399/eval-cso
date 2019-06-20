@@ -15,7 +15,7 @@ const props: Props = {
   service: "Call",
   evaluator: loggedInEvaluator,
   agents: [agent],
-  reasons: ["Breach of confidentiality", "inquiry"],
+  reasons: ["Breach of confidentiality", "inquiry", "Others"],
   parameterCategories: [
     {
       name: categories[zeroRated],
@@ -57,7 +57,13 @@ const props: Props = {
 };
 
 const adminProps = { ...props, evaluator: adminProfileA };
+const withNoReasons = { ...props, evaluator: adminProfileA, reasons: [] };
+const withNoReasonsEvaluator = { ...props, reasons: [] };
 
 storiesOf("components/EvaluationForm", module)
   .add("with evaluator", () => <EvaluationForm {...props} />)
-  .add("with admin", () => <EvaluationForm {...adminProps} />);
+  .add("with admin", () => <EvaluationForm {...adminProps} />)
+  .add("with out reasons admin", () => <EvaluationForm {...withNoReasons} />)
+  .add("with out reasons evaluator", () => (
+    <EvaluationForm {...withNoReasonsEvaluator} />
+  ));
