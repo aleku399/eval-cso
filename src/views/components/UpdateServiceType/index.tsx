@@ -158,14 +158,11 @@ export default class UpdateServiceType extends React.PureComponent<
     const parameters: ParameterRes[] = flatten(
       this.state.parameterCategories.map(obj => obj.parameters)
     ).map(param => {
-      if (param.isNew) {
         return {
           ...param,
           weight: Number(param.weight),
-          value: snakeCase(param.name.toLowerCase())
-        };
-      }
-      return param;
+          value: param.isNew ? snakeCase(param.name.toLowerCase()) : param.value
+        }
     });
 
     this.setState({ loading: true });
