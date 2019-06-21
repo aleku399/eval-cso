@@ -119,7 +119,7 @@ const columns: ColumnRowsOpt[] = [
         accessor: "customer"
       },
       {
-        Header: "Call Reason",
+        Header: "Reason",
         id: "reason",
         accessor: "reason",
         style: { whiteSpace: "unset" },

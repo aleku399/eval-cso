@@ -164,7 +164,7 @@ export default class EvaluationForm extends React.Component<Props, State> {
   public validate = (): boolean => {
     if (!this.state.evaluation.parameters.length) {
       this.setState({
-        error: "Please check at least one parameter",
+        error: "Please add a reason for deviation or zero rating",
         feedback: null
       });
       return false;
