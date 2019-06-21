@@ -61,7 +61,7 @@ export default class NetPromoterScoreForm extends React.Component<
     customerTel: "",
     furtherInformationGiven: false,
     ratingReason: "",
-    crmCaptureCorrect: "Fair",
+    crmCaptureCorrect: "Yes",
     crmCaptureReason: "",
     rating: 5
   };

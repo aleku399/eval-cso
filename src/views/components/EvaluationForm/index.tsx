@@ -178,13 +178,11 @@ export default class EvaluationForm extends React.Component<Props, State> {
   };
 
   public clearInput() {
-    const evaluation = {
-      ...this.state.evaluation,
-      comment: "",
-      reason: "",
-      customer: 0
-    };
-    this.setState({ evaluation });
+    const initState = this.initialState();
+    this.setState({
+      ...initState,
+      loading: false
+    });
   }
 
   public handleSubmit = async (): Promise<void> => {
@@ -208,13 +206,10 @@ export default class EvaluationForm extends React.Component<Props, State> {
       this.props
         .onSubmit(nullEmptyStrings<CreateEvaluation>(payload))
         .then(response => {
-          if (response.data.id) {
-            this.setState({
-              loading: false,
-              feedback: `Added new  ${this.props.service} evaluation`
-            });
-            this.clearInput();
+          if (response.status === 200) {
+            return this.clearInput();
           }
+          throw Error("failed to submit data");
         })
         .catch(error => {
           this.setState({ loading: false, error: error.toString() });
@@ -247,6 +242,7 @@ export default class EvaluationForm extends React.Component<Props, State> {
             <SearchableDropdown
               name="agentName"
               placeholder="Select an Agent"
+              value={this.state.evaluation.agentName}
               options={mkOptionsFromUser(this.props.agents)}
               onChange={this.handleDropDownInput}
             />
@@ -277,6 +273,7 @@ export default class EvaluationForm extends React.Component<Props, State> {
                 name="reason"
                 fluid={true}
                 values={this.props.reasons}
+                value={this.state.evaluation.reason}
                 onChange={this.handleDropDownInput}
               />
             </Form.Field>

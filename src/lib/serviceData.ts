@@ -25,14 +25,15 @@ export type Services =
   | "sms"
   | "email"
   | "whatsapp"
-  | "web"
+  | "chat"
   | "claim"
   | "nps"
   | "outbound_call"
   | "mystery_call"
   | "twitter"
   | "facebook"
-  | "look_and_feel";
+  | "look_and_feel"
+  | "mystery_mail";
 
 export interface ServicesMenu {
   id: Services;
@@ -44,11 +45,12 @@ export const serviceMenuItems: ServicesMenu[] = [
   { name: "SMS", id: "sms" },
   { name: "Email", id: "email" },
   { name: "Mystery call", id: "mystery_call" },
+  { name: "Mystery mail", id: "mystery_mail" },
   { name: "OutBound Call", id: "outbound_call" },
   { name: "Whatsapp", id: "whatsapp" },
   { name: "Facebook", id: "facebook" },
   { id: "twitter", name: "Twitter" },
-  { name: "Web", id: "web" },
+  { name: "Chat", id: "chat" },
   { name: "Look and feel", id: "look_and_feel" },
   { name: "Claim", id: "claim" },
   { name: "NPS", id: "nps" }
@@ -75,12 +77,13 @@ export const reasons: ServiceEvaluationReasons = {
   sms: commonReasons,
   email: commonReasons,
   whatsapp: commonReasons,
-  web: commonReasons,
+  chat: commonReasons,
   nps: [],
   claim: claimReasons,
   twitter: commonReasons,
   facebook: commonReasons,
   mystery_call: commonReasons,
   outbound_call: commonReasons,
-  look_and_feel: []
+  look_and_feel: [],
+  mystery_mail: commonReasons
 };

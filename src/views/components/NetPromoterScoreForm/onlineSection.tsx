@@ -6,7 +6,7 @@ import RangeSlider from "../RangeSlider";
 import SearchableDropdown from "../SearchableDropdown";
 import { Profile } from "../UserProfile";
 
-export type CrmCaptureState = "Good" | "Fair" | "Bad";
+export type CrmCaptureState = "Yes" | "No";
 
 export interface OnlineEvaluation {
   waitTime: string;

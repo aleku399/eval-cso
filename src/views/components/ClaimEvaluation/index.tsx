@@ -55,7 +55,11 @@ class ClaimEvaluation extends React.Component<Props, State> {
   constructor(props) {
     super(props);
 
-    this.state = {
+    this.state = this.initialState();
+  }
+
+  public initialState() {
+    return {
       claim: {
         claimType: "",
         details: "",
@@ -66,20 +70,18 @@ class ClaimEvaluation extends React.Component<Props, State> {
         reason: "",
         allParametersMet: false
       },
-      loading: props.loading,
-      error: props.error
+      loading: this.props.loading,
+      error: this.props.error
     };
   }
 
   public clearInput = () => {
-    const claim = {
-      ...this.state.claim,
-      claimType: "",
-      workflowNumber: 0,
-      comment: "",
-      allParametersMet: false
+    const initState = {
+      ...this.initialState(),
+      loading: false,
+      error: null
     };
-    this.setState({ claim });
+    this.setState(initState);
   };
 
   public submitForm = async (): Promise<void> => {
@@ -96,13 +98,10 @@ class ClaimEvaluation extends React.Component<Props, State> {
       this.props
         .onSubmit(nullEmptyStrings<ClaimPayload>(claim))
         .then(response => {
-          if (response.data.id) {
-            this.setState({
-              loading: false,
-              feedback: "Added new claim evaluation"
-            });
-            this.clearInput();
+          if (response.status === 200) {
+            return this.clearInput();
           }
+          throw new Error("Failed to create new claim");
         })
         .catch(error => {
           this.setState({ loading: false, error: error.toString() });
@@ -177,6 +176,7 @@ class ClaimEvaluation extends React.Component<Props, State> {
           <label>Agents</label>
           <SearchableDropdown
             placeholder="Select an Agent"
+            value={this.state.claim.agentName}
             options={mkOptionsFromUser(this.props.agents)}
             onChange={this.handleDropDownInput}
             name="agentName"
@@ -186,6 +186,7 @@ class ClaimEvaluation extends React.Component<Props, State> {
           <label>Type of claim</label>
           <SearchableDropdown
             placeholder="Select a claim type"
+            value={this.state.claim.claimType}
             options={this.claimTypeOptions(this.props.claimTypes)}
             onChange={this.handleDropDownInput}
             name="claimType"
@@ -227,6 +228,7 @@ class ClaimEvaluation extends React.Component<Props, State> {
           <SearchableDropdown
             placeholder="Select a reason"
             values={this.props.reasons}
+            value={this.state.claim.reason}
             onChange={this.handleDropDownInput}
             name="reason"
           />
