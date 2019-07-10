@@ -5,7 +5,10 @@ import { nullEmptyStrings } from "../../../lib/helper";
 import RadioGroup from "../RadioGroup";
 import { Profile } from "../UserProfile";
 import OfflineSection from "./offlineSection";
-import OnlineSection, { OnlineEvaluation } from "./onlineSection";
+import OnlineSection, {
+  OnlineEvaluation,
+  OthersReasonLabel
+} from "./onlineSection";
 
 interface OfflineSection {
   frontLineRatingReasons: string[];
@@ -29,7 +32,7 @@ export interface Props {
   evaluator: Profile;
   frontLineRatingReasons: string[];
   backOfficeReasons: string[];
-  touchPoints: string[];
+  branches: string[];
   reasons: string[];
 }
 
@@ -41,6 +44,7 @@ interface State {
   errors: string;
   showForm: boolean;
   feedback: string;
+  showOtherReasonField: boolean;
 }
 
 export const onlineSection: Section = "online";
@@ -52,7 +56,7 @@ export default class NetPromoterScoreForm extends React.Component<
 > {
   public initialOnline: OnlineEvaluation = {
     agentName: "",
-    touchPoint: "",
+    branch: "",
     date: "",
     reason: "",
     waitTime: "",
@@ -74,6 +78,7 @@ export default class NetPromoterScoreForm extends React.Component<
         backOfficeReasons: []
       }
     },
+    showOtherReasonField: false,
     errors: this.props.error,
     loading: this.props.loading,
     showForm: false,
@@ -125,7 +130,9 @@ export default class NetPromoterScoreForm extends React.Component<
       ...this.state.evaluation,
       [section]: sectionEvaluation
     };
-    return this.setState({ evaluation });
+    const showOtherReasonField =
+      name === "reason" && value === OthersReasonLabel;
+    return this.setState({ evaluation, showOtherReasonField });
   };
 
   public handleInput = (section: Section) => (event: any): void => {
@@ -136,9 +143,23 @@ export default class NetPromoterScoreForm extends React.Component<
       ...this.state.evaluation[section],
       [name]: validValue
     };
+
     const evaluation = {
       ...this.state.evaluation,
       [section]: sectionEvaluation
+    };
+    this.setState({ evaluation });
+  };
+
+  public handleOtherReasonInput = (event: any): void => {
+    const { value } = event.target;
+    const online = {
+      ...this.state.evaluation.online,
+      reason: value
+    };
+    const evaluation = {
+      ...this.state.evaluation,
+      online
     };
     this.setState({ evaluation });
   };
@@ -166,7 +187,7 @@ export default class NetPromoterScoreForm extends React.Component<
       this.setState({ errors: "Please select an agentName" });
       return false;
     }
-    if (!online.touchPoint) {
+    if (!online.branch) {
       this.setState({ errors: "Please select a touch point" });
       return false;
     }
@@ -261,8 +282,10 @@ export default class NetPromoterScoreForm extends React.Component<
               evaluation={this.state.evaluation.online}
               agents={this.props.agents}
               reasons={this.props.reasons}
-              touchPoints={this.props.touchPoints}
+              branches={this.props.branches}
               handleInput={this.handleInput(onlineSection)}
+              showOtherReasonField={this.state.showOtherReasonField}
+              handleOtherReasonInput={this.handleOtherReasonInput}
               handleChangeRadioInput={this.handleChangeRadioInput}
               handleDropDownInput={this.handleDropDownInput(onlineSection)}
             />

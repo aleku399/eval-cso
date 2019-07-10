@@ -33,7 +33,9 @@ export type Services =
   | "twitter"
   | "facebook"
   | "look_and_feel"
-  | "mystery_mail";
+  | "mystery_mail"
+  | "10th_floor_look_and_feel"
+  | "14th_floor_look_and_feel";
 
 export interface ServicesMenu {
   id: Services;
@@ -53,8 +55,37 @@ export const serviceMenuItems: ServicesMenu[] = [
   { name: "Chat", id: "chat" },
   { name: "Look and feel", id: "look_and_feel" },
   { name: "Claim", id: "claim" },
-  { name: "NPS", id: "nps" }
+  { name: "NPS", id: "nps" },
+  {
+    name: "10th Floor Look and Feel",
+    id: "10th_floor_look_and_feel"
+  },
+  {
+    name: "14th Floor Look and Feel",
+    id: "14th_floor_look_and_feel"
+  }
 ];
+
+export const emailServiceIds: Services[] = [
+  "email",
+  "mystery_mail",
+  "chat",
+  "facebook",
+  "twitter"
+];
+
+export const branchServiceIds: Services[] = [
+  "mystery_call",
+  "look_and_feel",
+  "mystery_mail",
+  "claim",
+  "nps",
+  "10th_floor_look_and_feel",
+  "14th_floor_look_and_feel"
+];
+
+export const getServiceName = (id: Services): string =>
+  serviceMenuItems.find(obj => obj.id === id).name;
 
 type ServiceEvaluationReasons = { [K in Services]: string[] };
 
@@ -85,5 +116,7 @@ export const reasons: ServiceEvaluationReasons = {
   mystery_call: commonReasons,
   outbound_call: commonReasons,
   look_and_feel: [],
+  "10th_floor_look_and_feel": [],
+  "14th_floor_look_and_feel": [],
   mystery_mail: commonReasons
 };

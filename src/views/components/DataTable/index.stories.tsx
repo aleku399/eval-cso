@@ -27,7 +27,7 @@ const columns: ColumnRowsOpt[] = [
       },
       {
         Header: "Customer",
-        accessor: "customer"
+        accessor: "customerEmail"
       },
       {
         Header: "Comment",
@@ -52,7 +52,7 @@ const testData = [
     agentName: "thanos",
     reason: "BALANCE REQUEST",
     comment: "Acknowledge the customer",
-    customer: "14",
+    customerEmail: "abc@gmail.com",
     score: 40,
     supervisor: "bob",
     branch: "Kampala"
@@ -63,7 +63,7 @@ const testData = [
     agentName: "simon",
     reason: "BALANCE REQUEST",
     comment: "Acknowledge the customer",
-    customer: "15",
+    customerEmail: "abc@gmail.com",
     branch: "Nakawa",
     supervisor: "steve",
     score: 50
@@ -73,6 +73,7 @@ const testData = [
 storiesOf("components/DataTable", module)
   .add("with evaluator logged In", () => (
     <DataTable
+      service="mystery_mail"
       columns={columns}
       data={testData}
       users={users}
@@ -81,6 +82,7 @@ storiesOf("components/DataTable", module)
   ))
   .add("with agent logged in", () => (
     <DataTable
+      service="mystery_mail"
       columns={columns}
       data={testData}
       users={users}
@@ -90,6 +92,7 @@ storiesOf("components/DataTable", module)
   .add("with admin logged in", () => (
     <DataTable
       columns={columns}
+      service="mystery_mail"
       data={testData}
       users={users}
       loggedIn={testAdmin}

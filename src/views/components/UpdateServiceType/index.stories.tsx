@@ -1,12 +1,13 @@
 import { action } from "@storybook/addon-actions";
 import { storiesOf } from "@storybook/react";
 import React from "react";
+import { Services } from "../../../lib/serviceData";
 import { deviation, zeroRated } from "../EvaluationForm";
 import UpdateServiceType from "./index";
 
 const props = {
   loading: false,
-  serviceType: "call",
+  serviceType: "call" as Services,
   parameterCategories: [
     {
       name: "Reasons for deviation",
@@ -49,7 +50,7 @@ const props = {
 
 const createParametersProps = {
   loading: false,
-  serviceType: "call",
+  serviceType: "call" as Services,
   parameterCategories: [
     {
       name: "Reasons for deviation",

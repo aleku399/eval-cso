@@ -5,25 +5,29 @@ import { AnyAction, Dispatch } from "redux";
 import { npsApi } from "../../../lib/apiEndpoints";
 import { authAxios } from "../../../lib/axios";
 import { throwLoginError } from "../../../lib/errors";
-import { reasons } from "../../../lib/serviceData";
+import { getAgentData } from "../../../redux/AgentData/action";
 import { AppState } from "../../../redux/reducers";
 import { getUsers } from "../../../redux/userList/action";
 import NetPromoterScoreForm, {
   SubmitEvaluation
 } from "../../components/NetPromoterScoreForm";
 import { AGENT, Profile } from "../../components/UserProfile";
+import { DispatchGetAgentData } from "../UpdateUserProfile";
 import { DispatchGetUsers } from "../UserList";
-import { backOfficeReasons, frontLineReasons, touchPoints } from "./data";
+import { backOfficeReasons, frontLineReasons, visitReasons } from "./data";
 
 interface DispatchedProps {
   jwt: string;
   error: string;
   evaluator: Profile;
   loading: boolean;
+  branches: string[];
   users: Profile[];
 }
 
-type Props = DispatchedProps & DispatchGetUsers;
+type DispatchFns = DispatchGetUsers & DispatchGetAgentData;
+
+type Props = DispatchedProps & DispatchFns;
 
 const submitNps = (jwt: string): SubmitEvaluation => async evaluation => {
   return authAxios(jwt).post(npsApi, evaluation);
@@ -31,20 +35,20 @@ const submitNps = (jwt: string): SubmitEvaluation => async evaluation => {
 
 const mapStateToProps = ({
   login: { jwt, profile },
-  users: { loading, error, users }
+  users: { loading, error, users },
+  agentData
 }: AppState): DispatchedProps => ({
   evaluator: profile,
-
   users,
-  error,
+  error: error || agentData.error,
   jwt,
-  loading
+  branches: agentData.branches,
+  loading: loading || agentData.loading
 });
 
-const mapDispatchToProps = (
-  dispatch: Dispatch<AnyAction>
-): DispatchGetUsers => ({
-  dispatchGetUsers: getUsers(dispatch)
+const mapDispatchToProps = (dispatch: Dispatch<AnyAction>): DispatchFns => ({
+  dispatchGetUsers: getUsers(dispatch),
+  dispatchGetAgentData: getAgentData(dispatch)
 });
 
 function CreateNps(props: Props) {
@@ -58,24 +62,27 @@ function CreateNps(props: Props) {
     if (!props.users.length) {
       props.dispatchGetUsers(props.jwt);
     }
+    if (!props.branches.length) {
+      props.dispatchGetAgentData();
+    }
   });
 
   return (
     <NetPromoterScoreForm
-      reasons={reasons.nps}
+      reasons={visitReasons}
       frontLineRatingReasons={frontLineReasons}
       backOfficeReasons={backOfficeReasons}
       error={props.error}
       agents={agents}
       loading={props.loading}
       evaluator={props.evaluator}
-      touchPoints={touchPoints}
+      branches={props.branches}
       onSubmit={submitNps(props.jwt)}
     />
   );
 }
 
-export default connect<DispatchedProps, DispatchGetUsers>(
+export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(CreateNps);

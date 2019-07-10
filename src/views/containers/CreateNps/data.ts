@@ -53,4 +53,25 @@ export const backOfficeReasons = [
   "Printed Statement not issued",
   "None"
 ];
-export const touchPoints = ["person-to-person", "via app"];
+
+export const visitReasons = [
+  "Statement Request",
+  "Statement Update",
+  "Statement Enquiries",
+  "Claim Submission",
+  "Benefits follow-up",
+  "Benefits Verification/predetermined",
+  "Contributions Payment",
+  "Clearance certificate",
+  "Duplicate Cards",
+  "Whistle Blower",
+  "Employee Registration",
+  "Employer Registration",
+  "Member Detail Update",
+  "Customer Engagement Message",
+  "SMS",
+  "Sensitization",
+  "General Inquiry",
+  "Voluntary",
+  "Others"
+];

@@ -13,7 +13,7 @@ export interface OnlineEvaluation {
   duration: string;
   date: string;
   reason: string;
-  touchPoint: string;
+  branch: string;
   customerTel: string;
   agentName: string;
   issueResolved: boolean;
@@ -28,11 +28,17 @@ interface Props {
   evaluation: OnlineEvaluation;
   agents: Profile[];
   reasons: string[];
-  touchPoints: string[];
+  branches: string[];
+  showOtherReasonField: boolean;
   handleInput: (event: any) => void;
+  handleOtherReasonInput: (event: any) => void;
   handleChangeRadioInput: RadioOnChange;
   handleDropDownInput: StrictDropdownProps["onChange"];
 }
+
+const crmCaptureState: CrmCaptureState[] = ["Yes", "No"];
+
+export const OthersReasonLabel = "Others";
 
 export default function OnlineSection(props: Props) {
   return (
@@ -79,10 +85,10 @@ export default function OnlineSection(props: Props) {
       <Form.Field required={true} width="8">
         <label>3. Touch point</label>
         <SearchableDropdown
-          name="touchPoint"
-          placeholder="Select an touch point"
-          value={props.evaluation.touchPoint}
-          values={props.touchPoints}
+          name="branch"
+          placeholder="Select a touch point"
+          value={props.evaluation.branch}
+          values={props.branches}
           onChange={props.handleDropDownInput}
         />
       </Form.Field>
@@ -95,12 +101,29 @@ export default function OnlineSection(props: Props) {
         <SearchableDropdown
           name="reason"
           placeholder="Select a reason"
-          value={props.evaluation.reason}
+          value={
+            props.showOtherReasonField
+              ? OthersReasonLabel
+              : props.evaluation.reason
+          }
           values={props.reasons}
           onChange={props.handleDropDownInput}
         />
       </Form.Field>
-
+      {props.showOtherReasonField ? (
+        <div style={{ paddingLeft: "2em" }}>
+          <Form.Field width="8">
+            <Form.Input
+              type="text"
+              name="otherReason"
+              value={props.evaluation.reason}
+              label="4. (b) Other Reason"
+              placeholder="Specify other reason"
+              onChange={props.handleOtherReasonInput}
+            />
+          </Form.Field>
+        </div>
+      ) : null}
       <Form.Field required={true}>
         <label>
           5. How long did you wait before an officer served you?(minutes)
@@ -170,7 +193,7 @@ export default function OnlineSection(props: Props) {
           name="crmCaptureCorrect"
           placeholder="Select a comment"
           value={props.evaluation.crmCaptureCorrect}
-          values={["Good", "Fair", "Bad"]}
+          values={crmCaptureState}
           onChange={props.handleDropDownInput}
         />
       </Form.Field>

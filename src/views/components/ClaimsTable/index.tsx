@@ -76,6 +76,7 @@ export default function ClaimsTable(props: Props) {
       data={props.data}
       users={props.users}
       columns={columns}
+      service="claim"
       loggedIn={props.loggedIn}
       deleteHandler={props.deleteHandler}
       loading={props.loading}

@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { evaluationServiceApi } from "../../../lib/apiEndpoints";
 import { authAxios } from "../../../lib/axios";
 import { throwLoginError } from "../../../lib/errors";
+import { Services } from "../../../lib/serviceData";
 import { useAxiosGet } from "../../../lib/useAxios";
 import { AppState } from "../../../redux/reducers";
 import { ParamCategoryName } from "../../components/EvaluationForm";
@@ -16,7 +17,7 @@ import UpdateServiceType, {
 
 interface Props {
   jwt: string;
-  service: string;
+  service: Services;
 }
 
 const createParameters = (

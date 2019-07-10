@@ -12,7 +12,7 @@ import { Profile } from "../UserProfile";
 export interface NPS extends TableData {
   customerName: string;
   customerTel: number;
-  touchPoint: string;
+  branch: string;
   reason: string;
   waitTime: string;
   duration: string;
@@ -51,16 +51,8 @@ const columns: ColumnRowsOpt[] = [
         accessor: "agentName"
       },
       {
-        Header: "Customer Name",
-        accessor: "customerName"
-      },
-      {
         Header: "Customer Tel",
         accessor: "customerTel"
-      },
-      {
-        Header: "Touch Point",
-        accessor: "touchPoint"
       },
       {
         Header: "Reason",
@@ -124,7 +116,7 @@ export default function NPSdataTable(props: Props) {
   return (
     <DataTable
       data={props.data}
-      isNpsTable={true}
+      service="nps"
       users={props.users}
       columns={columns}
       loggedIn={props.loggedIn}

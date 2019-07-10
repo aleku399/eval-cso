@@ -83,6 +83,7 @@ export default function SummaryClaimsTable(props: Props) {
   return (
     <DataTable
       data={props.data}
+      service="claim"
       users={props.users}
       columns={columns}
       loggedIn={props.loggedIn}

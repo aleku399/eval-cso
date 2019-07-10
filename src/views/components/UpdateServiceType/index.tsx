@@ -2,6 +2,7 @@ import { AxiosPromise } from "axios";
 import { flatten, groupBy, snakeCase } from "lodash";
 import * as React from "react";
 import { Button, Form, Header, Input, Message, Table } from "semantic-ui-react";
+import { getServiceName, Services } from "../../../lib/serviceData";
 import { ParameterAttrs } from "../EvaluationDataTable";
 import { ParamCategoryName } from "../EvaluationForm";
 
@@ -31,7 +32,7 @@ export interface Props {
   onSubmit: SubmitCreateParameters;
   loading?: boolean;
   error?: string;
-  serviceType: string;
+  serviceType: Services;
   parameterCategories: ParameterCategory[];
 }
 
@@ -154,15 +155,19 @@ export default class UpdateServiceType extends React.PureComponent<
     this.updateParameterCategories(updatedGroup);
   };
 
+  public setParamValue(paramName: string): string {
+    return `${this.props.serviceType}_${snakeCase(paramName.toLowerCase())}`;
+  }
+
   public submitForm = async (): Promise<void> => {
     const parameters: ParameterRes[] = flatten(
       this.state.parameterCategories.map(obj => obj.parameters)
     ).map(param => {
-        return {
-          ...param,
-          weight: Number(param.weight),
-          value: param.isNew ? snakeCase(param.name.toLowerCase()) : param.value
-        }
+      return {
+        ...param,
+        weight: Number(param.weight),
+        value: param.isNew ? this.setParamValue(param.value) : param.value
+      };
     });
 
     this.setState({ loading: true });
@@ -186,7 +191,7 @@ export default class UpdateServiceType extends React.PureComponent<
 
     const emptyParameter: ParameterRes = {
       name: "",
-      value: `${categoryValue}_${this.autoParamCounter}`,
+      value: `${categoryValue}_${this.autoParamCounter}`, // placeholder value
       weight: 0,
       isNew: true,
       category: categoryValue
@@ -255,7 +260,9 @@ export default class UpdateServiceType extends React.PureComponent<
           as="h3"
           textAlign="center"
           block={true}
-          content={`Update ${this.props.serviceType} service parameters`}
+          content={`${getServiceName(
+            this.props.serviceType
+          )} service parameters`}
         />
         <Form
           loading={this.state.loading}

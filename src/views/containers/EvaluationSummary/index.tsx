@@ -8,6 +8,7 @@ import { useAxiosGet } from "../../../lib/useAxios";
 import { AppState } from "../../../redux/reducers";
 import { getUsers } from "../../../redux/userList/action";
 
+import { Services } from "../../../lib/serviceData";
 import { EvaluationData } from "../../components/EvaluationDataTable";
 import SummaryEvalTable from "../../components/SummaryEvalTable";
 import { Profile } from "../../components/UserProfile";
@@ -18,7 +19,7 @@ interface DispatchedProps {
   error: string;
   profile: Profile;
   loading: boolean;
-  service: string;
+  service: Services;
   users: Profile[];
 }
 
@@ -61,6 +62,7 @@ function EvaluationSummary(props: Props) {
   return (
     <SummaryEvalTable
       data={data || []}
+      service={props.service}
       users={props.users}
       loggedIn={props.profile}
       loading={props.loading && loading}

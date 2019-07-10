@@ -10,6 +10,12 @@ import {
   TextArea
 } from "semantic-ui-react";
 import { mkOptionsFromUser, nullEmptyStrings } from "../../../lib/helper";
+import {
+  branchServiceIds,
+  emailServiceIds,
+  getServiceName,
+  Services
+} from "../../../lib/serviceData";
 import SearchableDropdown from "../SearchableDropdown";
 import { ParameterCategory } from "../UpdateServiceType";
 import { ADMIN, Profile } from "../UserProfile";
@@ -21,7 +27,9 @@ export interface Parameter {
 
 export interface EvalState {
   agentName: string;
-  customerTel: number;
+  customerTel?: string;
+  customerEmail?: string;
+  branch?: string;
   date: string;
   comment: string;
   details: string;
@@ -62,17 +70,23 @@ export interface Props {
   onSubmit: SubmitEvaluation;
   loading?: boolean;
   error?: string;
-  service: string;
+  service: Services;
   evaluator: Profile;
   agents: Profile[];
+  branches: string[];
   parameterCategories: ParameterCategory[];
   reasons: string[];
 }
 
 export default class EvaluationForm extends React.Component<Props, State> {
+  public emailServices: string[];
+  public branchServices: string[];
+
   constructor(props) {
     super(props);
     this.state = this.initialState();
+    this.emailServices = emailServiceIds;
+    this.branchServices = branchServiceIds;
   }
 
   public initialState(): State {
@@ -84,7 +98,9 @@ export default class EvaluationForm extends React.Component<Props, State> {
         comment: "",
         date: "",
         reason: "",
-        customerTel: 0,
+        customerTel: "",
+        customerEmail: "",
+        branch: "",
         agentName: "",
         details: ""
       },
@@ -225,6 +241,11 @@ export default class EvaluationForm extends React.Component<Props, State> {
         error={hasError}
         loading={this.state.loading}
       >
+        <Form.Field>
+          <Header as="h3" textAlign="center">
+            {getServiceName(this.props.service)} Evaluation{" "}
+          </Header>
+        </Form.Field>
         <Message
           hidden={!this.state.feedback}
           positive={true}
@@ -247,18 +268,28 @@ export default class EvaluationForm extends React.Component<Props, State> {
               onChange={this.handleDropDownInput}
             />
           </Form.Field>
-          <Form.Input
-            type="tel"
-            fluid={true}
-            label="Phone Number"
-            name="customerTel"
-            minLength={10}
-            maxLength={10}
-            pattern="[0]{1}[0-9]{9}"
-            value={this.state.evaluation.customerTel || ""}
-            required={true}
-            onChange={this.handleInput}
-          />
+          {emailServiceIds.includes(this.props.service) ? (
+            <Form.Input
+              type="email"
+              fluid={true}
+              label="Email"
+              name="customerEmail"
+              value={this.state.evaluation.customerEmail || ""}
+              onChange={this.handleInput}
+            />
+          ) : (
+            <Form.Input
+              type="tel"
+              fluid={true}
+              label="Phone Number"
+              name="customerTel"
+              minLength={10}
+              maxLength={10}
+              pattern="[0]{1}[0-9]{9}"
+              value={this.state.evaluation.customerTel}
+              onChange={this.handleInput}
+            />
+          )}
         </Form.Group>
 
         <Form.Group widths={this.props.evaluator.role === ADMIN ? "equal" : 8}>
@@ -273,7 +304,11 @@ export default class EvaluationForm extends React.Component<Props, State> {
                 name="reason"
                 fluid={true}
                 values={this.props.reasons}
-                value={this.state.evaluation.reason}
+                value={
+                  this.state.showOtherReasonField
+                    ? "Others"
+                    : this.state.evaluation.reason
+                }
                 onChange={this.handleDropDownInput}
               />
             </Form.Field>
@@ -296,7 +331,7 @@ export default class EvaluationForm extends React.Component<Props, State> {
               type="text"
               name="otherReason"
               value={this.state.evaluation.reason}
-              label="Other Reason"
+              label="Specify other Reason"
               placeholder="Specify other reason"
               onChange={this.handleOtherReasonInput}
             />
@@ -305,6 +340,18 @@ export default class EvaluationForm extends React.Component<Props, State> {
         <Form.Group widths="equal">
           {this.renderReasons(this.props.parameterCategories)}
         </Form.Group>
+        {branchServiceIds.includes(this.props.service) ? (
+          <Form.Field width="8">
+            <label> Branch</label>
+            <SearchableDropdown
+              name="branch"
+              placeholder="Select a branch"
+              value={this.state.evaluation.branch}
+              values={this.props.branches}
+              onChange={this.handleDropDownInput}
+            />
+          </Form.Field>
+        ) : null}
         <Form.Group widths="equal">
           <Form.Field inline={true}>
             <label>Comments</label>

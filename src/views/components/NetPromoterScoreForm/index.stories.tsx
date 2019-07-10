@@ -20,8 +20,8 @@ const props: Props = {
     "Easy finding and recognizing"
   ],
   onSubmit: action("submit"),
-  touchPoints: ["person-to-person", "via app"],
-  reasons: ["call", "email", "in-person"]
+  branches: ["Kampala", "Acacia"],
+  reasons: ["call", "email", "in-person", "Others"]
 };
 
 storiesOf("components/NetPromoterScoreForm", module).add(

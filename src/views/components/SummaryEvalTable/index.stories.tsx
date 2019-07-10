@@ -6,6 +6,7 @@ import SummaryEvalTable from "./index";
 
 storiesOf("components/SummaryEvalTable", module).add("default", () => (
   <SummaryEvalTable
+    service="call"
     data={evalTestData}
     users={users}
     loggedIn={loggedInEvaluator}

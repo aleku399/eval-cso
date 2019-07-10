@@ -31,7 +31,7 @@ interface AgentProfile {
   branch: string;
 }
 
-interface DispatchGetAgentData {
+export interface DispatchGetAgentData {
   dispatchGetAgentData: () => Promise<void>;
 }
 

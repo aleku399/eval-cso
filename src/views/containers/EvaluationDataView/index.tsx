@@ -5,6 +5,7 @@ import { AnyAction, Dispatch } from "redux";
 import { evaluationApi } from "../../../lib/apiEndpoints";
 import { authAxios } from "../../../lib/axios";
 import { throwLoginError } from "../../../lib/errors";
+import { Services } from "../../../lib/serviceData";
 import { useAxiosGet } from "../../../lib/useAxios";
 import { AppState } from "../../../redux/reducers";
 import { getUsers } from "../../../redux/userList/action";
@@ -20,7 +21,7 @@ interface DispatchedProps {
   error: string;
   profile: Profile;
   loading: boolean;
-  service: string;
+  service: Services;
   users: Profile[];
 }
 
@@ -69,6 +70,7 @@ function EvaluationDataView(props: Props) {
   return (
     <EvaluationDataTable
       data={data || []}
+      service={props.service}
       users={props.users}
       loggedIn={props.profile}
       loading={props.loading && loading}

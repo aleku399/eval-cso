@@ -5,8 +5,9 @@ import { AnyAction, Dispatch } from "redux";
 import { evaluationApi, evaluationServiceApi } from "../../../lib/apiEndpoints";
 import { authAxios } from "../../../lib/axios";
 import { throwLoginError } from "../../../lib/errors";
-import { reasons } from "../../../lib/serviceData";
+import { reasons, Services } from "../../../lib/serviceData";
 import { useAxiosGet } from "../../../lib/useAxios";
+import { getAgentData } from "../../../redux/AgentData/action";
 import { AppState } from "../../../redux/reducers";
 import { getUsers } from "../../../redux/userList/action";
 import EvaluationForm, {
@@ -15,6 +16,7 @@ import EvaluationForm, {
 import { ParameterRes } from "../../components/UpdateServiceType";
 import { AGENT, Profile } from "../../components/UserProfile";
 import { toParameterCategories } from "../UpdateServiceType";
+import { DispatchGetAgentData } from "../UpdateUserProfile";
 import { DispatchGetUsers } from "../UserList";
 
 interface DispatchedProps {
@@ -22,11 +24,14 @@ interface DispatchedProps {
   error: string;
   evaluator: Profile;
   loading: boolean;
-  service: string;
+  service: Services;
+  branches: string[];
   users: Profile[];
 }
 
-type Props = DispatchedProps & DispatchGetUsers;
+type DispatchedFns = DispatchGetUsers & DispatchGetAgentData;
+
+type Props = DispatchedProps & DispatchedFns;
 
 const createEvaluation = (
   jwt: string
@@ -37,20 +42,21 @@ const createEvaluation = (
 const mapStateToProps = ({
   service: { active },
   login: { jwt, profile },
-  users: { loading, error, users }
+  users: { loading, error, users },
+  agentData
 }: AppState): DispatchedProps => ({
   evaluator: profile,
   service: active,
   users,
-  error,
+  error: error || agentData.error,
+  branches: agentData.branches,
   jwt,
-  loading
+  loading: loading || agentData.loading
 });
 
-const mapDispatchToProps = (
-  dispatch: Dispatch<AnyAction>
-): DispatchGetUsers => ({
-  dispatchGetUsers: getUsers(dispatch)
+const mapDispatchToProps = (dispatch: Dispatch<AnyAction>): DispatchedFns => ({
+  dispatchGetUsers: getUsers(dispatch),
+  dispatchGetAgentData: getAgentData(dispatch)
 });
 
 function CreateEvaluation(props: Props) {
@@ -68,6 +74,9 @@ function CreateEvaluation(props: Props) {
     if (!props.users.length) {
       props.dispatchGetUsers(props.jwt);
     }
+    if (!props.branches.length) {
+      props.dispatchGetAgentData();
+    }
   });
 
   return (
@@ -78,13 +87,14 @@ function CreateEvaluation(props: Props) {
       agents={agents}
       loading={props.loading && loading}
       evaluator={props.evaluator}
+      branches={props.branches}
       onSubmit={createEvaluation(props.jwt)}
       reasons={reasons[props.service]}
     />
   );
 }
 
-export default connect<DispatchedProps, DispatchGetUsers>(
+export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(CreateEvaluation);

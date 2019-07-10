@@ -12,11 +12,11 @@ export const evalTestData = [
       evaluator: "alex",
       agentName: "thanos",
       comment: "Acknowledge the customer, you should have verified to",
-      customerTel: 10,
+      customerTel: "10",
       details: "failed to use the application",
-      customer: 10,
       supervisor: "bob",
-      branch: "Kampala"
+      branch: "",
+      agentBranch: "Kampala"
     },
     parameters: [
       {
@@ -44,10 +44,11 @@ export const evalTestData = [
       evaluator: "simon",
       agentName: "thanos",
       comment: "failed to apologize for failure to",
-      customerTel: 10,
+      customerTel: "10",
       details: "wanted to know how much balance is left on his account",
       supervisor: "bob",
-      branch: "Kampala"
+      branch: "",
+      agentBranch: "Kampala"
     },
     parameters: [
       {
@@ -75,14 +76,15 @@ export const evalTestData = [
     evalAttrs: {
       date: "2019-04-17",
       evaluator: "aleku399",
-      customerTel: 120,
+      customerTel: "10",
       comment: "comment",
       details: "details",
       agentName: "simon",
       reason: "BALANCE REQUEST",
       duration: 30,
       supervisor: "bob",
-      branch: "Nakawa"
+      branch: "",
+      agentBranch: "Nakawa"
     },
     score: 0,
     id: 243
@@ -92,6 +94,7 @@ export const evalTestData = [
 storiesOf("components/EvaluationDataTable", module).add("default", () => (
   <EvaluationDataTable
     data={evalTestData}
+    service="call"
     users={users}
     loggedIn={loggedInEvaluator}
     deleteHandler={action("delete")}

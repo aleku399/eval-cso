@@ -1,6 +1,7 @@
 import _ from "lodash";
 import * as React from "react";
 import "react-table/react-table.css";
+import { Services } from "../../../lib/serviceData";
 import DataTable, { ColumnRowsOpt } from "../DataTable";
 import {
   Evaluation,
@@ -20,6 +21,7 @@ export interface Props {
   users: Profile[];
   data: EvaluationData;
   loggedIn: Profile;
+  service: Services;
   loading?: boolean;
   error?: string;
 }
@@ -142,6 +144,7 @@ const getSummaryTableData = (data: Evaluation[]): EvaluationTableData[] =>
 export default function SummaryEvalTable(props: Props) {
   return (
     <DataTable
+      service={props.service}
       data={getSummaryTableData(props.data)}
       users={props.users}
       isSummaryTable={true}

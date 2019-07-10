@@ -4,8 +4,19 @@ import * as React from "react";
 import { CSVLink } from "react-csv";
 import ReactTable, { Column, Filter } from "react-table";
 import "react-table/react-table.css";
-import { Button, DropdownItemProps, Form, Message } from "semantic-ui-react";
+import {
+  Button,
+  DropdownItemProps,
+  Form,
+  Header,
+  Message
+} from "semantic-ui-react";
 import { getFormattedDate } from "../../../lib/helper";
+import {
+  branchServiceIds,
+  getServiceName,
+  Services
+} from "../../../lib/serviceData";
 import SearchableDropdown, { makeOptions } from "../SearchableDropdown";
 import { ADMIN, AGENT, EVALUATOR, Profile } from "../UserProfile";
 
@@ -47,7 +58,7 @@ export interface Props<T, S = any> {
   loggedIn: Profile;
   loading?: boolean;
   isSummaryTable?: boolean;
-  isNpsTable?: boolean;
+  service: Services;
   aggregate?: AggregateFn<T, S>;
   deleteHandler?: DeleteHandler;
   error?: string;
@@ -87,7 +98,6 @@ export default class DataTable<T, S> extends React.Component<
 > {
   private reactTable: React.RefObject<any>;
   private csvLink: React.RefObject<any>;
-  private branchField: string = this.props.isNpsTable ? "touchPoint" : "branch";
 
   constructor(props: Props<T, S>) {
     super(props);
@@ -140,6 +150,12 @@ export default class DataTable<T, S> extends React.Component<
     return tomorrow.toISOString().slice(0, 10);
   }
 
+  public getBranchField() {
+    return branchServiceIds.includes(this.props.service)
+      ? "branch"
+      : "agentBranch";
+  }
+
   public getDefaultEvaluatorSearch(): string {
     return this.props.loggedIn.role === EVALUATOR
       ? this.props.loggedIn.fullName
@@ -147,7 +163,9 @@ export default class DataTable<T, S> extends React.Component<
   }
 
   public getBranches(): string[] {
-    const branches = _.uniq(this.props.data.map(obj => obj[this.branchField]));
+    const branches = _.uniq(
+      this.props.data.map(obj => obj[this.getBranchField()])
+    );
     return [allBranches, ...branches];
   }
 
@@ -161,7 +179,7 @@ export default class DataTable<T, S> extends React.Component<
   }
 
   public isNpsSummaryTable() {
-    return this.props.isNpsTable && this.props.isSummaryTable;
+    return this.props.service === "nps" && this.props.isSummaryTable;
   }
 
   public addFullNames(data: InputData<T>): InputData<T> {
@@ -208,7 +226,7 @@ export default class DataTable<T, S> extends React.Component<
   public searchByEvaluator(data: InputData<T>): InputData<T> {
     return this.state.evaluatorSearch !== allEvaluators
       ? data.filter(row => {
-          return row.evaluator.includes(this.state.evaluatorSearch);
+          return row.evaluatorFullName.includes(this.state.evaluatorSearch);
         })
       : data;
   }
@@ -232,7 +250,7 @@ export default class DataTable<T, S> extends React.Component<
   public searchByBranch(data: InputData<T>): InputData<T> {
     return this.state.branchSearch !== allBranches
       ? data.filter(row => {
-          return row[this.branchField].includes(this.state.branchSearch);
+          return row[this.getBranchField()].includes(this.state.branchSearch);
         })
       : data;
   }
@@ -385,7 +403,7 @@ export default class DataTable<T, S> extends React.Component<
         this.searchBySupervisor(this.searchByEvaluator(this.state.data))
       )
     );
-    return this.props.isNpsTable ? this.searchByAgent(sortedData) : sortedData;
+    return this.props.service === "nps" ? this.searchByAgent(sortedData) : sortedData;
   }
 
   public renderedData() {
@@ -411,6 +429,11 @@ export default class DataTable<T, S> extends React.Component<
           content={this.state.error}
         />
         <Form loading={this.state.loading}>
+          <Form.Field>
+            <Header as="h3" textAlign="center">
+              {getServiceName(this.props.service)} Data
+            </Header>
+          </Form.Field>
           <Form.Group widths="equal">
             {this.isNpsSummaryTable() ? (
               <Form.Field inline={true}>

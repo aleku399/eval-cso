@@ -93,7 +93,7 @@ export default function SummaryNPSTable(props: Props) {
       users={props.users}
       columns={columns}
       loggedIn={props.loggedIn}
-      isNpsTable={true}
+      service="nps"
       isSummaryTable={true}
       aggregate={aggregate}
       loading={props.loading}

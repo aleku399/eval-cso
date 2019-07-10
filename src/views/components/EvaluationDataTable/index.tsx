@@ -2,6 +2,7 @@ import _ from "lodash";
 import * as React from "react";
 import "react-table/react-table.css";
 import { getFormattedDate } from "../../../lib/helper";
+import { emailServiceIds, Services } from "../../../lib/serviceData";
 import DataTable, {
   ColumnRowsOpt,
   DeleteHandler,
@@ -46,6 +47,7 @@ export interface EvaluationTableData extends TableData {
 export interface Props {
   users: Profile[];
   data: EvaluationData;
+  service: Services;
   loggedIn: Profile;
   loading?: boolean;
   error?: string;
@@ -100,7 +102,7 @@ export const parameterCategoryColumns = [
   }
 ];
 
-const columns: ColumnRowsOpt[] = [
+const getColumns = (service: Services): ColumnRowsOpt[] => [
   {
     Header: "Data View",
     columns: [
@@ -115,10 +117,6 @@ const columns: ColumnRowsOpt[] = [
         accessor: "agentName"
       },
       {
-        Header: "Customer",
-        accessor: "customer"
-      },
-      {
         Header: "Reason",
         id: "reason",
         accessor: "reason",
@@ -126,6 +124,12 @@ const columns: ColumnRowsOpt[] = [
         width: 200
       },
       ...parameterCategoryColumns,
+      {
+        Header: "Customer",
+        accessor: emailServiceIds.includes(service)
+          ? "customerEmail"
+          : "customerTel"
+      },
       {
         Header: "Comment",
         accessor: "comment",
@@ -173,8 +177,9 @@ export default function EvaluationDataTable(props: Props) {
   return (
     <DataTable
       data={getEvaluationTableData(props.data)}
+      service={props.service}
       users={props.users}
-      columns={columns}
+      columns={getColumns(props.service)}
       loggedIn={props.loggedIn}
       loading={props.loading}
       error={props.error}
