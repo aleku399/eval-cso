@@ -114,9 +114,11 @@ export default class EvaluationForm extends React.Component<Props, State> {
   public componentDidUpdate(prevProps: Props) {
     if (
       prevProps.loading !== this.props.loading ||
-      prevProps.error !== this.props.error
+      prevProps.error !== this.props.error ||
+      prevProps.parameterCategories !== this.props.parameterCategories
     ) {
       this.setState({
+        parameterCategories: this.props.parameterCategories,
         error: this.props.error,
         loading: this.props.loading
       });
