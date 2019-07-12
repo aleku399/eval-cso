@@ -21,7 +21,7 @@ export interface NPS extends TableData {
   rating: number;
   ratingReason: string;
   crmCaptureCorrect: boolean;
-  crmCapturedReason: string;
+  crmCaptureReason: string;
   frontLineRatingReasons: string[];
   backOfficeReasons: string[];
   id: number;
@@ -90,8 +90,8 @@ const columns: ColumnRowsOpt[] = [
         Cell: ({ row }) => (row.crmCaptureCorrect ? "yes" : "no")
       },
       {
-        Header: " CRM Captured Reason",
-        accessor: "crmCapturedReason"
+        Header: " CRM Capture Reason",
+        accessor: "crmCaptureReason"
       },
       {
         Header: "Front Line Rating Reasons",
