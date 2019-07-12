@@ -1,5 +1,11 @@
 import React from "react";
-import { Form, Input, StrictDropdownProps, TextArea } from "semantic-ui-react";
+import {
+  Form,
+  Input,
+  Ref,
+  StrictDropdownProps,
+  TextArea
+} from "semantic-ui-react";
 import { mkOptionsFromUser } from "../../../lib/helper";
 import RadioGroup, { RadioOnChange } from "../RadioGroup";
 import RangeSlider from "../RangeSlider";
@@ -32,11 +38,13 @@ interface Props {
   showOtherReasonField: boolean;
   handleInput: (event: any) => void;
   handleOtherReasonInput: (event: any) => void;
+  assignRatingReasonRef: (node: HTMLTextAreaElement) => void;
+  assignCrmCaptureReasonRef: (node: HTMLTextAreaElement) => void;
   handleChangeRadioInput: RadioOnChange;
   handleDropDownInput: StrictDropdownProps["onChange"];
 }
 
-const crmCaptureState: CrmCaptureState[] = ["Yes", "No"];
+const crmCaptureStates: CrmCaptureState[] = ["Yes", "No"];
 
 export const OthersReasonLabel = "Others";
 
@@ -178,35 +186,35 @@ export default function OnlineSection(props: Props) {
           10. Verbatim rating: What is the reason for the rating you have
           provided? (Please capture exactly what customer says)
         </label>
-        <TextArea
-          type="text"
-          name="ratingReason"
-          value={props.evaluation.ratingReason}
-          placeholder="Write your recommendation reason"
-          onChange={props.handleInput}
-        />
+        <Ref innerRef={props.assignRatingReasonRef}>
+          <TextArea
+            type="text"
+            name="ratingReason"
+            placeholder="Write your recommendation reason"
+          />
+        </Ref>
       </Form.Field>
 
       <Form.Field required={true} width="8">
         <label>11. Was the CRM task captured correctly</label>
         <SearchableDropdown
           name="crmCaptureCorrect"
-          placeholder="Select a comment"
+          placeholder="Select Yes or No"
+          values={crmCaptureStates}
           value={props.evaluation.crmCaptureCorrect}
-          values={crmCaptureState}
           onChange={props.handleDropDownInput}
         />
       </Form.Field>
 
       <Form.Field>
         <label>12. Please give reason for your response above</label>
-        <TextArea
-          type="text"
-          name="crmCaptureReason"
-          value={props.evaluation.crmCaptureReason}
-          placeholder="Reason for CRM capture state"
-          onChange={props.handleInput}
-        />
+        <Ref innerRef={props.assignCrmCaptureReasonRef}>
+          <TextArea
+            type="text"
+            name="crmCaptureReason"
+            placeholder="Reason for CRM capture state"
+          />
+        </Ref>
       </Form.Field>
     </Form.Field>
   );

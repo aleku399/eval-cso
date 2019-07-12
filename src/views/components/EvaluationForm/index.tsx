@@ -7,6 +7,7 @@ import {
   Header,
   List,
   Message,
+  Ref,
   TextArea
 } from "semantic-ui-react";
 import { mkOptionsFromUser, nullEmptyStrings } from "../../../lib/helper";
@@ -79,14 +80,12 @@ export interface Props {
 }
 
 export default class EvaluationForm extends React.Component<Props, State> {
-  public emailServices: string[];
-  public branchServices: string[];
+  public comment: HTMLTextAreaElement;
+  public details: HTMLTextAreaElement;
 
   constructor(props) {
     super(props);
     this.state = this.initialState();
-    this.emailServices = emailServiceIds;
-    this.branchServices = branchServiceIds;
   }
 
   public initialState(): State {
@@ -94,15 +93,15 @@ export default class EvaluationForm extends React.Component<Props, State> {
       feedback: null,
       showOtherReasonField: false,
       evaluation: {
-        parameters: [],
         comment: "",
+        details: "",
+        parameters: [],
         date: "",
         reason: "",
         customerTel: "",
         customerEmail: "",
         branch: "",
-        agentName: "",
-        details: ""
+        agentName: ""
       },
       error: this.props.error,
       loading: this.props.loading
@@ -201,6 +200,14 @@ export default class EvaluationForm extends React.Component<Props, State> {
     });
   }
 
+  public assignCommentRef = (node: HTMLTextAreaElement) => {
+    this.comment = node;
+  };
+
+  public assignDetailsRef = (node: HTMLTextAreaElement) => {
+    this.details = node;
+  };
+
   public handleSubmit = async (): Promise<void> => {
     if (this.validate()) {
       this.setState({ loading: true });
@@ -212,6 +219,8 @@ export default class EvaluationForm extends React.Component<Props, State> {
       const payload: CreateEvaluation = {
         evalAttrs: {
           ...this.state.evaluation,
+          comment: this.comment.value,
+          details: this.details.value,
           service: this.props.service,
           evaluator: this.props.evaluator.userName,
           customerTel: this.state.evaluation.customerTel,
@@ -219,6 +228,7 @@ export default class EvaluationForm extends React.Component<Props, State> {
         },
         parameters
       };
+
       this.props
         .onSubmit(nullEmptyStrings<CreateEvaluation>(payload))
         .then(response => {
@@ -355,23 +365,19 @@ export default class EvaluationForm extends React.Component<Props, State> {
         <Form.Group widths="equal">
           <Form.Field inline={true}>
             <label>Comments</label>
-            <TextArea
-              type="text"
-              name="comment"
-              value={this.state.evaluation.comment}
-              placeholder="Write your comment"
-              onChange={this.handleInput}
-            />
+            <Ref innerRef={this.assignCommentRef}>
+              <TextArea
+                type="text"
+                name="comment"
+                placeholder="Write your comment"
+              />
+            </Ref>
           </Form.Field>
           <Form.Field inline={true}>
             <label>Details</label>
-            <TextArea
-              type="text"
-              name="details"
-              value={this.state.evaluation.details}
-              placeholder="Add details"
-              onChange={this.handleInput}
-            />
+            <Ref innerRef={this.assignDetailsRef}>
+              <TextArea type="text" name="details" placeholder="Add details" />
+            </Ref>
           </Form.Field>
         </Form.Group>
         <Form.Field>

@@ -6,6 +6,7 @@ import {
   DropdownItemProps,
   Form,
   Message,
+  Ref,
   TextArea
 } from "semantic-ui-react";
 import { mkOptionsFromUser, nullEmptyStrings } from "../../../lib/helper";
@@ -51,6 +52,8 @@ export interface State {
 
 class ClaimEvaluation extends React.Component<Props, State> {
   public workflowNumber: string = "workflowNumber";
+  public comment: HTMLTextAreaElement;
+  public details: HTMLTextAreaElement;
 
   constructor(props) {
     super(props);
@@ -90,11 +93,14 @@ class ClaimEvaluation extends React.Component<Props, State> {
       const date = this.state.claim.date
         ? new Date(this.state.claim.date)
         : new Date();
+
+      const claimEvaluation = this.addRefDataToEvaluation(this.state.claim);
       const claim = {
-        ...this.state.claim,
+        ...claimEvaluation,
         evaluator: this.props.evaluator.userName,
         date: date.toISOString()
       };
+
       this.props
         .onSubmit(nullEmptyStrings<ClaimPayload>(claim))
         .then(response => {
@@ -142,6 +148,22 @@ class ClaimEvaluation extends React.Component<Props, State> {
       };
     });
   };
+
+  public assignCommentRef = (node: HTMLTextAreaElement) => {
+    this.comment = node;
+  };
+
+  public assignDetailsRef = (node: HTMLTextAreaElement) => {
+    this.details = node;
+  };
+
+  public addRefDataToEvaluation(claim: Evaluation): Evaluation {
+    return {
+      ...claim,
+      details: this.details.value,
+      comment: this.comment.value
+    };
+  }
 
   public handleInput = (event): any => {
     const name = event.target.name;
@@ -235,22 +257,20 @@ class ClaimEvaluation extends React.Component<Props, State> {
         </Form.Field>
         <Form.Field>
           <label>comment</label>
-          <TextArea
-            placeholder="Add comment"
-            onChange={this.handleInput}
-            value={this.state.claim.comment}
-            name="comment"
-          />
+          <Ref innerRef={this.assignCommentRef}>
+            <TextArea
+              type="text"
+              name="comment"
+              placeholder="Write your comment"
+            />
+          </Ref>
         </Form.Field>
 
         <Form.Field>
           <label>Details</label>
-          <TextArea
-            placeholder="Add detail"
-            onChange={this.handleInput}
-            value={this.state.claim.details}
-            name="details"
-          />
+          <Ref innerRef={this.assignDetailsRef}>
+            <TextArea type="text" name="details" placeholder="Add details" />
+          </Ref>
         </Form.Field>
         <Button className="ui submit button" type="submit">
           Submit

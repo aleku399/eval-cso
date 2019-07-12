@@ -54,6 +54,9 @@ export default class NetPromoterScoreForm extends React.Component<
   Props,
   State
 > {
+  public ratingReasonRef: HTMLTextAreaElement;
+  public crmCaptureReasonRef: HTMLTextAreaElement;
+
   public initialOnline: OnlineEvaluation = {
     agentName: "",
     branch: "",
@@ -216,18 +219,29 @@ export default class NetPromoterScoreForm extends React.Component<
     this.setState({ evaluation: this.initialState.evaluation });
   };
 
+  public addRefTextValues(evaluation: Evaluation): Evaluation {
+    const ratingReason = this.ratingReasonRef.value;
+    const crmCaptureReason = this.crmCaptureReasonRef.value;
+    const online = { ...evaluation.online, ratingReason, crmCaptureReason };
+    return {
+      ...evaluation,
+      online
+    };
+  }
+
   public handleSubmit = (): void => {
     if (this.validate()) {
       this.setState({ loading: true });
       const date = new Date(this.state.evaluation.online.date);
+      const evaluation = this.addRefTextValues(this.state.evaluation);
 
-      const evaluation = {
-        ...this.state.evaluation.offline,
-        ...this.state.evaluation.online,
+      const evaluationPayload = {
+        ...evaluation.offline,
+        ...evaluation.online,
         date: date.toISOString()
       };
 
-      const payload = nullEmptyStrings<EvaluationPayload>(evaluation);
+      const payload = nullEmptyStrings<EvaluationPayload>(evaluationPayload);
       this.props
         .onSubmit(payload)
         .then(({ status }) => {
@@ -245,6 +259,14 @@ export default class NetPromoterScoreForm extends React.Component<
           });
         });
     }
+  };
+
+  public assignRatingReasonRef = (node: HTMLTextAreaElement) => {
+    this.ratingReasonRef = node;
+  };
+
+  public assignCrmCaptureReasonRef = (node: HTMLTextAreaElement) => {
+    this.crmCaptureReasonRef = node;
   };
 
   public setWelcomeMessage = () => {
@@ -287,6 +309,8 @@ export default class NetPromoterScoreForm extends React.Component<
               showOtherReasonField={this.state.showOtherReasonField}
               handleOtherReasonInput={this.handleOtherReasonInput}
               handleChangeRadioInput={this.handleChangeRadioInput}
+              assignCrmCaptureReasonRef={this.assignCrmCaptureReasonRef}
+              assignRatingReasonRef={this.assignRatingReasonRef}
               handleDropDownInput={this.handleDropDownInput(onlineSection)}
             />
             <OfflineSection

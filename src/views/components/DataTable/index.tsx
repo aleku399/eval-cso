@@ -29,7 +29,7 @@ export interface TableData {
   date: string;
   agentName: string;
   evaluator: string;
-  comment: string;
+  comment?: string;
   id?: number;
   score?: number;
   branch?: string;
@@ -403,7 +403,9 @@ export default class DataTable<T, S> extends React.Component<
         this.searchBySupervisor(this.searchByEvaluator(this.state.data))
       )
     );
-    return this.props.service === "nps" ? this.searchByAgent(sortedData) : sortedData;
+    return this.props.service === "nps"
+      ? this.searchByAgent(sortedData)
+      : sortedData;
   }
 
   public renderedData() {
