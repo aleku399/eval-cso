@@ -165,14 +165,15 @@ export default class EvaluationForm extends React.Component<Props, State> {
 
   public updateParameterCategories(
     categoryValue: string,
-    parameterValue: string
+    parameterValue: string,
+    checked: boolean
   ) {
     const category = this.state.parameterCategories.find(
       cat => cat.value === categoryValue
     );
 
     const parameters = category.parameters.map(param =>
-      param.value === parameterValue ? { ...param, checked: true } : param
+      param.value === parameterValue ? { ...param, checked} : param
     );
 
     const parameterCategories = this.state.parameterCategories.map(
@@ -194,7 +195,7 @@ export default class EvaluationForm extends React.Component<Props, State> {
     const parameters = checked
       ? [...this.state.evaluation.parameters, parameterValue]
       : this.state.evaluation.parameters;
-    this.updateParameterCategories(category, name);
+    this.updateParameterCategories(category, name, checked);
     const evaluation = { ...this.state.evaluation, parameters };
     this.setState({ evaluation });
   };

@@ -166,7 +166,7 @@ export default class UpdateServiceType extends React.PureComponent<
       return {
         ...param,
         weight: Number(param.weight),
-        value: param.isNew ? this.setParamValue(param.value) : param.value
+        value: param.isNew ? this.setParamValue(param.name) : param.value
       };
     });
 
