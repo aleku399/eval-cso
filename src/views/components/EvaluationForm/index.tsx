@@ -24,6 +24,7 @@ import { ADMIN, Profile } from "../UserProfile";
 export interface Parameter {
   name: string;
   value: string;
+  checked?: boolean;
 }
 
 export interface EvalState {
@@ -58,6 +59,7 @@ export const zeroRated: ParamCategoryName = "zeroRated";
 
 interface State {
   evaluation: Evaluation;
+  parameterCategories: ParameterCategory[];
   showOtherReasonField: boolean;
   loading: boolean;
   error: string;
@@ -91,6 +93,7 @@ export default class EvaluationForm extends React.Component<Props, State> {
   public initialState(): State {
     return {
       feedback: null,
+      parameterCategories: this.props.parameterCategories,
       showOtherReasonField: false,
       evaluation: {
         comment: "",
@@ -120,14 +123,18 @@ export default class EvaluationForm extends React.Component<Props, State> {
     }
   }
 
-  public renderParameters = (parameters: Parameter[]) => {
+  public renderParameters = (category, parameters: Parameter[]) => {
     return parameters.map(parameter => {
       return (
         <List key={parameter.name}>
           <Checkbox
             label={parameter.name}
             name={parameter.value}
+            category={category}
             type="checkbox"
+            checked={
+              parameter.checked === undefined ? false : parameter.checked
+            }
             onChange={this.handleChange}
           />
         </List>
@@ -140,7 +147,7 @@ export default class EvaluationForm extends React.Component<Props, State> {
       return (
         <Form.Field inline={true} key={category.value}>
           <Header as="h3">{category.name}</Header>
-          <ul>{this.renderParameters(category.parameters)}</ul>
+          <ul>{this.renderParameters(category.value, category.parameters)}</ul>
         </Form.Field>
       );
     });
@@ -154,11 +161,38 @@ export default class EvaluationForm extends React.Component<Props, State> {
     return this.setState({ evaluation });
   };
 
-  public handleChange = async (_event, { name, checked }): Promise<void> => {
+  public updateParameterCategories(
+    categoryValue: string,
+    parameterValue: string
+  ) {
+    const category = this.state.parameterCategories.find(
+      cat => cat.value === categoryValue
+    );
+
+    const parameters = category.parameters.map(param =>
+      param.value === parameterValue ? { ...param, checked: true } : param
+    );
+
+    const parameterCategories = this.state.parameterCategories.map(
+      paramCats => {
+        if (paramCats.value === categoryValue) {
+          return { ...paramCats, parameters };
+        }
+        return paramCats;
+      }
+    );
+    this.setState({ parameterCategories });
+  }
+
+  public handleChange = async (
+    _event,
+    { category, name, checked }
+  ): Promise<void> => {
     const parameterValue = name;
     const parameters = checked
       ? [...this.state.evaluation.parameters, parameterValue]
       : this.state.evaluation.parameters;
+    this.updateParameterCategories(category, name);
     const evaluation = { ...this.state.evaluation, parameters };
     this.setState({ evaluation });
   };
@@ -194,6 +228,8 @@ export default class EvaluationForm extends React.Component<Props, State> {
 
   public clearInput() {
     const initState = this.initialState();
+    this.comment.value = "";
+    this.details.value = "";
     this.setState({
       ...initState,
       loading: false
@@ -348,7 +384,7 @@ export default class EvaluationForm extends React.Component<Props, State> {
           </Form.Field>
         ) : null}
         <Form.Group widths="equal">
-          {this.renderReasons(this.props.parameterCategories)}
+          {this.renderReasons(this.state.parameterCategories)}
         </Form.Group>
         {branchServiceIds.includes(this.props.service) ? (
           <Form.Field width="8">

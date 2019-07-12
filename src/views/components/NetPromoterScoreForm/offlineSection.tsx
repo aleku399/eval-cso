@@ -2,8 +2,14 @@ import React from "react";
 import { Form, StrictDropdownProps } from "semantic-ui-react";
 import SearchableDropdown from "../SearchableDropdown";
 
+export interface OfflineEvaluation {
+  frontLineRatingReasons: string[];
+  backOfficeReasons: string[];
+}
+
 interface Props {
   frontLineRatingReasons: string[];
+  evaluation: OfflineEvaluation;
   backOfficeReasons: string[];
   handleDropDownInput: StrictDropdownProps["onChange"];
 }
@@ -20,6 +26,7 @@ export default function OfflineSection(props: Props) {
           name="frontLineRatingReasons"
           placeholder="Select a reason"
           multiple={true}
+          value={props.evaluation.frontLineRatingReasons}
           values={props.frontLineRatingReasons}
           onChange={props.handleDropDownInput}
         />
@@ -30,6 +37,7 @@ export default function OfflineSection(props: Props) {
           name="backOfficeReasons"
           placeholder="Select a reason"
           multiple={true}
+          value={props.evaluation.backOfficeReasons}
           values={props.backOfficeReasons}
           onChange={props.handleDropDownInput}
         />

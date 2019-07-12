@@ -79,6 +79,8 @@ class ClaimEvaluation extends React.Component<Props, State> {
   }
 
   public clearInput = () => {
+    this.comment.value = "";
+    this.details.value = "";
     const initState = {
       ...this.initialState(),
       loading: false,

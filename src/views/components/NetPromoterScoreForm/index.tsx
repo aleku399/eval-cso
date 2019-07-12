@@ -4,23 +4,18 @@ import { Button, Form, Message } from "semantic-ui-react";
 import { nullEmptyStrings } from "../../../lib/helper";
 import RadioGroup from "../RadioGroup";
 import { Profile } from "../UserProfile";
-import OfflineSection from "./offlineSection";
+import OfflineSection, { OfflineEvaluation } from "./offlineSection";
 import OnlineSection, {
   OnlineEvaluation,
   OthersReasonLabel
 } from "./onlineSection";
 
-interface OfflineSection {
-  frontLineRatingReasons: string[];
-  backOfficeReasons: string[];
-}
-
 interface Evaluation {
   online: OnlineEvaluation;
-  offline: OfflineSection;
+  offline: OfflineEvaluation;
 }
 
-type EvaluationPayload = OnlineEvaluation & OfflineSection;
+type EvaluationPayload = OnlineEvaluation & OfflineEvaluation;
 
 export type SubmitEvaluation = (data: EvaluationPayload) => AxiosPromise<void>;
 
@@ -64,13 +59,13 @@ export default class NetPromoterScoreForm extends React.Component<
     reason: "",
     waitTime: "",
     duration: "",
-    issueResolved: false,
+    issueResolved: null,
     customerTel: "",
-    furtherInformationGiven: false,
+    furtherInformationGiven: null,
     ratingReason: "",
-    crmCaptureCorrect: "Yes",
+    crmCaptureCorrect: null,
     crmCaptureReason: "",
-    rating: 5
+    rating: 0
   };
 
   public initialState: State = {
@@ -109,16 +104,6 @@ export default class NetPromoterScoreForm extends React.Component<
     const feedback = value === "no" ? null : "Proceed as below";
     const radioState = value === "yes" ? true : false;
     this.setState({ feedback, showForm: radioState });
-  };
-
-  public handleChangeRadioInput = (_event, { name, value }): void => {
-    const radioState = value === "yes" ? true : false;
-    const online: OnlineEvaluation = {
-      ...this.state.evaluation.online,
-      [name]: radioState
-    };
-    const evaluation = { ...this.state.evaluation, online };
-    this.setState({ evaluation });
   };
 
   public handleDropDownInput = (section: Section) => (
@@ -216,6 +201,8 @@ export default class NetPromoterScoreForm extends React.Component<
   };
 
   public clearInput = () => {
+    this.ratingReasonRef.value = "";
+    this.crmCaptureReasonRef.value = "";
     this.setState({ evaluation: this.initialState.evaluation });
   };
 
@@ -308,13 +295,13 @@ export default class NetPromoterScoreForm extends React.Component<
               handleInput={this.handleInput(onlineSection)}
               showOtherReasonField={this.state.showOtherReasonField}
               handleOtherReasonInput={this.handleOtherReasonInput}
-              handleChangeRadioInput={this.handleChangeRadioInput}
               assignCrmCaptureReasonRef={this.assignCrmCaptureReasonRef}
               assignRatingReasonRef={this.assignRatingReasonRef}
               handleDropDownInput={this.handleDropDownInput(onlineSection)}
             />
             <OfflineSection
               frontLineRatingReasons={this.props.frontLineRatingReasons}
+              evaluation={this.state.evaluation.offline}
               backOfficeReasons={this.props.backOfficeReasons}
               handleDropDownInput={this.handleDropDownInput(offlineSection)}
             />

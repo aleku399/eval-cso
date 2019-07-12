@@ -7,12 +7,11 @@ import {
   TextArea
 } from "semantic-ui-react";
 import { mkOptionsFromUser } from "../../../lib/helper";
-import RadioGroup, { RadioOnChange } from "../RadioGroup";
 import RangeSlider from "../RangeSlider";
 import SearchableDropdown from "../SearchableDropdown";
 import { Profile } from "../UserProfile";
 
-export type CrmCaptureState = "Yes" | "No";
+export type YesNoToggle = "Yes" | "No";
 
 export interface OnlineEvaluation {
   waitTime: string;
@@ -22,10 +21,10 @@ export interface OnlineEvaluation {
   branch: string;
   customerTel: string;
   agentName: string;
-  issueResolved: boolean;
-  furtherInformationGiven: boolean;
+  issueResolved: YesNoToggle;
+  furtherInformationGiven: YesNoToggle;
   ratingReason: string;
-  crmCaptureCorrect: CrmCaptureState;
+  crmCaptureCorrect: YesNoToggle;
   crmCaptureReason?: string;
   rating: number;
 }
@@ -40,13 +39,17 @@ interface Props {
   handleOtherReasonInput: (event: any) => void;
   assignRatingReasonRef: (node: HTMLTextAreaElement) => void;
   assignCrmCaptureReasonRef: (node: HTMLTextAreaElement) => void;
-  handleChangeRadioInput: RadioOnChange;
   handleDropDownInput: StrictDropdownProps["onChange"];
 }
 
-const crmCaptureStates: CrmCaptureState[] = ["Yes", "No"];
+const yesNoStates: YesNoToggle[] = ["Yes", "No"];
 
 export const OthersReasonLabel = "Others";
+
+const yesNoOptions = [
+  { text: "Yes", value: true },
+  { text: "No", value: false }
+];
 
 export default function OnlineSection(props: Props) {
   return (
@@ -157,18 +160,26 @@ export default function OnlineSection(props: Props) {
           onChange={props.handleInput}
         />
       </Form.Field>
-      <RadioGroup
-        label="7. Was your issue resolved?"
-        name="issueResolved"
-        onChange={props.handleChangeRadioInput}
-        checkedValue={props.evaluation.issueResolved}
-      />
-      <RadioGroup
-        label="8. Did the CSO explain and give any further information?"
-        name="furtherInformationGiven"
-        onChange={props.handleChangeRadioInput}
-        checkedValue={props.evaluation.furtherInformationGiven}
-      />
+      <Form.Field required={true} width="8">
+        <label>7. Was your issue resolved?</label>
+        <SearchableDropdown
+          name="issueResolved"
+          placeholder="Select Yes or No"
+          options={yesNoOptions}
+          value={props.evaluation.issueResolved}
+          onChange={props.handleDropDownInput}
+        />
+      </Form.Field>
+      <Form.Field required={true} width="8">
+        <label>8. Did the CSO explain and give any further information?</label>
+        <SearchableDropdown
+          name="furtherInformationGiven"
+          placeholder="Select Yes or No"
+          options={yesNoOptions}
+          value={props.evaluation.furtherInformationGiven}
+          onChange={props.handleDropDownInput}
+        />
+      </Form.Field>
       <Form.Field>
         <label>
           9. Based on your experience while interacting with us, how likely is
@@ -200,7 +211,7 @@ export default function OnlineSection(props: Props) {
         <SearchableDropdown
           name="crmCaptureCorrect"
           placeholder="Select Yes or No"
-          values={crmCaptureStates}
+          values={yesNoStates}
           value={props.evaluation.crmCaptureCorrect}
           onChange={props.handleDropDownInput}
         />
@@ -212,7 +223,7 @@ export default function OnlineSection(props: Props) {
           <TextArea
             type="text"
             name="crmCaptureReason"
-            placeholder="Reason for CRM capture state"
+            placeholder="Reason for response"
           />
         </Ref>
       </Form.Field>

@@ -15,7 +15,7 @@ interface Props {
   fluid?: boolean;
   multiple?: boolean;
   search?: boolean;
-  value?: string;
+  value?: string | number | any[];
 }
 
 export function makeOptions(values: string[]): DropdownItemProps[] {
@@ -32,7 +32,6 @@ export default function SearchableDropdown(props: Props) {
   if (!options) {
     throw new Error(`Selection Options missing for ${props.name}`);
   }
-  const valueProp = multiple ? {} : { value: props.value };
   return (
     <Dropdown
       placeholder={props.placeholder}
@@ -43,7 +42,7 @@ export default function SearchableDropdown(props: Props) {
       search={search}
       selection={true}
       onChange={props.onChange}
-      {...valueProp}
+      value={props.value}
     />
   );
 }
