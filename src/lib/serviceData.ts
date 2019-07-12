@@ -79,9 +79,7 @@ export const branchServiceIds: Services[] = [
   "look_and_feel",
   "mystery_mail",
   "claim",
-  "nps",
-  "10th_floor_look_and_feel",
-  "14th_floor_look_and_feel"
+  "nps"
 ];
 
 export const getServiceName = (id: Services): string =>
