@@ -173,7 +173,7 @@ export default class EvaluationForm extends React.Component<Props, State> {
     );
 
     const parameters = category.parameters.map(param =>
-      param.value === parameterValue ? { ...param, checked} : param
+      param.value === parameterValue ? { ...param, checked } : param
     );
 
     const parameterCategories = this.state.parameterCategories.map(
@@ -262,7 +262,6 @@ export default class EvaluationForm extends React.Component<Props, State> {
           details: this.details.value,
           service: this.props.service,
           evaluator: this.props.evaluator.userName,
-          customerTel: this.state.evaluation.customerTel,
           date: date.toISOString()
         },
         parameters
@@ -320,9 +319,9 @@ export default class EvaluationForm extends React.Component<Props, State> {
           {emailServiceIds.includes(this.props.service) ? (
             <Form.Input
               type="email"
-              fluid={true}
               label="Email"
               name="customerEmail"
+              fluid={true}
               value={this.state.evaluation.customerEmail || ""}
               onChange={this.handleInput}
             />
@@ -351,7 +350,6 @@ export default class EvaluationForm extends React.Component<Props, State> {
               <SearchableDropdown
                 placeholder="Reason"
                 name="reason"
-                fluid={true}
                 values={this.props.reasons}
                 value={
                   this.state.showOtherReasonField
