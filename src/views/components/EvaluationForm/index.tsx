@@ -214,13 +214,6 @@ export default class EvaluationForm extends React.Component<Props, State> {
   };
 
   public validate = (): boolean => {
-    if (!this.state.evaluation.parameters.length) {
-      this.setState({
-        error: "Please add a reason for deviation or zero rating",
-        feedback: null
-      });
-      return false;
-    }
     if (!this.state.evaluation.agentName) {
       this.setState({ error: "Please select an agent" });
       return false;
@@ -332,8 +325,7 @@ export default class EvaluationForm extends React.Component<Props, State> {
               label="Phone Number"
               name="customerTel"
               minLength={10}
-              maxLength={10}
-              pattern="[0]{1}[0-9]{9}"
+              maxLength={30}
               value={this.state.evaluation.customerTel}
               onChange={this.handleInput}
             />

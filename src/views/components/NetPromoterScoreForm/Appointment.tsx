@@ -57,8 +57,7 @@ export default function CustomerAppointment(props: Props) {
         type="tel"
         fluid={true}
         minLength={10}
-        maxLength={10}
-        pattern="[0]{1}[0-9]{9}"
+        maxLength={30}
         value={appointment.customerTel || ""}
         required={true}
         onChange={handleInput}
