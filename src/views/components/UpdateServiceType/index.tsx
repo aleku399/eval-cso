@@ -1,7 +1,7 @@
 import { AxiosPromise } from "axios";
 import { flatten, groupBy, snakeCase } from "lodash";
 import * as React from "react";
-import { Button, Form, Header, Input, Message, Table } from "semantic-ui-react";
+import { Button, Form, Header, Message, Table } from "semantic-ui-react";
 import { getServiceName, Services } from "../../../lib/serviceData";
 import { ParameterAttrs } from "../EvaluationDataTable";
 import { ParamCategoryName } from "../EvaluationForm";
@@ -11,6 +11,8 @@ export interface ParameterRes extends ParameterAttrs {
   isNew?: boolean;
   description?: string;
   group?: string;
+  refName?: React.RefObject<HTMLInputElement>;
+  refWeight?: React.RefObject<HTMLInputElement>;
 }
 
 export interface ParameterCategory {
@@ -59,16 +61,15 @@ export default class UpdateServiceType extends React.PureComponent<
   State
 > {
   public autoParamCounter: number;
-
   public constructor(props: Props) {
     super(props);
+    const parameterCategories = this.addRefsToParams(props.parameterCategories);
     this.state = {
-      parameterCategories: props.parameterCategories,
+      parameterCategories,
       feedback: null,
       error: props.error,
       loading: props.loading
     };
-
     this.autoParamCounter = 0;
   }
 
@@ -77,12 +78,30 @@ export default class UpdateServiceType extends React.PureComponent<
       prevProps.loading !== this.props.loading ||
       prevProps.error !== this.props.error
     ) {
+      const parameterCategories = this.addRefsToParams(
+        this.mergeParameterCategories()
+      );
       this.setState({
-        parameterCategories: this.mergeParameterCategories(),
+        parameterCategories,
         error: this.props.error,
         loading: this.props.loading
       });
     }
+  }
+
+  public addRefsToParams(parameterCategories) {
+    return parameterCategories.map(cat => {
+      const parameters = cat.parameters.map(param => {
+        return !param.refName
+          ? {
+              ...param,
+              refName: React.createRef(),
+              refWeight: React.createRef()
+            }
+          : param;
+      });
+      return { ...cat, parameters };
+    });
   }
 
   public mergeParameterCategories(): ParameterCategory[] {
@@ -121,40 +140,6 @@ export default class UpdateServiceType extends React.PureComponent<
     this.setState({ parameterCategories });
   }
 
-  public onChangeHandler = (event: any): void => {
-    const inputValue = event.target.value;
-    const inputType = event.target.type;
-    const paramValue = event.target.name;
-    // attaching props directly to Input to set category wasn't working out
-    const category = this.getParamCategory(paramValue);
-
-    const paramCategory = this.state.parameterCategories.find(
-      cat => cat.value === category
-    );
-
-    const prevParam = paramCategory.parameters.find(
-      param => param.value === paramValue
-    );
-
-    const name = inputType === "text" ? inputValue : prevParam.name;
-    const weight = inputType === "number" ? inputValue : prevParam.weight;
-
-    const changedParameter = { ...prevParam, name, weight };
-
-    const updatedCategoryParams = paramCategory.parameters.map(param => {
-      if (param.value === paramValue) {
-        return changedParameter;
-      }
-      return param;
-    });
-
-    const updatedGroup = {
-      ...paramCategory,
-      parameters: updatedCategoryParams
-    };
-    this.updateParameterCategories(updatedGroup);
-  };
-
   public setParamValue(paramName: string): string {
     return `${this.props.serviceType}_${snakeCase(paramName.toLowerCase())}`;
   }
@@ -165,11 +150,13 @@ export default class UpdateServiceType extends React.PureComponent<
     ).map(param => {
       return {
         ...param,
-        weight: Number(param.weight),
-        value: param.isNew ? this.setParamValue(param.name) : param.value
+        name: param.refName.current.value,
+        weight: Number(param.refWeight.current.value),
+        value: param.isNew
+          ? this.setParamValue(param.refName.current.value)
+          : param.value
       };
     });
-
     this.setState({ loading: true });
 
     return this.props
@@ -194,7 +181,9 @@ export default class UpdateServiceType extends React.PureComponent<
       value: `${categoryValue}_${this.autoParamCounter}`, // placeholder value
       weight: 0,
       isNew: true,
-      category: categoryValue
+      category: categoryValue,
+      refName: React.createRef(),
+      refWeight: React.createRef()
     };
 
     const activeCategory = this.state.parameterCategories.find(
@@ -224,17 +213,19 @@ export default class UpdateServiceType extends React.PureComponent<
               {category.parameters.map(parameter => (
                 <Table.Row key={parameter.value}>
                   <Table.Cell>
-                    <Input
-                      value={parameter.name}
+                    <input
+                      defaultValue={parameter.name}
                       required={true}
                       type="text"
+                      ref={parameter.refName}
                       name={parameter.value}
                     />
                   </Table.Cell>
                   <Table.Cell>
-                    <Input
-                      value={parameter.weight}
+                    <input
+                      defaultValue={parameter.weight.toString()}
                       required={true}
+                      ref={parameter.refWeight}
                       type="number"
                       name={parameter.value}
                     />
@@ -264,11 +255,7 @@ export default class UpdateServiceType extends React.PureComponent<
             this.props.serviceType
           )} service parameters`}
         />
-        <Form
-          loading={this.state.loading}
-          error={!!this.state.error}
-          onChange={this.onChangeHandler}
-        >
+        <Form loading={this.state.loading} error={!!this.state.error}>
           <Message
             hidden={!this.state.feedback}
             floating={true}
