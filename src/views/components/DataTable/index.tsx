@@ -226,7 +226,7 @@ export default class DataTable<T, S> extends React.Component<
   public searchByEvaluator(data: InputData<T>): InputData<T> {
     return this.state.evaluatorSearch !== allEvaluators
       ? data.filter(row => {
-          return row.evaluatorFullName.includes(this.state.evaluatorSearch);
+          return row.evaluator.includes(this.state.evaluatorSearch);
         })
       : data;
   }
@@ -272,7 +272,7 @@ export default class DataTable<T, S> extends React.Component<
   }
 
   public userSearchOptions(
-    userType: string,
+    userNameLabel: string,
     allSearchValue: string
   ): DropdownItemProps[] {
     const allSearchOption = makeOptions([allSearchValue]);
@@ -280,13 +280,13 @@ export default class DataTable<T, S> extends React.Component<
       return allSearchOption;
     }
     const users: Profile[] = _.uniqBy(
-      this.props.data.map(obj => this.getUser(obj[userType])),
-      "value"
+      this.props.data.map(obj => this.getUser(obj[userNameLabel])),
+      "userName"
     );
 
     const userOptions: DropdownItemProps[] = users.map(user => ({
-      key: user.userName,
-      value: user.fullName,
+      key: `${userNameLabel}-${user.userName}`,
+      value: user.userName,
       text: user.fullName
     }));
 
@@ -307,7 +307,7 @@ export default class DataTable<T, S> extends React.Component<
             ...options,
             {
               key: loggedInUser.userName,
-              value: loggedInUser.fullName,
+              value: loggedInUser.userName,
               text: loggedInUser.fullName
             }
           ],
@@ -410,7 +410,6 @@ export default class DataTable<T, S> extends React.Component<
 
   public renderedData() {
     const sortedData = this.getSortedData();
-
     return this.props.isSummaryTable
       ? this.props.aggregate(sortedData)
       : sortedData;
