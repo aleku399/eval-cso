@@ -187,6 +187,10 @@ export default class NetPromoterScoreForm extends React.Component<
       this.setState({ errors: "Please select if CRM capture" });
       return false;
     }
+    if (!online.date) {
+      this.setState({ errors: "Please enter a date" });
+      return false;
+    }
     return true;
   };
 
@@ -265,7 +269,7 @@ export default class NetPromoterScoreForm extends React.Component<
 
   public render() {
     return (
-      <Form error={!!this.state.errors} loading={this.state.loading}>
+      <Form error={!!this.state.errors} loading={this.state.loading} onSubmit={this.handleSubmit}>
         <Message
           error={true}
           header="NetPromoterScore input Error"
@@ -306,7 +310,7 @@ export default class NetPromoterScoreForm extends React.Component<
               handleDropDownInput={this.handleDropDownInput(offlineSection)}
             />
             <Form.Field>
-              <Button type="submit" onClick={this.handleSubmit}>
+              <Button type="submit">
                 Submit
               </Button>
             </Form.Field>
