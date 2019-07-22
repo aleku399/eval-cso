@@ -173,7 +173,7 @@ export default class EvaluationForm extends React.Component<Props, State> {
     );
 
     const parameters = category.parameters.map(param =>
-      param.value === parameterValue ? { ...param, checked} : param
+      param.value === parameterValue ? { ...param, checked } : param
     );
 
     const parameterCategories = this.state.parameterCategories.map(
