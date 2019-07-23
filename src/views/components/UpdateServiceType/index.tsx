@@ -149,7 +149,7 @@ export default class UpdateServiceType extends React.PureComponent<
       this.state.parameterCategories.map(obj => obj.parameters)
     ).map(param => {
       return {
-        ...param,
+        category: param.category,
         name: param.refName.current.value,
         weight: Number(param.refWeight.current.value),
         value: param.isNew
