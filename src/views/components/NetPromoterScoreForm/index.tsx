@@ -269,7 +269,11 @@ export default class NetPromoterScoreForm extends React.Component<
 
   public render() {
     return (
-      <Form error={!!this.state.errors} loading={this.state.loading} onSubmit={this.handleSubmit}>
+      <Form
+        error={!!this.state.errors}
+        loading={this.state.loading}
+        onSubmit={this.handleSubmit}
+      >
         <Message
           error={true}
           header="NetPromoterScore input Error"
@@ -310,9 +314,7 @@ export default class NetPromoterScoreForm extends React.Component<
               handleDropDownInput={this.handleDropDownInput(offlineSection)}
             />
             <Form.Field>
-              <Button type="submit">
-                Submit
-              </Button>
+              <Button type="submit">Submit</Button>
             </Form.Field>
           </Form.Field>
         ) : null}
