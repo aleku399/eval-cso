@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
-import DataView from "src/views/templates/DataView";
+import SummaryView from "src/views/templates/SummaryView";
 
-const page = () => <DataView />;
+const page = () => <SummaryView />;
 
 export default connect()(page);
