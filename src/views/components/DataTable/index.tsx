@@ -323,7 +323,7 @@ export default class DataTable<T, S> extends React.Component<
           .map(valueObj =>
             valueObj.name ? valueObj.name : valueObj && valueObj.toString()
           )
-          .join(",\n");
+          .join("\r\n");
       }
       if (value && ["date", "to", "from"].includes(key)) {
         return getFormattedDate(value);
