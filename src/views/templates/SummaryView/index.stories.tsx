@@ -5,4 +5,4 @@ import withReduxProvider from "../../../storybook/provider";
 
 storiesOf("Templates/DataView", module)
   .addDecorator(withReduxProvider)
-  .add("default", () => < SummaryView />);
+  .add("default", () => <SummaryView />);
