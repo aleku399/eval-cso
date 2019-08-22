@@ -43,7 +43,7 @@ const columns: ColumnRowsOpt[] = [
       {
         Header: "Date",
         accessor: "date",
-        filterable: false,
+        filterable: true,
         Cell: dateCellFormatter()
       },
       {
