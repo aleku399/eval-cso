@@ -518,6 +518,7 @@ export default class DataTable<T, S> extends React.Component<
           filename="data.csv"
           className="hidden"
           ref={this.csvLink}
+          separator={";"}
           target="_blank"
         />
         <Form style={{ paddingTop: "1rem" }}>

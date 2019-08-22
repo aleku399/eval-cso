@@ -188,7 +188,10 @@ export default function OnlineSection(props: Props) {
           <SearchableDropdown
             name="rating"
             placeholder="Rate NSSF"
-            options={ratingOptions.map(rateValue => ({ key: rateValue, text: rateValue }))}
+            options={ratingOptions.map(rateValue => ({
+              key: rateValue,
+              text: rateValue
+            }))}
             value={props.evaluation.rating}
             onChange={props.handleDropDownInput}
           />
