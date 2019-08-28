@@ -15,7 +15,8 @@ import {
   branchServiceIds,
   emailServiceIds,
   getServiceName,
-  Services
+  Services,
+  usernameServiceIds
 } from "../../../lib/serviceData";
 import SearchableDropdown from "../SearchableDropdown";
 import { ParameterCategory } from "../UpdateServiceType";
@@ -81,13 +82,44 @@ export interface Props {
   reasons: string[];
 }
 
+interface ServiceInputDetails {
+  type: string;
+  label: string;
+  service: Services;
+}
+
+interface ServiceInputMap {
+  [field: string]: ServiceInputDetails;
+}
+
+const createServiceInputDetails = (inputType: string, inputLabel: string) => (
+  service: Services
+): ServiceInputDetails => ({ service, type: inputType, label: inputLabel });
+
+function nonTelServices(): ServiceInputMap {
+  const userNameServices = usernameServiceIds.map(
+    createServiceInputDetails("text", "UserName")
+  );
+  const emailServices = emailServiceIds.map(
+    createServiceInputDetails("email", "Email")
+  );
+  return [...userNameServices, ...emailServices].reduce(
+    (prev, current: ServiceInputDetails) => {
+      return { ...prev, [current.service]: { ...current } };
+    },
+    {}
+  );
+}
+
 export default class EvaluationForm extends React.Component<Props, State> {
   public comment: HTMLTextAreaElement;
   public details: HTMLTextAreaElement;
+  public serviceInputMap: ServiceInputMap;
 
   constructor(props) {
     super(props);
     this.state = this.initialState();
+    this.serviceInputMap = nonTelServices();
   }
 
   public initialState(): State {
@@ -307,10 +339,10 @@ export default class EvaluationForm extends React.Component<Props, State> {
               onChange={this.handleDropDownInput}
             />
           </Form.Field>
-          {emailServiceIds.includes(this.props.service) ? (
+          {this.serviceInputMap[this.props.service] ? (
             <Form.Input
-              type="email"
-              label="Email"
+              type={this.serviceInputMap[this.props.service].type}
+              label={this.serviceInputMap[this.props.service].label}
               name="customerEmail"
               fluid={true}
               value={this.state.evaluation.customerEmail || ""}
