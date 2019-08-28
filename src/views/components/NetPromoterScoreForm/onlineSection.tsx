@@ -7,7 +7,6 @@ import {
   TextArea
 } from "semantic-ui-react";
 import { mkOptionsFromUser } from "../../../lib/helper";
-import RangeSlider from "../RangeSlider";
 import SearchableDropdown from "../SearchableDropdown";
 import { Profile } from "../UserProfile";
 
@@ -50,6 +49,12 @@ const yesNoOptions = [
   { text: "Yes", value: true },
   { text: "No", value: false }
 ];
+
+const ratingOptions = [...Array(10).keys()].map(value => ({
+  key: value.toString(),
+  text: value,
+  value
+}));
 
 export default function OnlineSection(props: Props) {
   return (
@@ -179,14 +184,17 @@ export default function OnlineSection(props: Props) {
           onChange={props.handleDropDownInput}
         />
       </Form.Field>
-      <Form.Field>
+      <Form.Field width="8">
         <label>
           9. Based on your experience while interacting with us, how likely is
           it that you recommend NSSF to a friend or a Family member, (On a scale
           of 0 – 10)?
-          <RangeSlider
+          <SearchableDropdown
+            name="rating"
+            placeholder="Chose a rating figure"
+            options={ratingOptions}
             value={props.evaluation.rating}
-            onChange={props.handleInput}
+            onChange={props.handleDropDownInput}
           />
         </label>
       </Form.Field>
