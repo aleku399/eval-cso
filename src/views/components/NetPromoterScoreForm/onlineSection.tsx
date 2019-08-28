@@ -50,7 +50,11 @@ const yesNoOptions = [
   { text: "No", value: false }
 ];
 
-const ratingOptions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const ratingOptions = [...Array(10).keys()].map(value => ({
+  key: value.toString(),
+  text: value,
+  value
+}));
 
 export default function OnlineSection(props: Props) {
   return (
@@ -187,11 +191,8 @@ export default function OnlineSection(props: Props) {
           of 0 – 10)?
           <SearchableDropdown
             name="rating"
-            placeholder="Rate NSSF"
-            options={ratingOptions.map(rateValue => ({
-              key: rateValue,
-              text: rateValue
-            }))}
+            placeholder="Chose a rating figure"
+            options={ratingOptions}
             value={props.evaluation.rating}
             onChange={props.handleDropDownInput}
           />

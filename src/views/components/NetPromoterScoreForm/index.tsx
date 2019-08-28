@@ -65,7 +65,7 @@ export default class NetPromoterScoreForm extends React.Component<
     ratingReason: "",
     crmCaptureCorrect: null,
     crmCaptureReason: "",
-    rating: 0
+    rating: null
   };
 
   public initialState: State = {
@@ -125,8 +125,7 @@ export default class NetPromoterScoreForm extends React.Component<
 
   public handleInput = (section: Section) => (event: any): void => {
     const { name, value, type } = event.target;
-    const validValue =
-      type === "number" || type === "range" ? Number(value) : value;
+    const validValue = type === "number" ? Number(value) : value;
     const sectionEvaluation = {
       ...this.state.evaluation[section],
       [name]: validValue
@@ -169,6 +168,7 @@ export default class NetPromoterScoreForm extends React.Component<
     return true;
   };
 
+  // TODO: this can be abstracted away
   public validateOnlineSection = (): boolean => {
     const online = this.state.evaluation.online;
     if (!online.agentName) {
@@ -189,6 +189,10 @@ export default class NetPromoterScoreForm extends React.Component<
     }
     if (!online.date) {
       this.setState({ errors: "Please enter a date" });
+      return false;
+    }
+    if (online.rating === null) {
+      this.setState({ errors: "Please select a rating" });
       return false;
     }
     return true;
