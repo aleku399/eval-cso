@@ -66,13 +66,9 @@ export const serviceMenuItems: ServicesMenu[] = [
   }
 ];
 
-export const emailServiceIds: Services[] = [
-  "email",
-  "mystery_mail",
-  "chat",
-  "facebook",
-  "twitter"
-];
+export const emailServiceIds: Services[] = ["email", "mystery_mail", "chat"];
+
+export const usernameServiceIds: Services[] = ["facebook", "twitter"];
 
 export const branchServiceIds: Services[] = [
   "mystery_call",

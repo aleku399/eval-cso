@@ -74,6 +74,10 @@ const email = {
   evaluator: adminProfileA,
   service: "email" as Services
 };
+const facebook = {
+  ...email,
+  service: "facebook" as Services
+};
 const withNoReasons = { ...props, evaluator: adminProfileA, reasons: [] };
 const withNoReasonsEvaluator = { ...props, reasons: [] };
 
@@ -82,6 +86,7 @@ storiesOf("components/EvaluationForm", module)
   .add("look and feel", () => <EvaluationForm {...lookAndFeel} />)
   .add("mystery call", () => <EvaluationForm {...mysteryCall} />)
   .add("email", () => <EvaluationForm {...email} />)
+  .add("facebook", () => <EvaluationForm {...facebook} />)
   .add("with admin", () => <EvaluationForm {...adminProps} />)
   .add("with out reasons admin", () => <EvaluationForm {...withNoReasons} />)
   .add("with out reasons evaluator", () => (
