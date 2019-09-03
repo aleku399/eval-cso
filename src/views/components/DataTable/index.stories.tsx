@@ -51,7 +51,7 @@ const testData = [
     evaluator: "aleku399",
     agentName: "thanos",
     reason: "BALANCE REQUEST",
-    comment: "Acknowledge the customer, and be polite",
+    comment: "Acknowledge the customer, and be, polite",
     customerEmail: "abc@gmail.com",
     score: 40,
     supervisor: "bob",

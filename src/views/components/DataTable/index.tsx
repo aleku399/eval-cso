@@ -316,6 +316,8 @@ export default class DataTable<T, S> extends React.Component<
       : options;
   }
 
+  public commasToSemiColon = (word: string): string => word.replace(/,/g, ";");
+
   public toCSVDataObj(obj: InputDataObj<T>): { [field: string]: string } {
     return _.mapValues(obj, (value: any, key: string) => {
       if (Array.isArray(value)) {
@@ -323,13 +325,13 @@ export default class DataTable<T, S> extends React.Component<
           .map(valueObj =>
             valueObj.name ? valueObj.name : valueObj && valueObj.toString()
           )
-          .map(str => str.replace(",", ";")) // work around csv commas
+          .map(this.commasToSemiColon) // work around csv commas
           .join("\r\n");
       }
       if (value && ["date", "to", "from"].includes(key)) {
         return getFormattedDate(value);
       }
-      return value && value.toString().replace(",", ";");
+      return value && this.commasToSemiColon(value.toString());
     });
   }
 

@@ -50,7 +50,7 @@ const yesNoOptions = [
   { text: "No", value: false }
 ];
 
-const ratingOptions = [...Array(10).keys()].map(value => ({
+const ratingOptions = [...Array(11).keys()].map(value => ({
   key: value.toString(),
   text: value,
   value
